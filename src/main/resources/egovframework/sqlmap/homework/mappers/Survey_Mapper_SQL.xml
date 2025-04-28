@@ -31,7 +31,7 @@
 		FROM survey s
 		JOIN "user" u
 		ON s.author_idx = u.idx
-		ORDER BY b.created_at DESC
+		ORDER BY s.created_at DESC
 	</select>
 
 	<!-- 설문 상세 조회 -->

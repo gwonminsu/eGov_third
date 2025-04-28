@@ -5,11 +5,11 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>사용자 페이지(테스트용)</title>
+	<title>설문 목록 페이지</title>
 	<script src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
 	
-	<!-- 사용자 리스트 json 가져오는 api 호출 url -->
-	<c:url value="/api/user/userList.do" var="userListUrl"/>
+	<!-- 설문 리스트 json 가져오는 api 호출 url -->
+	<c:url value="/api/survey/list.do" var="surveyListUrl"/>
 	<!-- 로그인 페이지 url -->
 	<c:url value="/login.do" var="loginUrl"/>
 	<!-- 로그아웃 api 호출 url -->
@@ -48,15 +48,19 @@
 		<button type="button" id="btnLogout">로그아웃</button>
 	</div>
 	
-    <table id="userListTbl" border="1">
+    <table id="surveyListTbl" border="1">
     	<thead>
 	        <tr>
 	            <th>Idx</th>
-	            <th>이름</th>
-	            <th>아이디</th>
-	            <th>비밀번호</th>
-	            <th>권한여부</th>
-	            <th>가입일</th>
+	            <th>작성자</th>
+	            <th>수정자idx</th>
+	            <th>제목</th>
+	            <th>개요</th>
+	            <th>설문 시작일</th>
+	            <th>설문 종료일</th>
+	            <th>사용 유무</th>
+	            <th>등록일</th>
+	            <th>수정일</th>
 	        </tr>
     	</thead>
     	<tbody></tbody>
@@ -70,21 +74,25 @@
 		    $(document).ready(function() {
 		    	console.log('AJAX 호출 URL=', '${userListUrl}');
 		        $.ajax({
-		            url: '${userListUrl}',
-		            type: 'GET',
+		            url: '${surveyListUrl}',
+		            type: 'POST',
 		            dataType: 'json',
 		            success: function(data) {
 		            	console.log('받아온 데이터=', data);
-		                var $tbody = $('#userListTbl').find('tbody');
+		                var $tbody = $('#surveyListTbl').find('tbody');
 		                $tbody.empty();
 		                $.each(data, function(i, item) {
 		                    var row = '<tr>' +
 		                              '<td>' + item.idx + '</td>' +
 		                              '<td>' + item.userName + '</td>' +
-		                              '<td>' + item.userId + '</td>' +
-		                              '<td>' + item.password + '</td>' +
-		                              '<td>' + item.role + '</td>' +
+		                              '<td>' + item.editorIdx + '</td>' +
+		                              '<td>' + item.title + '</td>' +
+		                              '<td>' + item.description + '</td>' +
+		                              '<td>' + item.startDate + '</td>' +
+		                              '<td>' + item.endDate + '</td>' +
+		                              '<td>' + item.isUse + '</td>' +
 		                              '<td>' + item.createdAt + '</td>' +
+		                              '<td>' + item.updatedAt + '</td>' +
 		                              '</tr>';
 		                    $tbody.append(row);  
 		                });
