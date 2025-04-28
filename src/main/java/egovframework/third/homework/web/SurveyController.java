@@ -40,6 +40,7 @@ public class SurveyController {
         	surveyService.createSurvey(vo);
             return Collections.singletonMap("status","OK");
         } catch(Exception e) {
+        	log.info(e.getMessage());
             return Collections.singletonMap("error", e.getMessage());
         }
     }

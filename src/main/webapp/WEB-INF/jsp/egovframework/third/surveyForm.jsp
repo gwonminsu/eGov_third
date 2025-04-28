@@ -199,7 +199,15 @@
 			            }
 	    			},
 					error: function(xhr){
-						alert('게시글 ' + (mode==='edit'?'수정':'등록') + ' 중 에러 발생');
+						var errMsg = xhr.responseJSON && xhr.responseJSON.error; // 인터셉터에서 에러메시지 받아옴
+						if (!errMsg) {
+							try {
+								errMsg = JSON.parse(xhr.responseText).error;
+							} catch (e) {
+								errMsg = '게시글 ' + (mode==='edit'?'수정':'등록') + ' 중 에러 발생'
+							}
+						}
+						alert(errMsg);
 					}
 	    		});
 	        });
