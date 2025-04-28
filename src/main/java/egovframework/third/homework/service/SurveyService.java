@@ -1,0 +1,23 @@
+package egovframework.third.homework.service;
+
+import java.util.List;
+
+//Service 인터페이스
+public interface SurveyService {
+
+	// 설문 등록
+    void createSurvey(SurveyVO vo) throws Exception;
+    
+    // 설문 리스트 조회
+    List<SurveyVO> getSurveyList() throws Exception;
+    
+    // 설문 상세 조회
+    SurveyVO getSurvey(String idx) throws Exception;
+    
+    // 설문 수정
+    void modifySurvey(SurveyVO vo) throws Exception;
+    
+    // 설문 삭제
+    void removeSurvey(String idx) throws Exception;
+    
+}

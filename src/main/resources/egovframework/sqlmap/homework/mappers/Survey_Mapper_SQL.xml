@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="surveyDAO">
+
+	<!-- 설문 등록 -->
+	<insert id="insertSurvey" parameterType="surveyVO">
+		<selectKey keyProperty="idx" resultType="String" order="BEFORE">
+			SELECT 'SURVEY-' || (COALESCE(MAX((SUBSTRING(idx FROM 8))::int), 0) + 1)
+			FROM survey
+		</selectKey>
+		INSERT INTO survey
+			(idx, author_idx, editor_idx, title, description, start_date, end_date, is_use, created_at, updated_at)
+		VALUES
+			(#{idx}, #{authorIdx}, #{editorIdx}, #{title}, #{description}, #{startDate}, #{endDate}, #{isUse}, NOW(), NOW())
+	</insert>
+
+	<!-- 설문 목록 조회 -->
+	<select id="selectSurveyList" resultType="surveyVO">
+		SELECT
+			s.idx,
+			s.author_idx AS authorIdx,
+			s.editor_idx AS editorIdx,
+			u.user_name AS userName,
+			s.title,
+			s.description,
+			s.start_date AS startDate,
+			s.end_date AS endDate,
+			s.is_use AS isUse,
+			s.created_at AS createdAt,
+			s.updated_at AS updatedAt
+		FROM survey s
+		JOIN "user" u
+		ON s.author_idx = u.idx
+		ORDER BY b.created_at DESC
+	</select>
+
+	<!-- 설문 상세 조회 -->
+	<select id="selectSurvey" parameterType="String" resultType="surveyVO">
+		SELECT
+			s.idx,
+			s.author_idx AS authorIdx,
+			s.editor_idx AS editorIdx,
+			u.user_name AS userName,
+			s.title,
+			s.description,
+			s.start_date AS startDate,
+			s.end_date AS endDate,
+			s.is_use AS isUse,
+			s.created_at AS createdAt,
+			s.updated_at AS updatedAt
+		FROM survey s
+		JOIN "user" u
+		ON s.author_idx = u.idx
+		WHERE idx = #{idx}
+	</select>
+
+	<!-- 설문 수정 -->
+	<update id="updateSurvey" parameterType="surveyVO">
+		UPDATE survey
+		SET title = #{title},
+			description = #{description},
+			start_date = #{startDate},
+			end_date = #{endDate},
+			is_use = #{isUse},
+			updated_at = NOW()
+		WHERE idx = #{idx}
+	</update>
+
+	<!-- 설문 삭제 -->
+	<delete id="deleteSurvey" parameterType="String">
+		DELETE FROM survey WHERE idx = #{idx}
+	</delete>
+	
+</mapper>
