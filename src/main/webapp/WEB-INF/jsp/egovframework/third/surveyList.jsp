@@ -14,6 +14,10 @@
 	<c:url value="/login.do" var="loginUrl"/>
 	<!-- 로그아웃 api 호출 url -->
 	<c:url value="/api/user/logout.do" var="logoutUrl" />
+	<!-- 설문 작성 페이지 url -->
+	<c:url value="/surveyForm.do" var="surveyFormUrl"/>
+	<!-- 설문 상세 페이지 url -->
+	<c:url value="/surveyDetail.do" var="surveyDetailUrl"/>
 	
 	<!-- 세션에 담긴 사용자 이름을 JS 변수로 -->
 	<script>
@@ -58,7 +62,7 @@
     	<tbody></tbody>
     </table>
     
-    <button type="button" id="btnGoSurveyForm">등록</button>ㄴ
+    <button type="button" id="btnGoSurveyForm">등록</button>
     
     <script>
 	    $(function(){

@@ -34,7 +34,7 @@ public class SurveyController {
     }
 
     // 설문 등록
-    @PostMapping(value="/write.do", consumes="application/json", produces="application/json")
+    @PostMapping(value="/create.do", consumes="application/json", produces="application/json")
     public Map<String,String> write(@RequestBody SurveyVO vo) {
         try {
         	surveyService.createSurvey(vo);

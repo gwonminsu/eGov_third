@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ViewController {
 	
 	private static final Logger log = LoggerFactory.getLogger(ViewController.class);
-
-//    @Resource(name = "userService")
-//    protected UserService userService;
 	
 	// 로그인 페이지
 	@RequestMapping(value = "/login.do")
@@ -31,10 +28,16 @@ public class ViewController {
 		return "surveyList";
 	}
 	
-	// 글쓰기 폼 페이지
+	// 설문조사 폼 페이지
 	@RequestMapping(value = "/surveyForm.do")
 	public String showSurveyForm() {
 		return "surveyForm";
+	}
+	
+	// 설문조사 상세 페이지
+	@RequestMapping(value = "/surveyDetail.do")
+	public String showSurveyDetail() {
+		return "surveyDetail";
 	}
 	
 }

@@ -27,6 +27,7 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 	@Override
 	public void createSurvey(SurveyVO vo) throws Exception {
 		surveyDAO.insertSurvey(vo);
+		log.info("INSERT 설문 등록 성공 idx: {}", vo.getIdx());
 	}
 
 	// 설문 목록 조회
