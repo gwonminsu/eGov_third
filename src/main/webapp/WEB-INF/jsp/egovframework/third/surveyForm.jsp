@@ -129,7 +129,7 @@
 	
 	    $(function(){
  	    	if (mode === 'edit') {
-	    		$('#formTitle').text('게시글 수정');
+	    		$('#formTitle').text('설문지 관리(수정)');
 	    		$('#surveyFormGuide').show();
 	    		$('#idxShow').text(idx);
 	    		// 게시글 상세 정보 가져와서 input에 채워넣기
@@ -137,15 +137,15 @@
 		   	        $('#title').val(item.title);
 		   	        $('#description').html(item.description);
 	    		});
+	    	} else {
+	    		$('#surveyFormGuide').hide();
 	    	}
  	    	
- 	    	$('#surveyFormGuide').hide();
-	    	
 	    	// 작성자 input에 세션의 사용자 이름 넣기
 	    	// $('#userName').val(sessionUserName);
 	    	
-	    	// 데이트피커 기본 초기화 설정
-			$("#datepickerStart").datepicker({
+	    	// 데이트피커 기본옵션 정의
+	    	var datepickerOptions = {
 				dateFormat: 'yy-mm-dd', // 달력 날짜 형태
 				showOtherMonths: true, // 빈 공간에 현재월의 앞뒤월의 날짜를 표시
 				showMonthAfterYear: true, // 월- 년 순서가아닌 년도 - 월 순서
@@ -162,28 +162,11 @@
 				dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'],
 				minDate: "-5Y", //최소 선택일자
 				maxDate: "+5y" //최대 선택일자
-			});
-			$("#datepickerEnd").datepicker({    // ← 수정된 부분: 종료용도도 똑같이 초기화
-				dateFormat: 'yy-mm-dd',
-				showOtherMonths: true,
-				showMonthAfterYear: true,
-				changeYear: true,
-				changeMonth: true,
-				showOn: "both",
-				buttonImage: '${datepickerImgUrl}',
-				buttonImageOnly: true,
-				buttonText: "선택",
-				yearSuffix: "년",
-				monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-				monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-				dayNamesMin: ['일','월','화','수','목','금','토'],
-				dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'],
-				minDate: "-5Y",
-				maxDate: "+5y"
-			});
-			// 오늘 날짜로 초기값 세팅
-			$("#datepickerStart").datepicker('setDate', 'today');
-			$("#datepickerEnd").datepicker('setDate', 'today');
+	    	}
+			
+			// 데이트피커 옵션적용과 오늘 날짜로 초기값 세팅
+			$("#datepickerStart").datepicker(datepickerOptions).datepicker('setDate', 'today');
+			$("#datepickerEnd").datepicker(datepickerOptions).datepicker('setDate', 'today');
 			
 			
 	    	/* --------------------------- 질문 리스트 관련 스크립트 시작 ------------------------------- */
@@ -192,6 +175,16 @@
 			var questions = [];
 	    	// 객관식 옵션 객체 리스트
 	    	var currentOptions = [];
+	    	
+	    	// 타입-라벨 매핑 객체
+	    	var typeLabels = {
+				short: '단답형',
+				long:  '장문형',
+				radio: '라디오',
+				select:'드롭다운',
+				check: '체크박스',
+				image: '이미지'
+			};
 	    	
 			// 질문 입력 폼 초기화
 			function resetForm(){
@@ -210,7 +203,7 @@
 				renderTypeForm(type);
 			});
 			
-			// 입력 폼 변경: short -> input, long -> textarea
+			// 질문 추가 테이블 폼 변경
 			function renderTypeForm(type){
 				var $table = $('#addQuestionTable');
 				if(type === 'long') {
@@ -254,14 +247,7 @@
 			function renderQuestionList(){
 				var $list = $('#questionList').empty();
 				questions.forEach((q, idx) => {
-					var label;
-				    switch (q.type) {
-						case 'long': label = '장문형'; break;
-						case 'radio': label = '라디오'; break;
-						case 'select': label = '드롭다운'; break;
-						case 'check': label = '체크박스'; break;
-						default: label = '단답형';
-				    }
+					var label = typeLabels[q.type] || typeLabels.short;
 					var $tbl = $(`
 						<table class="question-item" data-index="\${idx}" >
 							<tr>
@@ -421,19 +407,19 @@
 	    		if (!$('#description')[0].reportValidity()) return;
 	    		
 				// Date 객체로 가져오기
-				const startObj = $("#datepickerStart").datepicker("getDate");
-				const endObj   = $("#datepickerEnd").datepicker("getDate");
+				var startObj = $("#datepickerStart").datepicker("getDate");
+				var endObj   = $("#datepickerEnd").datepicker("getDate");
 				// 종료 날짜가 시작날짜보다 빠른지 체크
 				if (endObj < startObj) {
 					alert("종료일이 시작일보다 빠릅니다! 날짜를 다시 확인해주세요");
 					return;
 				}
 				// 문자열 포맷 변환 (yyyy-MM-dd)
-				const startStr = $.datepicker.formatDate("yy-mm-dd", startObj);
-				const endStr   = $.datepicker.formatDate("yy-mm-dd", endObj);
+				var startStr = $.datepicker.formatDate("yy-mm-dd", startObj);
+				var endStr   = $.datepicker.formatDate("yy-mm-dd", endObj);
 				
 				// 사용 여부 값 가져오기
-				const isUseVal = $('input[name="isUse"]:checked').val() === 'true';
+				var isUseVal = $('input[name="isUse"]:checked').val() === 'true';
 	        	
 	    		// 검증 통과 시 게시글 등록 api 실행
 	    		var data = {
@@ -448,6 +434,7 @@
 	    		
 	    		console.log("data: " + JSON.stringify(data));
 	    		
+	    		// 설문지 등록 요청
 	    		$.ajax({
 	    			url: apiUrl + (mode==='edit' ? '?idx='+encodeURIComponent(idx) : ''),
 	    			type:'POST',
@@ -473,6 +460,8 @@
 						alert(errMsg);
 					}
 	    		});
+	    		
+	    		// 질문 등록/옵션 등록 요청 예정
 	        });
 	    	
 	    	$('#btnCancel').click(function() {
