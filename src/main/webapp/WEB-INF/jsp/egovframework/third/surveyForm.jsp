@@ -97,7 +97,7 @@
 								<option value="short">단답형</option>
 								<option value="long">장문형</option>
 								<option value="radio">객관식(라디오)</option>
-								<option value="select">객관식(드롭다운)</option>
+								<option value="dropdown">객관식(드롭다운)</option>
 								<option value="check">다중 객관식(체크박스)</option>
 								<option value="image">이미지</option>
 							</select>
@@ -181,7 +181,7 @@
 				short: '단답형',
 				long:  '장문형',
 				radio: '라디오',
-				select:'드롭다운',
+				dropdown:'드롭다운',
 				check: '체크박스',
 				image: '이미지'
 			};
@@ -199,6 +199,7 @@
 			
 			// 타입 드롭다운 변경 시
 			$('#qTypeSelect').on('change', function(){
+				currentOptions = [];
 				var type = $(this).val();
 				renderTypeForm(type);
 			});
@@ -214,7 +215,7 @@
 			    // 이미 찍혀있던 옵션 영역 제거
 			    $table.find('#optionInputRow, #optionListRow').remove();
 			    // 객관식 타입이면 옵션 입력/목록 로우 추가
-			    if(type==='radio' || type==='select' || type==='check') {
+			    if(type==='radio' || type==='dropdown' || type==='check') {
 					$(`<tr id="optionInputRow">
 					        <th>응답 옵션</th>
 					        <td>
@@ -287,7 +288,7 @@
 				}
 				var qObj = { type, content };
 				// 타입이 객관식이면 옵션 필수 체크
-			    if(type==='radio'||type==='select'||type==='check'){
+			    if(type==='radio'||type==='dropdown'||type==='check'){
 					if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
 					qObj.qitemList = [...currentOptions];
 				}
@@ -332,7 +333,7 @@
 					}
 					// 배열 업데이트(객관식일경우 옵션리스트 객체를 배열에 추가)
 					var updated = { type: newType, content: newContent };
-					if(newType==='radio' || newType==='select' || newType==='check'){
+					if(newType==='radio' || newType==='dropdown' || newType==='check'){
 						updated.qitemList = [...currentOptions];
 					}
 					questions[idx] = updated;
@@ -396,6 +397,7 @@
 			
 			$('#checkArray').on('click', function() {
 				console.table(questions);
+				console.log(JSON.stringify(questions));
 			});
 	    	
 	    	/* --------------------------- 질문 리스트 관련 스크립트 끝 --------------------------------- */
