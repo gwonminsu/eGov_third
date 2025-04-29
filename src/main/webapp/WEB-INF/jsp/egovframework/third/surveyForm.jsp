@@ -80,7 +80,36 @@
 		<tr>
 			<th>질문 내용</th>
 			<td colspan="3">
-				<!-- 여기에 질문 추가 영역 구현 예정 -->
+				<!-- 질문 아이템들이 쌓일 컨테이너 -->
+				<div id="questionList"></div>
+				<!-- 여기는 질문 추가 영역 -->
+				<table id="addQuestionTable">
+					<tr>
+						<th colspan="2" id="qAddHeader">
+							<div id="qHint">설문지 질문 추가</div>
+							<button type="button" id="addBtn">추가</button>
+						</th>
+					</tr>
+					<tr>
+						<th>질문 타입</th>
+						<td>
+							<select id="qTypeSelect">
+								<option value="short">단답형</option>
+								<option value="long">장문형</option>
+								<option value="radio">객관식(라디오)</option>
+								<option value="select">객관식(드롭다운)</option>
+								<option value="check">다중 객관식(체크박스)</option>
+								<option value="image">이미지</option>
+							</select>
+						</td>
+					</tr>
+					<tr id="qInputRow">
+						<th>질문</th>
+						<td>
+							<input type="text" id="qContent" /> <!-- 기본으로 단답형 -->
+						</td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
@@ -89,6 +118,7 @@
 		<button id="btnSubmit">저장</button>
 		<button id="btnCancel">취소</button>
 	</div>
+	<button id="checkArray" >현재 배열 확인하기</button>
 
 	<script>
 		// JSP EL로 POST 폼 파라미터 idx 바로 읽기
@@ -155,6 +185,147 @@
 			$("#datepickerStart").datepicker('setDate', 'today');
 			$("#datepickerEnd").datepicker('setDate', 'today');
 			
+			
+	    	/* --------------------------- 질문 리스트 관련 스크립트 시작 ------------------------------- */
+	    	
+			// 질문 객체 리스트
+			var questions = [];
+	    	
+			// 질문 입력 폼 초기화
+			function resetForm(){
+				$('#qTypeSelect').val('short');
+				renderInputRow('short');
+				$('#qContent').val('');
+				$('#addBtn').show();
+				$('#saveBtn')?.remove();
+			}
+			
+			// 입력 폼 변경: short -> input, long -> textarea
+			function renderInputRow(type){
+				var $td = $('#qInputRow td');
+				if(type === 'long') {
+					$td.html('<textarea id="qContent" rows="4" style="width:100%"></textarea>');
+				} else {
+					// 일단은 radio/select/check/image 모두 단답형으로 처리
+					$td.html('<input type="text" id="qContent" style="width:100%" />');
+				}
+			}
+			
+			// 타입 드롭다운 변경 시
+			$('#qTypeSelect').on('change', function(){
+				var type = $(this).val();
+				renderInputRow(type);
+			});
+			
+			// 질문 아이템 렌더링 함수
+			function renderQuestionList(){
+				var $list = $('#questionList').empty();
+				questions.forEach((q, idx) => {
+					var label = q.type === 'long' ? '장문형' : '단답형';
+					var $tbl = $(`
+						<table class="question-item" data-index="\${idx}" >
+							<tr>
+								<th colspan="2">
+									<div class="th-content">
+										<span class="label-text">\${label} 질문 [idx: \${idx}]</span>
+										<span class="btn-group">
+											<button class="modifyBtn">수정</button>
+											<button class="deleteBtn">삭제</button>
+											<button class="upBtn">▲</button>
+											<button class="downBtn">▼</button>
+										</span>
+									</div>
+								</th>
+							</tr>
+							<tr>
+								<th>질문</th>
+								<td>\${q.content}</td>
+							</tr>
+						</table>`);
+					$list.append($tbl);
+				});
+			}
+			
+			// 질문 추가 버튼
+			$('#addBtn').on('click', function(){
+				var type = $('#qTypeSelect').val();
+				var content = $('#qContent').val()?.trim();
+				if(!content) {
+					alert('질문을 입력해주세요');
+					return;
+				}
+				// 새 질문 객체 push
+				questions.push({ type, content });
+				renderQuestionList();
+				resetForm();
+			});
+			
+			// 수정 모드로 진입
+			$('#questionList').on('click', '.modifyBtn', function(){
+				var idx = +$(this).closest('table').data('index');
+				var q = questions[idx];
+
+				$('#qHint').text('설문지 질문 수정');
+				
+				// 폼에 값 채워주기
+				$('#qTypeSelect').val(q.type);
+				renderInputRow(q.type);
+				$('#qContent').val(q.content);
+				
+				// 추가 버튼 숨기고 수정완료 버튼 추가
+				$('#addBtn').hide();
+				if(!$('#saveBtn').length){
+					$('#addQuestionTable tr:first th')
+					  .append(' <button type="button" id="saveBtn">수정완료</button>');
+				}
+				
+				// 수정완료 클릭 핸들러
+				$('#saveBtn').off('click').on('click', function(){
+					$('#qHint').text('설문지 질문 추가');
+					var newType = $('#qTypeSelect').val();
+					var newContent = $('#qContent').val()?.trim();
+					if(!newContent){
+						alert('질문을 입력해주세요');
+						return;
+					}
+					// 배열 업데이트
+					questions[idx] = { type: newType, content: newContent };
+					renderQuestionList();
+					resetForm();
+				});
+			});
+			
+			// 삭제
+			$('#questionList').on('click', '.deleteBtn', function(){
+				var idx = +$(this).closest('table').data('index');
+				questions.splice(idx, 1);
+				renderQuestionList();
+			});
+			
+			// 순서 올리기
+			$('#questionList').on('click', '.upBtn', function(){
+				var idx = +$(this).closest('table').data('index');
+				if(idx > 0){
+					[questions[idx-1], questions[idx]] = [questions[idx], questions[idx-1]];
+					renderQuestionList();
+				}
+			});
+			
+			// 순서 내리기
+			$('#questionList').on('click', '.downBtn', function(){
+				var idx = +$(this).closest('table').data('index');
+				if(idx < questions.length - 1){
+					[questions[idx], questions[idx+1]] = [questions[idx+1], questions[idx]];
+					renderQuestionList();
+				}
+			});
+			
+			$('#checkArray').on('click', function() {
+				console.table(questions);
+			});
+	    	
+	    	/* --------------------------- 질문 리스트 관련 스크립트 끝 --------------------------------- */
+			
 	    	
 	        $('#btnSubmit').click(function(){
 	        	// 폼 검증(하나라도 인풋이 비어있으면 알림)
@@ -220,6 +391,7 @@
 	    		// 게시글 목록 페이지 이동
 	    		postTo('${listUrl}', {});
 	    	});
+	    	
 	    });
 	</script>
 </body>
