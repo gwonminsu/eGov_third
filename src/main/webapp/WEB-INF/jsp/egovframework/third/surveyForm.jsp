@@ -7,29 +7,7 @@
 	<meta charset="UTF-8">
 	<title>설문 작성</title>
 	
-	<style>
-		label textarea {
-			vertical-align: top;
-		}
-		
-		#datepickerStart,
-		#datepickerEnd {
-			box-sizing: border-box;
-		}
-		.ui-datepicker-trigger { 
-			width: 24px;
-			height: 24px;
-			vertical-align: middle;
-			margin-left: 4px;
-			cursor: pointer;
-		}
-		.ui-datepicker-trigger img { 
-			width: 100%;
-			height: 100%;
-			display: block;
-		}
-	</style>
-	
+	<link rel="stylesheet" href="<c:url value='/css/surveyForm.css'/>" />
 	<link rel="stylesheet" href="<c:url value='/css/jquery-ui.css'/>" />
 	<script src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
 	<script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
@@ -58,34 +36,60 @@
 	</script>
 </head>
 <body>
-	<h2 id="formTitle">설문 작성</h2>
+	<h2 id="formTitle">📋설문지 관리(작성)</h2>
 	<h3 id="surveyFormGuide">현재 수정중인 설문 idx: <span id="idxShow"></span></h3>
+	
+	<table class="form-table">
+		<tr>
+			<th>제목</th>
+			<td colspan="3">
+				<input type="text" id="title" required maxlength="100"/>
+			</td>
+		</tr>
+		<tr>
+			<th>개요</th>
+			<td colspan="3">
+				<textarea id="description" rows="1" required oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';"></textarea>
+			</td>
+		</tr>
+		<tr>
+			<th>설문 시작일</th>
+			<td>
+				<div class="date-container">
+					<input type="text" id="datepickerStart" readonly />
+				</div>
+			</td>
+			<th>설문 종료일</th>
+			<td>
+				<div class="date-container">
+					<input type="text" id="datepickerEnd" readonly />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th>사용 여부</th>
+			<td colspan="3">
+				<label>
+					<input type="radio" name="isUse" value="true" checked /> 사용
+				</label>
+				<label style="margin-left:16px;">
+					<input type="radio" name="isUse" value="false" /> 미사용
+				</label>
+			</td>
+		</tr>
+		<tr>
+			<th>질문 내용</th>
+			<td colspan="3">
+				<!-- 여기에 질문 추가 영역 구현 예정 -->
+			</td>
+		</tr>
+	</table>
 
-	<label>제목: 
-		<input type="text" id="title" required maxlength="100"/>
-	</label><br/>
-	<label>개요: 
-		<textarea rows="4" cols="50" required id="description"></textarea>
-	</label><br/>
-	<label>설문 시작일:
-		<input type="text" id="datepickerStart" readonly />
-	</label>
-	<label>설문 종료일:
-		<input type="text" id="datepickerEnd" readonly />
-	</label>
-	<div>
-		<label>사용 여부: </label>
-		<label>
-			<input type="radio" name="isUse" value="true" checked /> 사용
-		</label>
-		<label>
-			<input type="radio" name="isUse" value="false" /> 미사용
-		</label>
+	<div class="btn-area">
+		<button id="btnSubmit">저장</button>
+		<button id="btnCancel">취소</button>
 	</div>
 
-	<button id="btnSubmit">저장</button>
-	<button id="btnCancel">취소</button>
-	
 	<script>
 		// JSP EL로 POST 폼 파라미터 idx 바로 읽기
 		var idx = '${param.idx}';  
