@@ -190,38 +190,78 @@
 	    	
 			// 질문 객체 리스트
 			var questions = [];
+	    	// 객관식 옵션 객체 리스트
+	    	var currentOptions = [];
 	    	
 			// 질문 입력 폼 초기화
 			function resetForm(){
 				$('#qTypeSelect').val('short');
-				renderInputRow('short');
+				renderTypeForm('short');
 				$('#qContent').val('');
 				$('#addBtn').show();
 				$('#saveBtn')?.remove();
-			}
-			
-			// 입력 폼 변경: short -> input, long -> textarea
-			function renderInputRow(type){
-				var $td = $('#qInputRow td');
-				if(type === 'long') {
-					$td.html('<textarea id="qContent" rows="4" style="width:100%"></textarea>');
-				} else {
-					// 일단은 radio/select/check/image 모두 단답형으로 처리
-					$td.html('<input type="text" id="qContent" style="width:100%" />');
-				}
+				currentOptions = []; // 현재 옵션 리셋
+				$('#optionInputRow, #optionListRow').remove();
 			}
 			
 			// 타입 드롭다운 변경 시
 			$('#qTypeSelect').on('change', function(){
 				var type = $(this).val();
-				renderInputRow(type);
+				renderTypeForm(type);
 			});
+			
+			// 입력 폼 변경: short -> input, long -> textarea
+			function renderTypeForm(type){
+				var $table = $('#addQuestionTable');
+				if(type === 'long') {
+					$('#qInputRow td').html('<textarea id="qContent" rows="4" style="width:100%"></textarea>');
+				} else {
+					$('#qInputRow td').html('<input type="text" id="qContent" style="width:100%"/>');
+				}
+			    // 이미 찍혀있던 옵션 영역 제거
+			    $table.find('#optionInputRow, #optionListRow').remove();
+			    // 객관식 타입이면 옵션 입력/목록 로우 추가
+			    if(type==='radio' || type==='select' || type==='check') {
+					$(`<tr id="optionInputRow">
+					        <th>응답 옵션</th>
+					        <td>
+					          <input type="text" id="optionContent" style="width:70%"/>
+					          <button type="button" id="addOptionBtn">추가</button>
+					        </td>
+					      </tr>`).insertAfter('#qInputRow'); // qInputRow 다음에 추가
+					$(`<tr id="optionListRow">
+					        <th>옵션 리스트</th>
+					        <td><ul id="optionList" style="list-style:none;padding:0;margin:0"></ul></td>
+					      </tr>`).insertAfter('#optionInputRow'); // optionInputRow 다음에 추가
+			    }
+			}
+			
+			// 옵션 리스트 렌더링
+			function renderOptionList(){
+				var $ul = $('#optionList').empty();
+				currentOptions.forEach((opt, i) => {
+					var $li = $(`<li data-idx="\${i}" style="margin-bottom:4px">
+					                 \${opt}
+					                 <button class="optUpBtn">▲</button>
+					                 <button class="optDownBtn">▼</button>
+					                 <button class="optDelBtn">X</button>
+					               </li>`);
+					$ul.append($li);
+				});
+			}
 			
 			// 질문 아이템 렌더링 함수
 			function renderQuestionList(){
 				var $list = $('#questionList').empty();
 				questions.forEach((q, idx) => {
-					var label = q.type === 'long' ? '장문형' : '단답형';
+					var label;
+				    switch (q.type) {
+						case 'long': label = '장문형'; break;
+						case 'radio': label = '라디오'; break;
+						case 'select': label = '드롭다운'; break;
+						case 'check': label = '체크박스'; break;
+						default: label = '단답형';
+				    }
 					var $tbl = $(`
 						<table class="question-item" data-index="\${idx}" >
 							<tr>
@@ -242,6 +282,11 @@
 								<td>\${q.content}</td>
 							</tr>
 						</table>`);
+					// 옵션리스트가 있으면 아래에 로우 추가
+					if(q.qitemList){
+					  var optsHtml = q.qitemList.map(o=>`<div>▪ \${o}</div>`).join('');
+					  $tbl.append(`<tr><th>응답 옵션</th><td>\${optsHtml}</td></tr>`);
+					}
 					$list.append($tbl);
 				});
 			}
@@ -254,8 +299,14 @@
 					alert('질문을 입력해주세요');
 					return;
 				}
+				var qObj = { type, content };
+				// 타입이 객관식이면 옵션 필수 체크
+			    if(type==='radio'||type==='select'||type==='check'){
+					if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
+					qObj.qitemList = [...currentOptions];
+				}
 				// 새 질문 객체 push
-				questions.push({ type, content });
+				questions.push(qObj);
 				renderQuestionList();
 				resetForm();
 			});
@@ -269,8 +320,13 @@
 				
 				// 폼에 값 채워주기
 				$('#qTypeSelect').val(q.type);
-				renderInputRow(q.type);
+				renderTypeForm(q.type);
 				$('#qContent').val(q.content);
+				// 객관식이면 기존 옵션들 세팅
+				if (q.qitemList) {
+					currentOptions = [...q.qitemList];
+					renderOptionList();
+				}
 				
 				// 추가 버튼 숨기고 수정완료 버튼 추가
 				$('#addBtn').hide();
@@ -288,21 +344,25 @@
 						alert('질문을 입력해주세요');
 						return;
 					}
-					// 배열 업데이트
-					questions[idx] = { type: newType, content: newContent };
+					// 배열 업데이트(객관식일경우 옵션리스트 객체를 배열에 추가)
+					var updated = { type: newType, content: newContent };
+					if(newType==='radio' || newType==='select' || newType==='check'){
+						updated.qitemList = [...currentOptions];
+					}
+					questions[idx] = updated;
 					renderQuestionList();
 					resetForm();
 				});
 			});
 			
-			// 삭제
+			// 질문 삭제
 			$('#questionList').on('click', '.deleteBtn', function(){
 				var idx = +$(this).closest('table').data('index');
 				questions.splice(idx, 1);
 				renderQuestionList();
 			});
 			
-			// 순서 올리기
+			// 질문 순서 올리기
 			$('#questionList').on('click', '.upBtn', function(){
 				var idx = +$(this).closest('table').data('index');
 				if(idx > 0){
@@ -311,13 +371,41 @@
 				}
 			});
 			
-			// 순서 내리기
+			// 질문 순서 내리기
 			$('#questionList').on('click', '.downBtn', function(){
 				var idx = +$(this).closest('table').data('index');
 				if(idx < questions.length - 1){
 					[questions[idx], questions[idx+1]] = [questions[idx+1], questions[idx]];
 					renderQuestionList();
 				}
+			});
+			
+			// 옵션 추가
+			$('#addQuestionTable').on('click', '#addOptionBtn', function(){
+				var opt = $('#optionContent').val()?.trim();
+				if(!opt) return alert('옵션을 입력해주세요');
+				currentOptions.push(opt);
+				renderOptionList();
+				$('#optionContent').val('').focus();
+			});
+			
+			// 옵션 삭제
+			$('#addQuestionTable').on('click','.optDelBtn', function(){
+				var i = +$(this).parent().data('idx');
+				currentOptions.splice(i,1);
+				renderOptionList();
+			});
+			
+			// 옵션 순서 올리기
+			$('#addQuestionTable').on('click','.optUpBtn', function(){
+				var i = +$(this).parent().data('idx');
+				if(i>0){ [currentOptions[i-1],currentOptions[i]]=[currentOptions[i],currentOptions[i-1]]; renderOptionList(); }
+			});
+			
+			// 옵션 순서 내리기
+			$('#addQuestionTable').on('click','.optDownBtn', function(){
+				var i = +$(this).parent().data('idx');
+				if(i<currentOptions.length-1){ [currentOptions[i],currentOptions[i+1]]=[currentOptions[i+1],currentOptions[i]]; renderOptionList(); }
 			});
 			
 			$('#checkArray').on('click', function() {
