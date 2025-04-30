@@ -99,19 +99,66 @@ table.form-table textarea {
 	text-align: center;
 }
 #qAddHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	position: relative;
 }
-#addBtn {
+#qHint {
 	position: absolute;
-	top: 50%;
-	right: 16px;
-	transform: translateY(-50%);
+	left: 50%;
+	transform: translateX(-50%);
 }
-#saveBtn {
+#switch-text {
+	padding-right: 8px;
+	font-weight: normal;
+}
+.switch-container {
+	position: relative;
+}
+#isRequiredSwitch {
 	position: absolute;
-	top: 50%;
-	right: 16px;
-	transform: translateY(-50%);
+	/* hidden */
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+}
+.switch-label {
+	position: relative;
+	cursor: pointer;
+	display: inline-block;
+	width: 35px;
+	height: 20px;
+	background: #fff;
+	border: 2px solid #808080;
+	border-radius: 20px;
+	transition: 0.2s;
+}
+.switch-label:hover {
+	background: #efefef;
+}
+.onf-btn {
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border-radius: 20px;
+	background: #808080;
+	transition: 0.2s;
+}
+#isRequiredSwitch:checked+.switch-label {
+	background: #30c90a;
+	border: 2px solid #30c90a;
+}
+#isRequiredSwitch:checked+.switch-label:hover {
+	background: #238f07;
+}
+#isRequiredSwitch:checked+.switch-label .onf-btn {
+	left: 18px;
+	background: #fff;
+	box-shadow: 1px 2px 3px #00000020;
 }
 
 /* 질문 아이템 테이블 스타일 */
@@ -147,5 +194,10 @@ table.form-table textarea {
 }
 .question-item th .btn-group button {
 	margin-left: 2px;
+}
+#required-mark {
+	color: #e74c3c;
+	margin-left: 4px;
+	font-weight: bold;
 }
 

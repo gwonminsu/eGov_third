@@ -85,9 +85,20 @@
 				<!-- 여기는 질문 추가 영역 -->
 				<table id="addQuestionTable">
 					<tr>
-						<th colspan="2" id="qAddHeader">
-							<div id="qHint">설문지 질문 추가</div>
-							<button type="button" id="addBtn">추가</button>
+						<th colspan="2">
+							<div id="qAddHeader">
+								<div style="display:flex;">
+									<span id="switch-text">필수 여부</span>
+									<div class="switch-container">
+										<input type="checkbox" id="isRequiredSwitch">
+										<label for="isRequiredSwitch" class="switch-label">
+											<span class="onf-btn"></span>
+										</label>
+									</div>
+								</div>
+								<div id="qHint">설문지 질문 추가</div>
+								<button type="button" id="addBtn">추가</button>
+							</div>
 						</th>
 					</tr>
 					<tr>
@@ -193,6 +204,7 @@
 				$('#qContent').val('');
 				$('#addBtn').show();
 				$('#saveBtn')?.remove();
+				$('#isRequiredSwitch').prop('checked', false); // 필수 여부 초기화
 				currentOptions = []; // 현재 옵션 초기화
 			    // 이미지 초기화
 			    currentImage = null;
@@ -268,6 +280,12 @@
 				var $list = $('#questionList').empty();
 				questions.forEach((q, idx) => {
 					var label = typeLabels[q.type] || typeLabels.short;
+					var requiredMark 
+					if(q.isRequired) {
+						requiredMark = '<span id="required-mark">＊</span>';
+					} else {
+						requiredMark = '';
+					}
 					
 				    // HTML 이스케이프 (XSS 예방 차원)
 				    var escaped = q.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -279,7 +297,7 @@
 							<tr>
 								<th colspan="2">
 									<div class="th-content">
-										<span class="label-text">\${label} 질문 [idx: \${idx}]</span>
+										<span class="label-text">\${label} 질문 [idx: \${idx}] \${requiredMark}</span>
 										<span class="btn-group">
 											<button class="modifyBtn">수정</button>
 											<button class="deleteBtn">삭제</button>
@@ -311,11 +329,14 @@
 			$('#addBtn').on('click', function() {
 				var type = $('#qTypeSelect').val();
 				var content = $('#qContent').val()?.trim();
+				var isRequired = $('#isRequiredSwitch').prop('checked');
 				if(!content) {
 					alert('질문을 입력해주세요');
 					return;
 				}
-				var qObj = { type, content };
+				console.table(type);
+				var qObj = { type, content, isRequired };
+				console.log(qObj);
 				// 타입이 객관식이면 옵션 필수 체크
 			    if(type === 'radio' || type === 'dropdown' || type === 'check') {
 					if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
@@ -337,9 +358,11 @@
 			$('#questionList').on('click', '.modifyBtn', function() {
 				var idx = +$(this).closest('table').data('index');
 				var q = questions[idx];
-
+				
 				$('#qHint').text('설문지 질문 수정');
 				
+				// 질문아이템의 필수 여부 값 스위치 세팅
+				$('#isRequiredSwitch').prop('checked', q.isRequired);
 				// 폼에 값 채워주기
 				$('#qTypeSelect').val(q.type);
 				renderTypeForm(q.type);
@@ -359,7 +382,7 @@
 				// 추가 버튼 숨기고 수정완료 버튼 추가
 				$('#addBtn').hide();
 				if(!$('#saveBtn').length) {
-					$('#addQuestionTable tr:first th')
+					$('#addQuestionTable tr:first th #qAddHeader')
 					  .append(' <button type="button" id="saveBtn">수정완료</button>');
 				}
 				
@@ -368,12 +391,13 @@
 					$('#qHint').text('설문지 질문 추가');
 					var newType = $('#qTypeSelect').val();
 					var newContent = $('#qContent').val()?.trim();
+					var newIsRequired = $('#isRequiredSwitch').prop('checked');
 					if(!newContent){
 						alert('질문을 입력해주세요');
 						return;
 					}
 					// 배열 업데이트(객관식일경우 옵션리스트 객체를 배열에 추가)
-					var updated = { type: newType, content: newContent };
+					var updated = { type: newType, content: newContent, isRequired: newIsRequired };
 					if(newType === 'radio' || newType === 'dropdown' || newType === 'check') {
 						updated.qitemList = [...currentOptions];
 					}
