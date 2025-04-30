@@ -10,5 +10,6 @@
 		<typeAlias alias="egovMap" type="org.egovframe.rte.psl.dataaccess.util.EgovMap"/>
 		<typeAlias alias="userVO" type="egovframework.third.homework.service.UserVO"/>
 		<typeAlias alias="surveyVO" type="egovframework.third.homework.service.SurveyVO"/>
+		<typeAlias alias="questionVO" type="egovframework.third.homework.service.QuestionVO"/>
     </typeAliases>
 </configuration>

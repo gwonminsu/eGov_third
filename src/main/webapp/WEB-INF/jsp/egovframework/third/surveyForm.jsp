@@ -334,9 +334,7 @@
 					alert('질문을 입력해주세요');
 					return;
 				}
-				console.table(type);
 				var qObj = { type, content, isRequired };
-				console.log(qObj);
 				// 타입이 객관식이면 옵션 필수 체크
 			    if(type === 'radio' || type === 'dropdown' || type === 'check') {
 					if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
@@ -544,7 +542,7 @@
 						if (res.error) {
 							alert(res.error);
 						} else {
-							alert(mode==='edit'?'글 수정 완료':'글 등록 완료');
+							alert(mode==='edit'?'설문 수정 완료':'설문 등록 완료');
 							postTo('${listUrl}', {});
 			            }
 	    			},
@@ -554,7 +552,7 @@
 							try {
 								errMsg = JSON.parse(xhr.responseText).error;
 							} catch (e) {
-								errMsg = '게시글 ' + (mode==='edit'?'수정':'등록') + ' 중 에러 발생'
+								errMsg = '설문 ' + (mode==='edit'?'수정':'등록') + ' 중 에러 발생'
 							}
 						}
 						alert(errMsg);
