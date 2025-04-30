@@ -16,13 +16,13 @@
 	<c:url value="/surveyList.do" var="listUrl"/>
 	<!-- API URL -->
     <c:url value="/api/survey/create.do" var="createApi"/>
-    <c:url value="/api/survey/edit.do"   var="editApi"/>
+    <c:url value="/api/survey/edit.do" var="editApi"/>
     <c:url value="/api/survey/detail.do" var="detailApi"/>
     <!-- 데이트피커 이미지 url -->
     <c:url value="/images/datepicker.png" var="datepickerImgUrl"/>
 	
 	<script>
-		var sessionUserIdx  = '<c:out value="${sessionScope.loginUser.idx}" default="" />';
+		var sessionUserIdx = '<c:out value="${sessionScope.loginUser.idx}" default="" />';
 		var sessionUserName = '<c:out value="${sessionScope.loginUser.userName}" default="" />';
 		
         // 동적 POST 폼 생성 함수
@@ -171,15 +171,15 @@
 			
 	    	/* --------------------------- 질문 리스트 관련 스크립트 시작 ------------------------------- */
 	    	
-			// 질문 객체 리스트
-			var questions = [];
-	    	// 객관식 옵션 객체 리스트
-	    	var currentOptions = [];
+			var questions = []; // 질문 객체 리스트
+	    	var currentOptions = []; // 객관식 옵션 객체 리스트
+			var currentImage = null; // 이미지 파일 객체
+			var currentImageData = null; // DataURL 미리보기
 	    	
 	    	// 타입-라벨 매핑 객체
 	    	var typeLabels = {
 				short: '단답형',
-				long:  '장문형',
+				long: '장문형',
 				radio: '라디오',
 				dropdown:'드롭다운',
 				check: '체크박스',
@@ -187,35 +187,42 @@
 			};
 	    	
 			// 질문 입력 폼 초기화
-			function resetForm(){
+			function resetForm() {
 				$('#qTypeSelect').val('short');
 				renderTypeForm('short');
 				$('#qContent').val('');
 				$('#addBtn').show();
 				$('#saveBtn')?.remove();
-				currentOptions = []; // 현재 옵션 리셋
-				$('#optionInputRow, #optionListRow').remove();
+				currentOptions = []; // 현재 옵션 초기화
+			    // 이미지 초기화
+			    currentImage = null;
+			    currentImageData = null;
+				$('#optionInputRow, #optionListRow').remove(); // 객관식 타입 로우 제거
+			    $('#imageInputRow, #imagePreviewRow').remove(); // 이미지 타입 로우 제거
 			}
 			
 			// 타입 드롭다운 변경 시
-			$('#qTypeSelect').on('change', function(){
+			$('#qTypeSelect').on('change', function() {
 				currentOptions = [];
+			    currentImage = null;
+			    currentImageData = null;
 				var type = $(this).val();
 				renderTypeForm(type);
 			});
 			
 			// 질문 추가 테이블 폼 변경
-			function renderTypeForm(type){
+			function renderTypeForm(type) {
 				var $table = $('#addQuestionTable');
-				if(type === 'long') {
-					$('#qInputRow td').html('<textarea id="qContent" rows="4" style="width:100%"></textarea>');
-				} else {
+				if(type === 'short') {
 					$('#qInputRow td').html('<input type="text" id="qContent" style="width:100%"/>');
+				} else {
+					$('#qInputRow td').html('<textarea id="qContent" rows="4" style="width:100%"></textarea>');
 				}
-			    // 이미 찍혀있던 옵션 영역 제거
-			    $table.find('#optionInputRow, #optionListRow').remove();
+			    // 기존 객관식/이미지 관련 로우 제거
+			    $table.find('#optionInputRow, #optionListRow, #imageInputRow, #imagePreviewRow').remove();
+			    
 			    // 객관식 타입이면 옵션 입력/목록 로우 추가
-			    if(type==='radio' || type==='dropdown' || type==='check') {
+			    if(type === 'radio' || type === 'dropdown' || type === 'check') {
 					$(`<tr id="optionInputRow">
 					        <th>응답 옵션</th>
 					        <td>
@@ -228,10 +235,25 @@
 					        <td><ul id="optionList" style="list-style:none;padding:0;margin:0"></ul></td>
 					      </tr>`).insertAfter('#optionInputRow'); // optionInputRow 다음에 추가
 			    }
+			    
+			    // 이미지 타입이면 파일 추가/미리보기 로우 추가
+			    if(type==='image') {
+					$(`<tr id="imageInputRow">
+					     <th>이미지 업로드</th>
+					     <td>
+					       <input type="file" id="imageInput" accept="image/*"/>
+					     </td>
+					   </tr>`).insertAfter('#qInputRow');
+					$(`<tr id="imagePreviewRow">
+					     <th>미리보기</th>
+					     <td><img id="imagePreview" style="max-width:200px; max-height:200px; display:block"/></td>
+					   </tr>`).insertAfter('#imageInputRow');
+				}
+			    
 			}
 			
 			// 옵션 리스트 렌더링
-			function renderOptionList(){
+			function renderOptionList() {
 				var $ul = $('#optionList').empty();
 				currentOptions.forEach((opt, i) => {
 					var $li = $(`<li data-idx="\${i}" style="margin-bottom:4px">
@@ -245,7 +267,7 @@
 			}
 			
 			// 질문 아이템 렌더링 함수
-			function renderQuestionList(){
+			function renderQuestionList() {
 				var $list = $('#questionList').empty();
 				questions.forEach((q, idx) => {
 					var label = typeLabels[q.type] || typeLabels.short;
@@ -270,16 +292,20 @@
 							</tr>
 						</table>`);
 					// 옵션리스트가 있으면 아래에 로우 추가
-					if(q.qitemList){
-					  var optsHtml = q.qitemList.map(o=>`<div>▪ \${o}</div>`).join('');
-					  $tbl.append(`<tr><th>응답 옵션</th><td>\${optsHtml}</td></tr>`);
+					if(q.qitemList) {
+						var optsHtml = q.qitemList.map(o=>`<div>▪ \${o}</div>`).join('');
+						$tbl.append(`<tr><th>응답 옵션</th><td>\${optsHtml}</td></tr>`);
+					}
+					// 이미지데이터가 있으면 아래에 로우 추가
+					if(q.imageData) {
+						$tbl.append(`<tr><th>첨부 이미지</th><td><img src="\${q.imageData}" style="max-width:200px;"/></td></tr>`);
 					}
 					$list.append($tbl);
 				});
 			}
 			
 			// 질문 추가 버튼
-			$('#addBtn').on('click', function(){
+			$('#addBtn').on('click', function() {
 				var type = $('#qTypeSelect').val();
 				var content = $('#qContent').val()?.trim();
 				if(!content) {
@@ -288,9 +314,15 @@
 				}
 				var qObj = { type, content };
 				// 타입이 객관식이면 옵션 필수 체크
-			    if(type==='radio'||type==='dropdown'||type==='check'){
+			    if(type === 'radio' || type === 'dropdown' || type === 'check') {
 					if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
 					qObj.qitemList = [...currentOptions];
+				}
+				// 타입이 이미지면 이미지 파일 필수 체크
+			    if(type === 'image') {
+					if(!currentImage) return alert('이미지 파일을 선택해주세요');
+					qObj.imageFile = currentImage; // 서버 전송용
+					qObj.imageData = currentImageData; // 미리보기용
 				}
 				// 새 질문 객체 push
 				questions.push(qObj);
@@ -299,7 +331,7 @@
 			});
 			
 			// 수정 모드로 진입
-			$('#questionList').on('click', '.modifyBtn', function(){
+			$('#questionList').on('click', '.modifyBtn', function() {
 				var idx = +$(this).closest('table').data('index');
 				var q = questions[idx];
 
@@ -314,16 +346,22 @@
 					currentOptions = [...q.qitemList];
 					renderOptionList();
 				}
+				// 이미지면 해당 이미지 세팅
+				if (q.imageData) {
+					currentImage = q.imageFile || null;
+					currentImageData = q.imageData;
+					$('#imagePreview').attr('src', currentImageData);
+				}
 				
 				// 추가 버튼 숨기고 수정완료 버튼 추가
 				$('#addBtn').hide();
-				if(!$('#saveBtn').length){
+				if(!$('#saveBtn').length) {
 					$('#addQuestionTable tr:first th')
 					  .append(' <button type="button" id="saveBtn">수정완료</button>');
 				}
 				
 				// 수정완료 클릭 핸들러
-				$('#saveBtn').off('click').on('click', function(){
+				$('#saveBtn').off('click').on('click', function() {
 					$('#qHint').text('설문지 질문 추가');
 					var newType = $('#qTypeSelect').val();
 					var newContent = $('#qContent').val()?.trim();
@@ -333,8 +371,12 @@
 					}
 					// 배열 업데이트(객관식일경우 옵션리스트 객체를 배열에 추가)
 					var updated = { type: newType, content: newContent };
-					if(newType==='radio' || newType==='dropdown' || newType==='check'){
+					if(newType === 'radio' || newType === 'dropdown' || newType === 'check') {
 						updated.qitemList = [...currentOptions];
+					}
+					if(newType === 'image') {
+						updated.imageData = currentImageData;
+						updated.imageFile = currentImage;
 					}
 					questions[idx] = updated;
 					renderQuestionList();
@@ -343,32 +385,32 @@
 			});
 			
 			// 질문 삭제
-			$('#questionList').on('click', '.deleteBtn', function(){
+			$('#questionList').on('click', '.deleteBtn', function() {
 				var idx = +$(this).closest('table').data('index');
 				questions.splice(idx, 1);
 				renderQuestionList();
 			});
 			
 			// 질문 순서 올리기
-			$('#questionList').on('click', '.upBtn', function(){
+			$('#questionList').on('click', '.upBtn', function() {
 				var idx = +$(this).closest('table').data('index');
-				if(idx > 0){
+				if(idx > 0) {
 					[questions[idx-1], questions[idx]] = [questions[idx], questions[idx-1]];
 					renderQuestionList();
 				}
 			});
 			
 			// 질문 순서 내리기
-			$('#questionList').on('click', '.downBtn', function(){
+			$('#questionList').on('click', '.downBtn', function() {
 				var idx = +$(this).closest('table').data('index');
-				if(idx < questions.length - 1){
+				if(idx < questions.length - 1) {
 					[questions[idx], questions[idx+1]] = [questions[idx+1], questions[idx]];
 					renderQuestionList();
 				}
 			});
 			
 			// 옵션 추가
-			$('#addQuestionTable').on('click', '#addOptionBtn', function(){
+			$('#addQuestionTable').on('click', '#addOptionBtn', function() {
 				var opt = $('#optionContent').val()?.trim();
 				if(!opt) return alert('옵션을 입력해주세요');
 				currentOptions.push(opt);
@@ -377,22 +419,51 @@
 			});
 			
 			// 옵션 삭제
-			$('#addQuestionTable').on('click','.optDelBtn', function(){
+			$('#addQuestionTable').on('click','.optDelBtn', function() {
 				var i = +$(this).parent().data('idx');
 				currentOptions.splice(i,1);
 				renderOptionList();
 			});
 			
 			// 옵션 순서 올리기
-			$('#addQuestionTable').on('click','.optUpBtn', function(){
+			$('#addQuestionTable').on('click','.optUpBtn', function() {
 				var i = +$(this).parent().data('idx');
-				if(i>0){ [currentOptions[i-1],currentOptions[i]]=[currentOptions[i],currentOptions[i-1]]; renderOptionList(); }
+				if (i > 0) {
+					[currentOptions[i-1],currentOptions[i]] = [currentOptions[i],currentOptions[i-1]];
+					renderOptionList();
+				}
 			});
 			
 			// 옵션 순서 내리기
-			$('#addQuestionTable').on('click','.optDownBtn', function(){
+			$('#addQuestionTable').on('click','.optDownBtn', function() {
 				var i = +$(this).parent().data('idx');
-				if(i<currentOptions.length-1){ [currentOptions[i],currentOptions[i+1]]=[currentOptions[i+1],currentOptions[i]]; renderOptionList(); }
+				if(i < currentOptions.length-1) {
+					[currentOptions[i],currentOptions[i+1]] = [currentOptions[i+1],currentOptions[i]];
+					renderOptionList();
+				}
+			});
+			
+			// 이미지 파일 선택 시 검증 + 미리보기
+			$('#addQuestionTable').on('change','#imageInput',function() {
+				var file=this.files[0];
+				if(!file) {
+					currentImage=null;
+					currentImageData=null;
+					$('#imagePreview').attr('src','');
+					return;
+				}
+				if(!file.type.startsWith('image/')) {
+					alert('이미지 파일이 아닙니다');
+					$(this).val('');
+					return;
+				}
+				currentImage = file;
+				var reader = new FileReader();
+				reader.onload = function(e) {
+					currentImageData = e.target.result;
+					$('#imagePreview').attr('src', e.target.result);
+				};
+				reader.readAsDataURL(file);
 			});
 			
 			$('#checkArray').on('click', function() {
