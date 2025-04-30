@@ -106,7 +106,7 @@
 					<tr id="qInputRow">
 						<th>질문</th>
 						<td>
-							<input type="text" id="qContent" /> <!-- 기본으로 단답형 -->
+							<textarea id="qContent" rows="1" required oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px';"></textarea>
 						</td>
 					</tr>
 				</table>
@@ -213,11 +213,8 @@
 			// 질문 추가 테이블 폼 변경
 			function renderTypeForm(type) {
 				var $table = $('#addQuestionTable');
-				if(type === 'short') {
-					$('#qInputRow td').html('<input type="text" id="qContent" style="width:100%"/>');
-				} else {
-					$('#qInputRow td').html('<textarea id="qContent" rows="4" style="width:100%"></textarea>');
-				}
+				$('#qInputRow td').html('<textarea id="qContent" rows="1" required oninput="this.style.height=\'auto\'; this.style.height=this.scrollHeight+\'px\';"></textarea>');
+
 			    // 기존 객관식/이미지 관련 로우 제거
 			    $table.find('#optionInputRow, #optionListRow, #imageInputRow, #imagePreviewRow').remove();
 			    
@@ -271,6 +268,12 @@
 				var $list = $('#questionList').empty();
 				questions.forEach((q, idx) => {
 					var label = typeLabels[q.type] || typeLabels.short;
+					
+				    // HTML 이스케이프 (XSS 예방 차원)
+				    var escaped = q.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+				    // 줄바꿈을 <br/> 로 변환
+				    var contentHtml = escaped.replace(/\r\n|\r|\n/g, '<br/>');
+					
 					var $tbl = $(`
 						<table class="question-item" data-index="\${idx}" >
 							<tr>
@@ -288,7 +291,7 @@
 							</tr>
 							<tr>
 								<th>질문</th>
-								<td>\${q.content}</td>
+								<td>\${contentHtml}</td>
 							</tr>
 						</table>`);
 					// 옵션리스트가 있으면 아래에 로우 추가

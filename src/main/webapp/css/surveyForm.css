@@ -143,6 +143,7 @@ table.form-table textarea {
 }
 .question-item td {
 	padding-top: 0;
+	white-space: pre-line;
 }
 .question-item th .btn-group button {
 	margin-left: 2px;
