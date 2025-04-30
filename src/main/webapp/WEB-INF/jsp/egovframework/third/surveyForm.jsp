@@ -518,26 +518,27 @@
 				
 				// 사용 여부 값 가져오기
 				var isUseVal = $('input[name="isUse"]:checked').val() === 'true';
-	        	
+				
 	    		// 검증 통과 시 게시글 등록 api 실행
-	    		var data = {
-	    				authorIdx: sessionUserIdx,
-	    				title: $('#title').val(),
-	    				description: $('#description').val(),
-	    				startDate: startStr,
-	    				endDate: endStr,
-	    				isUse: isUseVal
-	    				}; // 보낼 데이터
-	    		if (mode==='edit') data.idx = idx; // 수정 모드면 idx 추가
-	    		
-	    		console.log("data: " + JSON.stringify(data));
+	    		var payload = {
+	    				survey: $.extend({}, {
+		    				authorIdx: sessionUserIdx,
+		    				title: $('#title').val(),
+		    				description: $('#description').val(),
+		    				startDate: startStr,
+		    				endDate: endStr,
+		    				isUse: isUseVal
+	    				}, mode==='edit'?{idx: idx}:{}),
+	    				questionList: questions
+   				}; // 보낼 데이터
+	    		console.log("payload: " + JSON.stringify(payload));
 	    		
 	    		// 설문지 등록 요청
 	    		$.ajax({
 	    			url: apiUrl + (mode==='edit' ? '?idx='+encodeURIComponent(idx) : ''),
 	    			type:'POST',
 	    			contentType:'application/json',
-	    			data: JSON.stringify(data),
+	    			data: JSON.stringify(payload),
 	    			success: function(res){
 						if (res.error) {
 							alert(res.error);

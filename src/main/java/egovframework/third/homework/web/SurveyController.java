@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import egovframework.third.homework.service.QuestionVO;
 import egovframework.third.homework.service.SurveyService;
 import egovframework.third.homework.service.SurveyVO;
 
@@ -21,9 +25,14 @@ import egovframework.third.homework.service.SurveyVO;
 public class SurveyController {
 	
 	private static final Logger log = LoggerFactory.getLogger(SurveyController.class);
+	
+	@Resource
+	private ObjectMapper objectMapper;
 
 	@Resource(name = "surveyService")
 	protected SurveyService surveyService;
+	
+	
 	
     // 설문 목록
     @PostMapping(value="/list.do", produces="application/json")
@@ -33,16 +42,15 @@ public class SurveyController {
         return surveyList;
     }
 
-    // 설문 등록
+    // 설문 등록(해당 설문의 질문 등록 작업 포함)
     @PostMapping(value="/create.do", consumes="application/json", produces="application/json")
-    public Map<String,String> write(@RequestBody SurveyVO vo) {
-        try {
-        	surveyService.createSurvey(vo);
-            return Collections.singletonMap("status","OK");
-        } catch(Exception e) {
-        	log.info(e.getMessage());
-            return Collections.singletonMap("error", e.getMessage());
-        }
+    public Map<String,String> write(@RequestBody Map<String, Object> payload) throws Exception {
+    	SurveyVO surveyVO = objectMapper.convertValue(payload.get("survey"), SurveyVO.class);
+        List<QuestionVO> questionList = objectMapper.convertValue(payload.get("questionList"), new TypeReference<List<QuestionVO>>() {});
+//    	log.info("surveyVO: {}", surveyVO);
+//    	log.info("questionList: {}", questionList);
+        surveyService.createSurvey(surveyVO, questionList);
+        return Collections.singletonMap("status","OK");
     }
 
     // 설문 상세

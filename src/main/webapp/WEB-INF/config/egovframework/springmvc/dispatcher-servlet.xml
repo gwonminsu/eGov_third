@@ -55,6 +55,9 @@
  		</constructor-arg>
  		<constructor-arg ref="permissionInterceptor"/>
  	</bean>
+ 	
+ 	<!-- json ObjectMapper 빈 -->
+ 	<bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper"/>
     
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver" />
     <!-- 쿠키를 이용한 Locale 이용시 <bean id="localeResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver"/> -->
