@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import egovframework.third.homework.service.QitemService;
+import egovframework.third.homework.service.QitemVO;
 import egovframework.third.homework.service.QuestionService;
 import egovframework.third.homework.service.QuestionVO;
 import egovframework.third.homework.service.SurveyService;
@@ -27,6 +29,9 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 	
     @Resource(name = "questionService")
     private QuestionService questionService;
+    
+    @Resource(name="qitemService")
+    private QitemService qitemService;
 
 	// 설문 등록(해당 설문의 질문 등록 작업 포함)
 	@Override
@@ -41,6 +46,17 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 				q.setSurveyIdx(vo.getIdx()); // surveyIdx를 해당 설문 idx로 설정
 				q.setSeq(i); // 순서값 세팅
 				questionService.createQuestion(q); // 질문 등록
+				
+				// 객관식 문항 처리
+				if (q.getQitemList() != null) {
+					for (int j = 0; j < q.getQitemList().size(); j++) {
+						QitemVO qitem = new QitemVO();
+						qitem.setQuestionIdx(q.getIdx()); // questionIdx를 해당 질문 idx로 설정
+						qitem.setContent(q.getQitemList().get(j));
+						qitem.setSeq(j);
+						qitemService.createQitem(qitem);
+					}
+				}
 			}
 		}
 	}

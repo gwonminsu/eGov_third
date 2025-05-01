@@ -37,6 +37,6 @@ public class QuestionDAO {
     
     // 질문 삭제
     public void deleteQuestion(String idx) {
-        sqlSession.delete("deleteQuestion", idx);
+        sqlSession.delete("questionDAO.deleteQuestion", idx);
     }
 }

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="qitemDAO">
+
+	<!-- 문항 등록 -->
+	<insert id="insertQitem" parameterType="qitemVO">
+		<selectKey keyProperty="idx" resultType="String" order="BEFORE">
+			SELECT 'QITEM-' || (COALESCE(MAX((SUBSTRING(idx FROM 7))::int), 0)+ 1)
+			FROM qitem
+		</selectKey>
+		INSERT INTO qitem
+			(idx, question_idx, content, seq, created_at, updated_at)
+		VALUES
+			(#{idx}, #{questionIdx}, #{content}, #{seq}, NOW(), NOW())
+	</insert>
+
+	<!-- 질문 idx로 문항 목록 조회 -->
+	<select id="selectQitemListByQuestionIdx" parameterType="String" resultType="qitemVO">
+		SELECT
+			idx,
+			question_idx AS questionIdx,
+			content,
+			seq,
+			created_at AS createdAt,
+			updated_at AS updatedAt
+		FROM qitem
+		WHERE question_idx = #{questionIdx}
+		ORDER BY seq DESC
+	</select>
+
+	<!-- 질문 단일 조회 -->
+	<select id="selectQitem" parameterType="String" resultType="qitemVO">
+		SELECT
+			idx,
+			question_idx AS questionIdx,
+			content,
+			seq,
+			created_at AS createdAt,
+			updated_at AS updatedAt
+		FROM qitem
+		WHERE idx = #{idx}
+	</select>
+
+	<!-- 질문 수정 -->
+	<update id="updateQitem" parameterType="qitemVO">
+		UPDATE qitem
+		SET content = #{content},
+			seq = #{seq},
+			updated_at = NOW()
+		WHERE idx = #{idx}
+	</update>
+
+	<!-- 질문 삭제 -->
+	<delete id="deleteQitem" parameterType="qitemVO">
+		DELETE FROM qitem WHERE idx = #{idx}
+	</delete>
+	
+</mapper>
