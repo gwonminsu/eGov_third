@@ -28,7 +28,7 @@
 		ORDER BY seq DESC
 	</select>
 
-	<!-- 질문 단일 조회 -->
+	<!-- 문항 단일 조회 -->
 	<select id="selectQitem" parameterType="String" resultType="qitemVO">
 		SELECT
 			idx,
@@ -41,8 +41,8 @@
 		WHERE idx = #{idx}
 	</select>
 
-	<!-- 질문 수정 -->
-	<update id="updateQitem" parameterType="qitemVO">
+	<!-- 문항 수정 -->
+	<update id="updateQitem" parameterType="String">
 		UPDATE qitem
 		SET content = #{content},
 			seq = #{seq},
@@ -50,8 +50,8 @@
 		WHERE idx = #{idx}
 	</update>
 
-	<!-- 질문 삭제 -->
-	<delete id="deleteQitem" parameterType="qitemVO">
+	<!-- 문항 삭제 -->
+	<delete id="deleteQitem" parameterType="String">
 		DELETE FROM qitem WHERE idx = #{idx}
 	</delete>
 	

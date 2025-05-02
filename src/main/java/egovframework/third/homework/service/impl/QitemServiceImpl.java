@@ -40,7 +40,7 @@ public class QitemServiceImpl extends EgovAbstractServiceImpl implements QitemSe
 	public QitemVO getQitem(String idx) throws Exception {
 		QitemVO vo = qitemDAO.selectQitem(idx);
 		log.info("SELECT 문항({}) 조회 완료", idx);
-		return null;
+		return vo;
 	}
 
 	// 문항 수정

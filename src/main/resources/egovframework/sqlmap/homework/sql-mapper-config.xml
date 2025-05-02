@@ -12,5 +12,6 @@
 		<typeAlias alias="surveyVO" type="egovframework.third.homework.service.SurveyVO"/>
 		<typeAlias alias="questionVO" type="egovframework.third.homework.service.QuestionVO"/>
 		<typeAlias alias="qitemVO" type="egovframework.third.homework.service.QitemVO"/>
+		<typeAlias alias="qimageVO" type="egovframework.third.homework.service.QimageVO"/>
     </typeAliases>
 </configuration>

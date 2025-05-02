@@ -33,7 +33,7 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
     @Resource(name="qitemService")
     private QitemService qitemService;
 
-	// 설문 등록(해당 설문의 질문 등록 작업 포함)
+	// 설문 등록(해당 설문의 질문과 문항/이미지 등록 작업 포함)
 	@Override
 	public void createSurvey(SurveyVO vo, List<QuestionVO> questionList) throws Exception {
 		surveyDAO.insertSurvey(vo); // 설문 먼저 등록

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="qimageDAO">
+
+	<!-- 질문 이미지 등록 -->
+	<insert id="insertQimage" parameterType="qimageVO">
+		<selectKey keyProperty="idx, fileUuid" keyColumn="gen_idx, gen_uuid" resultType="map" order="BEFORE">
+			SELECT 'QIMAGE-' || (COALESCE(MAX((SUBSTRING(idx FROM 8))::int), 0)+ 1) AS gen_idx,
+			SELECT gen_random_uuid()::text AS gen_uuid
+			FROM qimage
+		</selectKey>
+		INSERT INTO qimage
+			(idx, question_idx, file_name, file_uuid, file_path, file_size, ext, created_at)
+		VALUES
+			(#{idx}, #{questionIdx}, #{fileName}, #{fileUuid}, #{filePath}, #{fileSize}, #{ext}, NOW())
+	</insert>
+
+	<!-- 질문 idx로 질문 이미지 조회 -->
+	<select id="selectQimageByQuestionIdx" parameterType="String" resultType="qimageVO">
+		SELECT * FROM qimage
+		WHERE question_idx = #{questionIdx}
+		ORDER BY created_at ASC
+		LIMIT 1
+	</select>
+
+	<!-- 질문 이미지 단일 조회 -->
+	<select id="selectQimage" parameterType="String" resultType="qimageVO">
+		SELECT *
+		FROM qimage
+		WHERE idx = #{idx}
+	</select>
+
+	<!-- 질문 이미지 삭제 -->
+	<delete id="deleteQimage" parameterType="String">
+		DELETE FROM qimage WHERE idx = #{idx}
+	</delete>
+	
+	<!-- 질문에 있는 질문 이미지 삭제 -->
+	<delete id="deleteQimageByQuestionIdx" parameterType="String">
+		DELETE FROM qimage WHERE question_idx = #{questionIdx}
+	</delete>
+	
+</mapper>

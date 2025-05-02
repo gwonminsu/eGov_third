@@ -20,7 +20,7 @@ public class QitemDAO {
 		sqlSession.insert("qitemDAO.insertQitem", vo);
 	}
     
-    // 설문 idx로 질문 목록 조회
+    // 질문 idx로 질문 목록 조회
     public List<QitemVO> selectQitemListByQuestionIdx(String questionIdx) {
         return sqlSession.selectList("qitemDAO.selectQitemListByQuestionIdx", questionIdx);
     }

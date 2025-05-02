@@ -48,6 +48,13 @@
 			<param-value>/WEB-INF/config/egovframework/springmvc/dispatcher-servlet.xml</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
+		
+		<multipart-config>
+ 			<location>C:/uploadFiles/tmp</location>
+ 			<max-file-size>524288000</max-file-size> <!-- 500MB -->
+ 			<max-request-size>524288000</max-request-size>
+ 			<file-size-threshold>0</file-size-threshold>
+ 		</multipart-config>
 	</servlet>
     
 	<servlet-mapping>
