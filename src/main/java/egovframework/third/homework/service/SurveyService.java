@@ -2,11 +2,13 @@ package egovframework.third.homework.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 //Service 인터페이스
 public interface SurveyService {
 
 	// 설문 등록(해당 설문의 질문 등록 작업 포함)
-    void createSurvey(SurveyVO vo, List<QuestionVO> questionList) throws Exception;
+    void createSurvey(SurveyVO vo, List<QuestionVO> questionList, List<MultipartFile> files) throws Exception;
     
     // 설문 리스트 조회
     List<SurveyVO> getSurveyList() throws Exception;

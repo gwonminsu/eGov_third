@@ -519,6 +519,12 @@
 				// 사용 여부 값 가져오기
 				var isUseVal = $('input[name="isUse"]:checked').val() === 'true';
 				
+				// questions 배열에서 imageFile, imageData 필드 뺀 clone 배열 준비
+				var cleanQuestions = questions.map(q => {
+					var { type, content, isRequired, qitemList } = q;
+					return { type, content, isRequired, ...(qitemList && { qitemList }) };
+				});
+				
 	    		// 검증 통과 시 게시글 등록 api 실행
 	    		var payload = {
 	    				survey: $.extend({}, {
@@ -529,16 +535,31 @@
 		    				endDate: endStr,
 		    				isUse: isUseVal
 	    				}, mode==='edit'?{idx: idx}:{}),
-	    				questionList: questions
+	    				questionList: cleanQuestions
    				}; // 보낼 데이터
 	    		console.log("payload: " + JSON.stringify(payload));
+   				
+				// FormData 에 JSON + 이미지 파일들 묶기
+				var formData = new FormData();
+				formData.append('payload', new Blob([JSON.stringify(payload)],{type:'application/json'}));
+				questions.forEach(q => {
+					if (q.type==='image' && q.imageFile) {
+						// 키는 전부 동일하게 'files' 로, 순서대로 붙이면 컨트롤러에 List<MultipartFile> 로 들어옴
+						formData.append('files', q.imageFile);
+					}
+				});
+				
+				for (let [key, value] of formData.entries()) {
+					console.log(key, value);
+				}
 	    		
 	    		// 설문지 등록 요청
 	    		$.ajax({
 	    			url: apiUrl + (mode==='edit' ? '?idx='+encodeURIComponent(idx) : ''),
 	    			type:'POST',
-	    			contentType:'application/json',
-	    			data: JSON.stringify(payload),
+	    			contentType: false,
+	    			processData: false,
+	    			data: formData,
 	    			success: function(res){
 						if (res.error) {
 							alert(res.error);
@@ -559,8 +580,6 @@
 						alert(errMsg);
 					}
 	    		});
-	    		
-	    		// 질문 등록/옵션 등록 요청 예정
 	        });
 	    	
 	    	$('#btnCancel').click(function() {

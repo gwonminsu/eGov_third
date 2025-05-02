@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,13 +45,13 @@ public class SurveyController {
     }
 
     // 설문 등록(해당 설문의 질문 등록 작업 포함)
-    @PostMapping(value="/create.do", consumes="application/json", produces="application/json")
-    public Map<String,String> write(@RequestBody Map<String, Object> payload) throws Exception {
+    @PostMapping(value="/create.do", consumes="multipart/form-data", produces="application/json")
+    public Map<String, String> write(
+    		@RequestPart Map<String, Object> payload,
+    		@RequestPart(value="files", required=false) List<MultipartFile> files) throws Exception {
     	SurveyVO surveyVO = objectMapper.convertValue(payload.get("survey"), SurveyVO.class);
         List<QuestionVO> questionList = objectMapper.convertValue(payload.get("questionList"), new TypeReference<List<QuestionVO>>() {});
-//    	log.info("surveyVO: {}", surveyVO);
-//    	log.info("questionList: {}", questionList);
-        surveyService.createSurvey(surveyVO, questionList);
+        surveyService.createSurvey(surveyVO, questionList, files);
         return Collections.singletonMap("status","OK");
     }
 

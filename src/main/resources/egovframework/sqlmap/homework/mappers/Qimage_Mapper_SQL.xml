@@ -4,9 +4,10 @@
 
 	<!-- 질문 이미지 등록 -->
 	<insert id="insertQimage" parameterType="qimageVO">
-		<selectKey keyProperty="idx, fileUuid" keyColumn="gen_idx, gen_uuid" resultType="map" order="BEFORE">
-			SELECT 'QIMAGE-' || (COALESCE(MAX((SUBSTRING(idx FROM 8))::int), 0)+ 1) AS gen_idx,
-			SELECT gen_random_uuid()::text AS gen_uuid
+		<selectKey keyProperty="idx,fileUuid" keyColumn="gen_idx,gen_uuid" resultType="map" order="BEFORE">
+			SELECT
+				'QIMAGE-' || (COALESCE(MAX((SUBSTRING(idx FROM 8))::int), 0)+ 1) AS gen_idx,
+				gen_random_uuid()::text AS gen_uuid
 			FROM qimage
 		</selectKey>
 		INSERT INTO qimage

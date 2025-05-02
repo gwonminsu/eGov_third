@@ -8,7 +8,9 @@ import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import egovframework.third.homework.service.QimageService;
 import egovframework.third.homework.service.QitemService;
 import egovframework.third.homework.service.QitemVO;
 import egovframework.third.homework.service.QuestionService;
@@ -32,12 +34,16 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
     
     @Resource(name="qitemService")
     private QitemService qitemService;
+    
+    @Resource(name="qimageService")
+    private QimageService qimageService;
 
 	// 설문 등록(해당 설문의 질문과 문항/이미지 등록 작업 포함)
 	@Override
-	public void createSurvey(SurveyVO vo, List<QuestionVO> questionList) throws Exception {
+	public void createSurvey(SurveyVO vo, List<QuestionVO> questionList, List<MultipartFile> files) throws Exception {
 		surveyDAO.insertSurvey(vo); // 설문 먼저 등록
 		log.info("INSERT 설문 등록 성공 idx: {}", vo.getIdx());
+		int imgIdx = 0; // 이미지
 		
 		// 질문들 등록
 		if (questionList != null) {
@@ -56,6 +62,12 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 						qitem.setSeq(j);
 						qitemService.createQitem(qitem);
 					}
+				}
+				
+				// 여기에 질문 타입 이미지에 imgidx로 파일 매핑
+				if (q.getType().equals("image")) {
+					MultipartFile mf = files.get(imgIdx++);
+					qimageService.createQimage(q.getIdx(), mf); // 이미지를 해당 질문 자식으로 저장
 				}
 			}
 		}
