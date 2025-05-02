@@ -27,7 +27,7 @@
 			updated_at AS updatedAt
 		FROM question
 		WHERE survey_idx = #{surveyIdx}
-		ORDER BY seq DESC
+		ORDER BY seq ASC
 	</select>
 
 	<!-- 질문 단일 조회 -->

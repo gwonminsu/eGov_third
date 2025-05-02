@@ -1,6 +1,8 @@
 package egovframework.third.homework.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
@@ -9,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import egovframework.third.homework.service.QitemVO;
 import egovframework.third.homework.service.QuestionService;
 import egovframework.third.homework.service.QuestionVO;
 
@@ -19,6 +22,12 @@ public class QuestionServiceImpl extends EgovAbstractServiceImpl implements Ques
 	
 	@Resource(name = "questionDAO")
 	private QuestionDAO questionDAO;
+	
+    @Resource(name="qitemDAO")
+    private QitemDAO qitemDAO;
+    
+    @Resource(name="qimageDAO")
+    private QimageDAO qimageDAO;
 
 	// 질문 등록
 	@Override
@@ -32,6 +41,16 @@ public class QuestionServiceImpl extends EgovAbstractServiceImpl implements Ques
 	public List<QuestionVO> getQuestionList(String surveyIdx) throws Exception {
 		List<QuestionVO> list = questionDAO.selectQuestionListBySurveyIdx(surveyIdx);
 		log.info("SELECT 설문({})에 대한 질문 목록 조회 완료", surveyIdx);
+		
+		for (QuestionVO q : list) {
+			// 객관식 문항을 순서대로 세팅
+            List<QitemVO> items = qitemDAO.selectQitemListByQuestionIdx(q.getIdx());
+            List<String> optionList = new ArrayList<>();
+            for (QitemVO item: items) {
+            	optionList.add(item.getContent());
+            }
+            q.setQitemList(optionList);
+		}
 		return list;
 	}
 

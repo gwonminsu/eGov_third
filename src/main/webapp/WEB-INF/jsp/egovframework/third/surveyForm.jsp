@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
@@ -280,7 +279,7 @@
 				var $list = $('#questionList').empty();
 				questions.forEach((q, idx) => {
 					var label = typeLabels[q.type] || typeLabels.short;
-					var requiredMark 
+					var requiredMark;
 					if(q.isRequired) {
 						requiredMark = '<span id="required-mark">＊</span>';
 					} else {

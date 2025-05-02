@@ -86,7 +86,7 @@
 		                              '<td>' + item.idx + '</td>' +
 		                              '<td>' + item.userName + '</td>' +
 		                              '<td>' + item.editorIdx + '</td>' +
-		                              '<td>' + item.title + '</td>' +
+		                              '<td><a href="javascript:void(0)" onclick="postTo(\'${surveyDetailUrl}\', { idx: \'' + item.idx + '\' })">' + item.title + '</a></td>' +
 		                              '<td>' + item.description + '</td>' +
 		                              '<td>' + item.startDate + '</td>' +
 		                              '<td>' + item.endDate + '</td>' +

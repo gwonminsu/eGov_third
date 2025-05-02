@@ -8,9 +8,11 @@ import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import egovframework.third.homework.service.QimageService;
+import egovframework.third.homework.service.QimageVO;
+import egovframework.third.homework.service.QitemService;
+import egovframework.third.homework.service.QuestionService;
 import egovframework.third.homework.service.QuestionVO;
 import egovframework.third.homework.service.SurveyService;
 import egovframework.third.homework.service.SurveyVO;
@@ -34,7 +40,11 @@ public class SurveyController {
 	@Resource(name = "surveyService")
 	protected SurveyService surveyService;
 	
-	
+    @Resource(name = "questionService")
+    private QuestionService questionService;
+
+    @Resource(name = "qimageService")
+    private QimageService qimageService;
 	
     // 설문 목록
     @PostMapping(value="/list.do", produces="application/json")
@@ -55,11 +65,24 @@ public class SurveyController {
         return Collections.singletonMap("status","OK");
     }
 
-    // 설문 상세
+    // 설문 상세 조회(설문 기본 정보)
     @PostMapping(value="/detail.do", consumes="application/json", produces="application/json")
     public SurveyVO detail(@RequestBody Map<String,String> param) throws Exception {
         return surveyService.getSurvey(param.get("idx"));
     }
+    
+	// 설문에 등록된 질문 리스트 조회
+    @PostMapping(value="/questions.do", consumes="application/json", produces="application/json")
+	public List<QuestionVO> questions(@RequestBody Map<String,String> param) throws Exception {
+		String surveyIdx = param.get("surveyIdx");
+		return questionService.getQuestionList(surveyIdx);
+	}
+    
+    // 이미지 타입 질문의 이미지 정보 조회
+    @PostMapping(value="/qimage.do", consumes="application/json", produces="application/json")
+	public QimageVO qimage(@RequestBody Map<String,String> param) throws Exception {
+		return qimageService.getQimageByQuestionIdx(param.get("questionIdx"));
+	}
 
     // 설문 수정
     @PostMapping(value="/edit.do", consumes="application/json", produces="application/json")

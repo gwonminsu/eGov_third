@@ -30,7 +30,7 @@
 			s.updated_at AS updatedAt
 		FROM survey s
 		JOIN "user" u
-		ON s.author_idx = u.idx
+			ON s.author_idx = u.idx
 		ORDER BY s.created_at DESC
 	</select>
 
@@ -50,8 +50,8 @@
 			s.updated_at AS updatedAt
 		FROM survey s
 		JOIN "user" u
-		ON s.author_idx = u.idx
-		WHERE idx = #{idx}
+			ON s.author_idx = u.idx
+		WHERE s.idx = #{idx}
 	</select>
 
 	<!-- 설문 수정 -->
