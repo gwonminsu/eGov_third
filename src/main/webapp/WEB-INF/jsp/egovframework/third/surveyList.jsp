@@ -6,6 +6,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>설문 목록(관리) 페이지</title>
+	<link rel="stylesheet" href="<c:url value='/css/surveyList.css'/>" />
 	<script src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
 	
 	<!-- 설문 리스트 json 가져오는 api 호출 url -->

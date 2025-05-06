@@ -1,0 +1,73 @@
+@charset "UTF-8";
+
+/* ── 설문 목록 테이블 스타일 ── */
+table#surveyListTbl {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+table#surveyListTbl th,
+table#surveyListTbl td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    vertical-align: middle;
+}
+table#surveyListTbl th {
+    background-color: #f8f9fa;
+}
+table#surveyListTbl tbody tr:hover {
+    background-color: #f1f3f5;
+}
+
+/* 제목 컬럼은 링크로 처리 */
+table#surveyListTbl td a {
+    color: #3498DB;
+    text-decoration: none;
+    cursor: pointer;
+}
+table#surveyListTbl td a:hover {
+    color: #2980B9;
+    text-decoration: underline;
+}
+
+/* ── 버튼 공통 스타일 ── */
+#btnGoSurveyForm,
+#btnGoLogin,
+#btnLogout {
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-right: 8px;
+}
+
+/* 설문 등록 버튼 */
+#btnGoSurveyForm {
+    background-color: #3498DB;
+    color: #fff;
+    margin-top: 10px;
+}
+#btnGoSurveyForm:hover {
+    background-color: #2980B9;
+}
+
+/* 로그인/로그아웃 버튼 */
+#btnGoLogin,
+#btnLogout {
+    background-color: #E9ECEF;
+    color: #333;
+}
+#btnGoLogin:hover,
+#btnLogout:hover {
+    background-color: #CED4DA;
+}
+
+/* ── 사용자 정보 영역 ── */
+#userInfo {
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+#userInfo span {
+    margin-right: 12px;
+    font-weight: bold;
+}
