@@ -1,6 +1,8 @@
 package egovframework.third.homework.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -75,8 +77,22 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 
 	// 설문 목록 조회
 	@Override
-	public List<SurveyVO> getSurveyList() throws Exception {
-		return surveyDAO.selectSurveyList();
+	public List<SurveyVO> getSurveyList(SurveyVO vo, String searchType, String searchKeyword) throws Exception {
+        Map<String,Object> param = new HashMap<>();
+        param.put("surveyVO", vo);
+        param.put("searchType", searchType);
+        param.put("searchKeyword", searchKeyword);
+		return surveyDAO.selectSurveyList(param);
+	}
+	
+	// 전체/검색된 설문 개수 조회
+	@Override
+	public int getSurveyCount(SurveyVO vo, String searchType, String searchKeyword) throws Exception {
+        Map<String,Object> param = new HashMap<>();
+        param.put("surveyVO", vo);
+        param.put("searchType", searchType);
+        param.put("searchKeyword", searchKeyword);
+		return surveyDAO.selectSurveyCount(param);
 	}
 
 	// 설문 상세 조회

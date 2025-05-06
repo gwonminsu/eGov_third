@@ -1,18 +1,18 @@
 package egovframework.third.homework.web;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import egovframework.third.homework.service.QimageService;
 import egovframework.third.homework.service.QimageVO;
-import egovframework.third.homework.service.QitemService;
 import egovframework.third.homework.service.QuestionService;
 import egovframework.third.homework.service.QuestionVO;
 import egovframework.third.homework.service.SurveyService;
@@ -36,6 +35,9 @@ public class SurveyController {
 	
 	@Resource
 	private ObjectMapper objectMapper;
+	
+    @Resource(name="propertiesService")
+    private EgovPropertyService prop;
 
 	@Resource(name = "surveyService")
 	protected SurveyService surveyService;
@@ -48,10 +50,31 @@ public class SurveyController {
 	
     // 설문 목록
     @PostMapping(value="/list.do", produces="application/json")
-    public List<SurveyVO> list() throws Exception {
-    	List<SurveyVO> surveyList = surveyService.getSurveyList();
+    public Map<String,Object> list(@RequestBody Map<String,Object> req) throws Exception {
+    	// 파라미터 꺼내기
+        int pageIndex = (Integer) req.get("pageIndex") <= 0 ? 1 : (Integer) req.get("pageIndex");
+        int recordCountPerPage = (Integer) req.get("recordCountPerPage");
+        String searchType = (String) req.get("searchType"); // "userName" or "title"
+        String searchKeyword = (String)  req.get("searchKeyword");
+        
+        log.info("현재 넘겨받은 파라미터 값 - pageIndex:{}, recordCountPerPage:{}, searchType:{}, searchKeyword:{}", pageIndex, recordCountPerPage, searchType, searchKeyword);
+        
+        // VO 에 페이징 정보만 세팅
+        SurveyVO vo = new SurveyVO();
+        vo.setPageIndex(pageIndex);
+        vo.setRecordCountPerPage(recordCountPerPage);
+        vo.setFirstIndex((pageIndex - 1) * recordCountPerPage);
+        
+        int totalCount = surveyService.getSurveyCount(vo, searchType, searchKeyword);
+        List<SurveyVO> surveyList = surveyService.getSurveyList(vo, searchType, searchKeyword);
+        
     	log.info("SELECT 설문 목록 JSON 데이터: {}", surveyList);
-        return surveyList;
+    	
+        Map<String,Object> result = new HashMap<>();
+        result.put("list", surveyList);
+        result.put("totalCount", totalCount);
+        
+        return result;
     }
 
     // 설문 등록(해당 설문의 질문 등록 작업 포함)

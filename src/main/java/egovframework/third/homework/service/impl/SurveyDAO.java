@@ -1,6 +1,7 @@
 package egovframework.third.homework.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -21,8 +22,13 @@ public class SurveyDAO {
 	}
     
     // 설문 목록 조회
-    public List<SurveyVO> selectSurveyList() {
-        return sqlSession.selectList("surveyDAO.selectSurveyList");
+    public List<SurveyVO> selectSurveyList(Map<String,Object> param) throws Exception {
+        return sqlSession.selectList("surveyDAO.selectSurveyList", param);
+    }
+    
+    // 전체/검색한 설문 개수 조회
+    public int selectSurveyCount(Map<String,Object> param) throws Exception {
+    	return sqlSession.selectOne("surveyDAO.selectSurveyCount", param);
     }
     
     // 설문 상세 조회

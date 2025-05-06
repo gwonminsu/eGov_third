@@ -15,7 +15,7 @@
 	</insert>
 
 	<!-- 설문 목록 조회 -->
-	<select id="selectSurveyList" resultType="surveyVO">
+	<select id="selectSurveyList" parameterType="map" resultType="surveyVO">
 		SELECT
 			s.idx,
 			s.author_idx AS authorIdx,
@@ -31,7 +31,33 @@
 		FROM survey s
 		JOIN "user" u
 			ON s.author_idx = u.idx
+		<where>
+			<if test="searchType=='userName' and searchKeyword != null and searchKeyword != ''">
+				AND u.user_name LIKE '%' || #{searchKeyword} || '%'
+			</if>
+			<if test="searchType=='title' and searchKeyword != null and searchKeyword != ''">
+				AND s.title LIKE '%' || #{searchKeyword} || '%'
+			</if>
+		</where>
 		ORDER BY s.created_at DESC
+		LIMIT #{surveyVO.recordCountPerPage}
+ 		OFFSET #{surveyVO.firstIndex}
+	</select>
+	
+	<!-- 전체/검색된 설문조사 개수 조회 -->
+	<select id="selectSurveyCount" parameterType="map" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM survey s
+		JOIN "user" u ON s.author_idx = u.idx
+		<where>
+			<if test="searchType=='userName' and searchKeyword != null and searchKeyword != ''">
+				AND u.user_name LIKE '%' || #{searchKeyword} || '%'
+			</if>
+			<if test="searchType=='title' and searchKeyword != null and searchKeyword != ''">
+				AND s.title LIKE '%' || #{searchKeyword} || '%'
+			</if>
+		</where>
 	</select>
 
 	<!-- 설문 상세 조회 -->

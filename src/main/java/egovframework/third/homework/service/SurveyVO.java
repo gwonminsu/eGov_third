@@ -41,4 +41,8 @@ public class SurveyVO {
     
 	private Timestamp updatedAt; // 수정일
 	
+	private int pageIndex = 1; // 현재 페이지 번호
+	private int firstIndex; // 조회 시작 위치
+	private int recordCountPerPage; // 페이지당 레코드 건수
+	
 }

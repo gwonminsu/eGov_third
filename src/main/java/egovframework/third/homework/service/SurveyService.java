@@ -11,7 +11,10 @@ public interface SurveyService {
     void createSurvey(SurveyVO vo, List<QuestionVO> questionList, List<MultipartFile> files) throws Exception;
     
     // 설문 리스트 조회
-    List<SurveyVO> getSurveyList() throws Exception;
+    List<SurveyVO> getSurveyList(SurveyVO vo, String searchType, String searchKeyword) throws Exception;
+    
+    // 전체/검색된 설문 개수 조회
+    int getSurveyCount(SurveyVO vo, String searchType, String searchKeyword) throws Exception;
     
     // 설문 상세 조회
     SurveyVO getSurvey(String idx) throws Exception;
