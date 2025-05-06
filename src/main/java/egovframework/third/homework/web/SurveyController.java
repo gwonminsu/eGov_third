@@ -55,7 +55,8 @@ public class SurveyController {
         int pageIndex = (Integer) req.get("pageIndex") <= 0 ? 1 : (Integer) req.get("pageIndex");
         int recordCountPerPage = (Integer) req.get("recordCountPerPage");
         String searchType = (String) req.get("searchType"); // "userName" or "title"
-        String searchKeyword = (String)  req.get("searchKeyword");
+        String searchKeyword = (String) req.get("searchKeyword");
+        Boolean onlyAvailable = (Boolean) req.get("onlyAvailable");
         
         log.info("현재 넘겨받은 파라미터 값 - pageIndex:{}, recordCountPerPage:{}, searchType:{}, searchKeyword:{}", pageIndex, recordCountPerPage, searchType, searchKeyword);
         
@@ -65,8 +66,8 @@ public class SurveyController {
         vo.setRecordCountPerPage(recordCountPerPage);
         vo.setFirstIndex((pageIndex - 1) * recordCountPerPage);
         
-        int totalCount = surveyService.getSurveyCount(vo, searchType, searchKeyword);
-        List<SurveyVO> surveyList = surveyService.getSurveyList(vo, searchType, searchKeyword);
+        int totalCount = surveyService.getSurveyCount(vo, searchType, searchKeyword, onlyAvailable);
+        List<SurveyVO> surveyList = surveyService.getSurveyList(vo, searchType, searchKeyword, onlyAvailable);
         
     	log.info("SELECT 설문 목록 JSON 데이터: {}", surveyList);
     	

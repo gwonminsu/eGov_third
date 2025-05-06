@@ -63,7 +63,8 @@
 					pageIndex: currentPageIndex,
 					recordCountPerPage: PAGE_UNIT,
 					searchType: sType,
-					searchKeyword: sKeyword
+					searchKeyword: sKeyword,
+					onlyAvailable: true
 			};
 
 	        $.ajax({

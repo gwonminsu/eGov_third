@@ -77,21 +77,23 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 
 	// 설문 목록 조회
 	@Override
-	public List<SurveyVO> getSurveyList(SurveyVO vo, String searchType, String searchKeyword) throws Exception {
+	public List<SurveyVO> getSurveyList(SurveyVO vo, String searchType, String searchKeyword, Boolean onlyAvailable) throws Exception {
         Map<String,Object> param = new HashMap<>();
         param.put("surveyVO", vo);
         param.put("searchType", searchType);
         param.put("searchKeyword", searchKeyword);
+        param.put("onlyAvailable", onlyAvailable);
 		return surveyDAO.selectSurveyList(param);
 	}
 	
 	// 전체/검색된 설문 개수 조회
 	@Override
-	public int getSurveyCount(SurveyVO vo, String searchType, String searchKeyword) throws Exception {
+	public int getSurveyCount(SurveyVO vo, String searchType, String searchKeyword, Boolean onlyAvailable) throws Exception {
         Map<String,Object> param = new HashMap<>();
         param.put("surveyVO", vo);
         param.put("searchType", searchType);
         param.put("searchKeyword", searchKeyword);
+        param.put("onlyAvailable", onlyAvailable);
 		return surveyDAO.selectSurveyCount(param);
 	}
 

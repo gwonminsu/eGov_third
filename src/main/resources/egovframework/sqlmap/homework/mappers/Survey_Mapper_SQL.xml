@@ -38,6 +38,10 @@
 			<if test="searchType=='title' and searchKeyword != null and searchKeyword != ''">
 				AND s.title LIKE '%' || #{searchKeyword} || '%'
 			</if>
+		    <if test="onlyAvailable == true">
+				AND s.is_use = true
+				AND CURRENT_TIMESTAMP BETWEEN s.start_date AND s.end_date
+		    </if>
 		</where>
 		ORDER BY s.created_at DESC
 		LIMIT #{surveyVO.recordCountPerPage}
@@ -57,6 +61,10 @@
 			<if test="searchType=='title' and searchKeyword != null and searchKeyword != ''">
 				AND s.title LIKE '%' || #{searchKeyword} || '%'
 			</if>
+		    <if test="onlyAvailable == true">
+				AND s.is_use = true
+				AND CURRENT_TIMESTAMP BETWEEN s.start_date AND s.end_date
+		    </if>
 		</where>
 	</select>
 
