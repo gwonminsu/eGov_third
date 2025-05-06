@@ -5,19 +5,25 @@ table#surveyListTbl {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    table-layout: auto;
 }
 table#surveyListTbl th,
 table#surveyListTbl td {
     border: 1px solid #ccc;
     padding: 8px;
-    vertical-align: middle;
-    text-align: center;   
+	vertical-align: middle; 
+    text-align: center; 
 }
 table#surveyListTbl th {
     background-color: #f8f9fa;
 }
 table#surveyListTbl tbody tr:hover {
     background-color: #f1f3f5;
+}
+table#surveyListTbl th:not(:first-child),
+table#surveyListTbl td:not(:first-child) {
+    white-space: nowrap;
+    width: 1%;
 }
 .count-red {
 	color: red;
@@ -37,7 +43,8 @@ table#surveyListTbl td a:hover {
 }
 
 /* 버튼 공통 스타일 */
-#btnGoSurveyManage,
+#btnGoSurveyForm,
+#btnGoSurveyList,
 #btnGoLogin,
 #btnLogout {
     padding: 6px 12px;
@@ -47,14 +54,14 @@ table#surveyListTbl td a:hover {
     margin-right: 8px;
 }
 
-/* 설문 관리 페이지 이동 버튼 */
-#btnGoSurveyManage {
-    background-color: #bfbfbf;
+/* 설문 등록 버튼 */
+#btnGoSurveyForm {
+    background-color: #3498DB;
     color: #fff;
     margin-top: 10px;
 }
-#btnGoSurveyManage:hover {
-    background-color: #939393;
+#btnGoSurveyForm:hover {
+    background-color: #2980B9;
 }
 
 /* 로그인/로그아웃 버튼 */

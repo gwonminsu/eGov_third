@@ -5,8 +5,8 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>설문 목록 페이지</title>
-	<link rel="stylesheet" href="<c:url value='/css/surveyList.css'/>" />
+	<title>설문 관리 페이지</title>
+	<link rel="stylesheet" href="<c:url value='/css/surveyManage.css'/>" />
 	<script src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
 	
 	<!-- 설문 리스트 json 가져오는 api 호출 url -->
@@ -15,10 +15,14 @@
 	<c:url value="/login.do" var="loginUrl"/>
 	<!-- 로그아웃 api 호출 url -->
 	<c:url value="/api/user/logout.do" var="logoutUrl" />
-	<!-- 설문 작성 페이지 url -->
-	<c:url value="/surveyManage.do" var="surveyManageUrl"/>
+	<!-- 설문 작성/수정 페이지 url -->
+	<c:url value="/surveyForm.do" var="surveyFormUrl"/>
 	<!-- 설문 상세 페이지 url -->
 	<c:url value="/surveyDetail.do" var="surveyDetailUrl"/>
+	<!-- 목록 페이지 URL -->
+	<c:url value="/surveyList.do" var="listUrl"/>
+	<!-- 통계 조회(추후 구현) -->
+	<c:url value="/surveyStats.do" var="surveyStatsUrl"/>
 	
 	<!-- 페이지네이션 버튼 이미지 url -->
 	<c:url value="/images/egovframework/cmmn/btn_page_pre10.gif" var="firstImgUrl"/>
@@ -43,12 +47,6 @@
 		var currentSearchType = '<c:out value="${param.searchType}" default="title"/>';
 		var currentSearchKeyword = '<c:out value="${param.searchKeyword}" default=""/>';
 		var currentPageIndex = parseInt('<c:out value="${param.pageIndex}" default="1"/>');
-		
-		// 에러메시지 알림
-		var errorMsg = "${errorMsg}";  
-		if (errorMsg) {
-			alert(decodeURIComponent(errorMsg)); 
-		}
 		
 		// AJAX 로 페이징/리스트를 불러오는 함수
 		function loadSurveyList(pageIndex) {
@@ -88,24 +86,15 @@
 	                $tbody.empty();
 	                $.each(data, function(i, item) {
 	                    var row = '<tr>' +
-								'<td>' + item.idx + '</td>' +
+								'<td>' + item.title + '</td>' +
+								'<td>' + (item.isUse ? 'Y' : 'N') + '</td>' +
+								'<td>' + item.userName + '</td>' +
 								'<td>' +
-									'<a href="javascript:void(0)" ' +
-										'onclick="postTo(' +
-											'\'${surveyDetailUrl}\',' +
-											' {' +
-											' idx: \'' + item.idx + '\',' +
-											' searchType: \'' + currentSearchType + '\',' +
-											' searchKeyword: \'' + currentSearchKeyword + '\',' +
-											' pageIndex: ' + currentPageIndex + 
-											' }' +
-										 ')">' +
-										item.title +
-									'</a>' +
+									'<button onclick="goEdit(\'' + item.idx + '\')">수정</button>' +
 								'</td>' +
-								'<td>' + item.description + '</td>' +
-								'<td>' + item.startDate + '</td>' +
-								'<td>' + item.endDate + '</td>' +
+								'<td>' +
+									'<button onclick="goStats(\'' + item.idx + '\')">통계조회</button>' +
+								'</td>' +
 								'</tr>';
 	                    $tbody.append(row);  
 	                });
@@ -115,6 +104,25 @@
 	                console.error('AJAX 에러:', error);
 	            }
 	        });
+		}
+		
+		// 수정 버튼 헬퍼 메서드
+		function goEdit(idx) {
+			postTo('${surveyFormUrl}', {
+				idx:            idx,
+				searchType:     currentSearchType,
+				searchKeyword:  currentSearchKeyword,
+				pageIndex:      currentPageIndex
+			});
+		}
+		// 통계 조회 버튼 헬퍼 메서드
+		function goStats(idx) {
+			postTo('${surveyStatsUrl}', {
+				idx:            idx,
+				searchType:     currentSearchType,
+				searchKeyword:  currentSearchKeyword,
+				pageIndex:      currentPageIndex
+			});
 		}
 		
 		// 페이지네이션 UI
@@ -184,7 +192,7 @@
 	</script>
 </head>
 <body>
-    <h2>참여 가능한 설문 목록</h2>
+    <h2>🛠️설문 관리</h2>
     
 	<!-- 사용자 로그인 상태 영역 -->
 	<div id="userInfo">
@@ -211,11 +219,11 @@
     <table id="surveyListTbl" border="1">
     	<thead>
 	        <tr>
-	            <th>Idx</th>
 	            <th>제목</th>
-	            <th>개요</th>
-	            <th>설문 시작일</th>
-	            <th>설문 종료일</th>
+	            <th>사용 유무</th>
+	            <th>작성자</th>
+	            <th>수정</th>
+	            <th>통계 조회</th>
 	        </tr>
     	</thead>
     	<tbody></tbody>
@@ -223,7 +231,8 @@
     
     <div id="paginationArea"></div>
     
-    <button type="button" id="btnGoSurveyManage">설문 관리 페이지로 이동</button>
+    <button type="button" id="btnGoSurveyForm">등록</button>
+    <button type="button" id="btnGoSurveyList">참여 설문 목록으로 돌아가기</button>
     
     <script>
 	    $(function(){
@@ -251,13 +260,6 @@
 				$('#btnGoLogin').show();
 				$('#btnLogout').hide();
 	        }
-	        
-	        // 관리자면 설문 관리 페이지 이동 버튼 표시
-	        if (isAdmin == 'true') {
-	        	$('#btnGoSurveyManage').show();
-	        } else {
-	        	$('#btnGoSurveyManage').hide();
-	        }
 	    	
 	    	// 로그인 버튼 핸들러
 	    	$('#btnGoLogin').click(function() {
@@ -279,15 +281,16 @@
 				});
 	        });
 	        
-	        // 설문 관리 페이지 이동 버튼 핸들러
-	        $('#btnGoSurveyManage').click(function() {
-	        	if (isAdmin) {
-    			    // 설문 관리 페이지로 이동
-					postTo('${surveyManageUrl}', {});
-	        	} else {
-	        		alert('관리자 권한 없음: 설문 관리 페이지 이동 불가');
-	        	}
-
+	        // 설문 등록 버튼 핸들러
+	        $('#btnGoSurveyForm').click(function() {
+	        	// 설문 등록 페이지로 이동
+				postTo('${surveyFormUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+			})
+			
+			// 설문 목록 버튼 핸들러
+	        $('#btnGoSurveyList').click(function() {
+	        	// 설문 목록 페이지로 이동
+				postTo('${listUrl}', {});
 			})
 	        
 	    });

@@ -12,7 +12,7 @@
 	<script src="<c:url value='/js/jquery-ui.min.js'/>"></script>
 	
 	<!-- 목록 페이지 URL -->
-	<c:url value="/surveyList.do" var="listUrl"/>
+	<c:url value="/surveyManage.do" var="surveyManageUrl"/>
 	<!-- API URL -->
     <c:url value="/api/survey/create.do" var="createApi"/>
     <c:url value="/api/survey/edit.do" var="editApi"/>
@@ -569,7 +569,7 @@
 							alert(res.error);
 						} else {
 							alert(mode==='edit'?'설문 수정 완료':'설문 등록 완료');
-							postTo('${listUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+							postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 			            }
 	    			},
 					error: function(xhr){
@@ -588,7 +588,7 @@
 	    	
 	    	$('#btnCancel').click(function() {
 	    		// 게시글 목록 페이지 이동
-	    		postTo('${listUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+	    		postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 	    	});
 	    	
 	    });
