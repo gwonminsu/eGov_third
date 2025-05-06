@@ -19,6 +19,11 @@
 	<c:url value="/surveyParticipate.do" var="participateUrl"/>
 	
 	<script>
+	    // 검색 변수(파라미터에서 값 받아와서 검색 상태 유지)
+		var currentSearchType = '<c:out value="${param.searchType}" default="title"/>';
+		var currentSearchKeyword = '<c:out value="${param.searchKeyword}" default=""/>';
+		var currentPageIndex = parseInt('<c:out value="${param.pageIndex}" default="1"/>');
+	
         // 동적 POST 폼 생성 함수
         function postTo(url, params) {
             var form = $('<form>').attr({ method: 'POST', action: url });
@@ -59,7 +64,7 @@
 		// 설문 idx가 파라미터에 없으면
 		if (!idx) {
 			alert('잘못된 접근입니다');
-			postTo('${listUrl}', {});
+			postTo('${listUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 		}
 	
 		$(function(){
@@ -158,11 +163,11 @@
 
 			// 목록 버튼
 			$('#btnList').click(function() {
-				postTo('${listUrl}', {});
+				postTo('${listUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 			});
 			// 설문 참여 버튼
 			$('#btnGo').click(function() {
-				postTo('${participateUrl}', { idx: idx });
+				postTo('${participateUrl}', { idx: idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 			});
 		});
 	</script>

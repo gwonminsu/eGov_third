@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-/* ── 설문 목록 테이블 스타일 ── */
+/* 설문 목록 테이블 스타일 */
 table#surveyListTbl {
     width: 100%;
     border-collapse: collapse;
@@ -18,6 +18,11 @@ table#surveyListTbl th {
 table#surveyListTbl tbody tr:hover {
     background-color: #f1f3f5;
 }
+.count-red {
+	color: red;
+	font-weight: bold;
+	font-size: 1.2em;
+}
 
 /* 제목 컬럼은 링크로 처리 */
 table#surveyListTbl td a {
@@ -30,7 +35,7 @@ table#surveyListTbl td a:hover {
     text-decoration: underline;
 }
 
-/* ── 버튼 공통 스타일 ── */
+/* 버튼 공통 스타일 */
 #btnGoSurveyForm,
 #btnGoLogin,
 #btnLogout {
@@ -62,7 +67,7 @@ table#surveyListTbl td a:hover {
     background-color: #CED4DA;
 }
 
-/* ── 사용자 정보 영역 ── */
+/* 사용자 정보 영역 */
 #userInfo {
     margin-bottom: 20px;
     font-size: 0.9rem;
@@ -70,4 +75,64 @@ table#surveyListTbl td a:hover {
 #userInfo span {
     margin-right: 12px;
     font-weight: bold;
+}
+
+/* 검색 영역 */
+#searchArea {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1em;
+}
+#searchArea label {
+    font-weight: bold;
+}
+#searchArea select,
+#searchArea input[type="text"] {
+    padding: 4px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+#btnSearch {
+    padding: 6px 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #3498DB;
+    color: #fff;
+    border-radius: 4px;
+    margin-left: 4px;
+}
+#btnSearch:hover {
+    background-color: #2980B9;
+}
+#searchInfo {
+    margin-bottom: 0.5em;
+    font-style: italic;
+}
+
+/* 페이지네이션 영역 스타일 */
+#paginationArea {
+    margin-top: 1em;
+    text-align: center;
+}
+#paginationArea a,
+#paginationArea strong {
+    display: inline-block;
+    margin: 0 4px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: #3498DB;
+}
+#paginationArea a:hover {
+    text-decoration: underline;
+}
+#paginationArea strong {
+    font-weight: bold;
+    color: #333;
+}
+.disabled {
+	opacity:0.3;
+	cursor:default;
+	pointer-events:none;
 }

@@ -24,6 +24,11 @@
 		var sessionUserIdx = '<c:out value="${sessionScope.loginUser.idx}" default="" />';
 		var sessionUserName = '<c:out value="${sessionScope.loginUser.userName}" default="" />';
 		
+	    // 검색 변수(파라미터에서 값 받아와서 검색 상태 유지)
+		var currentSearchType = '<c:out value="${param.searchType}" default="title"/>';
+		var currentSearchKeyword = '<c:out value="${param.searchKeyword}" default=""/>';
+		var currentPageIndex = parseInt('<c:out value="${param.pageIndex}" default="1"/>');
+		
         // 동적 POST 폼 생성 함수
         function postTo(url, params) {
             var form = $('<form>').attr({ method: 'POST', action: url });
@@ -564,7 +569,7 @@
 							alert(res.error);
 						} else {
 							alert(mode==='edit'?'설문 수정 완료':'설문 등록 완료');
-							postTo('${listUrl}', {});
+							postTo('${listUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 			            }
 	    			},
 					error: function(xhr){
@@ -583,7 +588,7 @@
 	    	
 	    	$('#btnCancel').click(function() {
 	    		// 게시글 목록 페이지 이동
-	    		postTo('${listUrl}', {});
+	    		postTo('${listUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 	    	});
 	    	
 	    });
