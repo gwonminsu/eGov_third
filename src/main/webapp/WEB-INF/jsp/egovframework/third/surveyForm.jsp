@@ -133,6 +133,7 @@
 
 	<div class="btn-area">
 		<button id="btnSubmit">저장</button>
+		<button id="btnDelete">삭제</button>
 		<button id="btnCancel">취소</button>
 	</div>
 	<button id="checkArray" >현재 배열 확인하기</button>
@@ -628,6 +629,14 @@
 					}
 	    		});
 	        });
+	    	
+	        $('#btnDelete').click(function() {
+	        	if(confirm("정말 삭제하시겠습니까?")){
+	        		alert("삭제 처리");
+	        	}else{
+	        		alert("삭제 취소");
+	        	}
+			})
 	    	
 	    	$('#btnCancel').click(function() {
 	    		// 게시글 목록 페이지 이동

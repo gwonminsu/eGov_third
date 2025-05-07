@@ -74,6 +74,14 @@ table.form-table textarea {
 #btnSubmit:hover {
 	background-color: #2980B9;
 }
+#btnDelete {
+	background-color: #ff7979;
+	color: #FFFFFF;
+	border: none;
+}
+#btnDelete:hover {
+	background-color: #ff0000;
+}
 #btnCancel {
 	background-color: #E9ECEF;
 	border: none;
