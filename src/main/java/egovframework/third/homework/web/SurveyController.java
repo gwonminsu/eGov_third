@@ -109,14 +109,14 @@ public class SurveyController {
 	}
 
     // 설문 수정
-    @PostMapping(value="/edit.do", consumes="application/json", produces="application/json")
-    public Map<String,String> edit(@RequestBody SurveyVO vo) {
-        try {
-        	surveyService.modifySurvey(vo);
-            return Collections.singletonMap("status","OK");
-        } catch(Exception e) {
-            return Collections.singletonMap("error", e.getMessage());
-        }
+    @PostMapping(value="/edit.do", consumes="multipart/form-data", produces="application/json")
+    public Map<String,String> edit(
+    		@RequestPart Map<String,Object> payload,
+    		@RequestPart(value="files", required=false) List<MultipartFile> files) throws Exception {
+    	SurveyVO surveyVO = objectMapper.convertValue(payload.get("survey"), SurveyVO.class);
+        List<QuestionVO> questionList = objectMapper.convertValue(payload.get("questionList"), new TypeReference<List<QuestionVO>>() {});
+        surveyService.modifySurvey(surveyVO, questionList, files);
+        return Collections.singletonMap("status","OK");
     }
 
     // 설문 삭제

@@ -20,7 +20,7 @@ public interface SurveyService {
     SurveyVO getSurvey(String idx) throws Exception;
     
     // 설문 수정
-    void modifySurvey(SurveyVO vo) throws Exception;
+    void modifySurvey(SurveyVO vo, List<QuestionVO> questionList, List<MultipartFile> files) throws Exception;
     
     // 설문 삭제
     void removeSurvey(String idx) throws Exception;

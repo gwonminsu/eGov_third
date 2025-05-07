@@ -31,4 +31,6 @@ public class QuestionVO {
 	private Timestamp updatedAt; // 수정일
 
 	private List<String> qitemList; // 객관식 문항 리스트
+	
+	private Boolean imageChanged; // 이미지 수정 여부
 }

@@ -65,23 +65,42 @@ public class QimageServiceImpl extends EgovAbstractServiceImpl implements Qimage
 	@Override
 	public QimageVO getQimage(String idx) throws Exception {
 		QimageVO vo = qimageDAO.selectQimage(idx);
-		log.info("SELECT 문항({}) 조회 완료", idx);
+		log.info("SELECT 질문 이미지({}) 조회 완료", idx);
 		return vo;
 	}
 
-	// 문항 삭제
+	// 이미지 삭제
 	@Override
 	public void removeQimage(String idx) throws Exception {
-		qimageDAO.deleteQimage(idx);
-		log.info("DELETE 문항({}) 삭제 완료", idx);
+		QimageVO vo = qimageDAO.selectQimage(idx);
+		qimageDAO.deleteQimage(idx); // DB에서 삭제
+		log.info("DELETE 질문 이미지({}) 삭제 완료", vo.getFileName());
+		// 물리 파일 삭제
+		File file = new File(vo.getFilePath(), vo.getFileUuid() + vo.getExt());
+		log.info("삭제되는 첨부파일 이름: {}", vo.getFileName());
+		if (file.exists()) {
+			file.delete();
+			log.info("로컬 저장소에서 파일 삭제 완료! : {}", vo.getFileUuid() + vo.getExt());
+		} else {
+			log.info("로컬 저장소에서 삭제할 파일이 존재하지 않음 : {}", vo.getFileUuid() + vo.getExt());
+		}
 	}
 
 	// 질문에 소속된 질문 이미지 삭제
 	@Override
 	public void removeQimageByQuestionIdx(String questionIdx) throws Exception {
 		QimageVO vo = qimageDAO.selectQimageByQuestionIdx(questionIdx);
-		qimageDAO.deleteQimageByQuestionIdx(questionIdx);
+		qimageDAO.deleteQimageByQuestionIdx(questionIdx); // DB에서 삭제
 		log.info("DELETE 질문({})에 대한 질문 이미지({}) 삭제 완료", questionIdx, vo.getFileName());
+		// 물리 파일 삭제
+		File file = new File(vo.getFilePath(), vo.getFileUuid() + vo.getExt());
+		log.info("삭제될 질문({})에 소속된 삭제되는 첨부파일 이름: {}", questionIdx, vo.getFileName());
+		if (file.exists()) {
+			file.delete();
+			log.info("로컬 저장소에서 파일 삭제 완료! : {}", vo.getFileUuid() + vo.getExt());
+		} else {
+			log.info("로컬 저장소에서 삭제할 파일이 존재하지 않음 : {}", vo.getFileUuid() + vo.getExt());
+		}
 	}
 
 }

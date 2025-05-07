@@ -1,5 +1,6 @@
 package egovframework.third.homework.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import egovframework.third.homework.service.QimageService;
+import egovframework.third.homework.service.QimageVO;
 import egovframework.third.homework.service.QitemService;
 import egovframework.third.homework.service.QitemVO;
 import egovframework.third.homework.service.QuestionService;
@@ -105,9 +107,88 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 
 	// 설문 수정
 	@Override
-	public void modifySurvey(SurveyVO vo) throws Exception {
-		surveyDAO.updateSurvey(vo);
+	public void modifySurvey(SurveyVO vo, List<QuestionVO> questionList, List<MultipartFile> files) throws Exception {
+		surveyDAO.updateSurvey(vo); // 설문 먼저 수정
+		log.info("UPDATE 설문 수정 성공 idx: {}", vo.getIdx());
 		
+		int imgIdx = 0; // 이미지
+		
+		// 기존 질문들 중, 수정자가 보내주지 않은 질문은 삭제 처리
+		// questionList에 있는 idx를 incomingIdxs에 모아두기
+		List<String> incomingIdxs = new ArrayList<>();
+		for (QuestionVO q : questionList) {
+			if (q.getIdx() != null) {
+				incomingIdxs.add(q.getIdx());
+			}
+		}
+		
+		// DB에 있는 기존 질문 리스트
+		List<QuestionVO> existingQList = questionService.getQuestionList(vo.getIdx());
+		for (QuestionVO originQ : existingQList) {
+			// incomingIdxs에 원래 질문의 idx가 없으면 삭제할 질문임
+			if (!incomingIdxs.contains(originQ.getIdx())) {
+				// 문항/이미지 삭제 후 질문 삭제
+				List<QitemVO> items = qitemService.getQitemList(originQ.getIdx());
+				for (QitemVO qi : items) {
+					qitemService.removeQitem(qi.getIdx());
+				}
+				QimageVO img = qimageService.getQimageByQuestionIdx(originQ.getIdx());
+				if (img != null) {
+					qimageService.removeQimage(img.getIdx());
+				}
+	            questionService.removeQuestion(originQ.getIdx());
+			}
+		}
+		
+		// 기존 + 신규 질문들 처리
+		for (int i = 0; i < questionList.size(); i++) {
+			QuestionVO q = questionList.get(i);
+			q.setSurveyIdx(vo.getIdx()); // surveyIdx를 해당 설문 idx로 설정
+			q.setSeq(i); // 순서값 세팅
+			
+			if (q.getIdx() == null) {
+				// 아직 pk가 없으니 신규 질문임
+				questionService.createQuestion(q); // 신규 질문 등록
+			} else {
+				questionService.modifyQuestion(q); // 기존 질문 업데이트
+			}
+			
+			// 객관식 문항은 전부 삭제하고 재등록
+			if (q.getType().equals("radio") || q.getType().equals("dropdown") || q.getType().equals("check")) {
+				// 질문 q의 문항 전부 삭제
+				List<QitemVO> items = qitemService.getQitemList(q.getIdx());
+				for (QitemVO qitem : items) {
+					qitemService.removeQitem(qitem.getIdx());
+				}
+				// 객관식 문항 일괄 등록
+				if (q.getQitemList() != null) {
+					for (int j = 0; j < q.getQitemList().size(); j++) {
+						QitemVO qitem = new QitemVO();
+						qitem.setQuestionIdx(q.getIdx()); // questionIdx를 해당 질문 idx로 설정
+						qitem.setContent(q.getQitemList().get(j));
+						qitem.setSeq(j);
+						qitemService.createQitem(qitem);
+					}
+				}
+			}
+			
+			// 이미지도 기존 삭제하고 재등록
+			if (q.getType().equals("image") && Boolean.TRUE.equals(q.getImageChanged())) {
+			    // 기존 이미지 조회
+			    QimageVO exist = qimageService.getQimageByQuestionIdx(q.getIdx());
+
+			    // 프론트에서 실제 새 파일이 넘어왔을 때만
+			    if (files != null && imgIdx < files.size() && !files.get(imgIdx).isEmpty()) {
+			        // 기존 이미지 삭제
+			        if (exist != null) {
+			            qimageService.removeQimage(exist.getIdx());
+			        }
+			        // 새 파일 등록
+			        MultipartFile mf = files.get(imgIdx++);
+			        qimageService.createQimage(q.getIdx(), mf);
+			    }
+			}
+		}
 	}
 
 	// 설문 삭제

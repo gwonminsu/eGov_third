@@ -188,45 +188,11 @@
 							return $.Deferred().resolve().promise();
 						}
 					});
+					// 모든 qimage 호출 끝나면 렌더링
 					$.when.apply($, calls).always(function(){
 						renderQuestionList();
 					});
-/* 					qList.forEach(function(q) {
-						var obj = {
-								type: q.type,
-								content: q.content,
-								isRequired: q.isRequired,
-								qitemList: q.qitemList
-						};
-						questions.push(obj);
-						renderQuestionList();
-					}); */
-					
-/* 					questions.forEach(function(q, index) {
-						if (q.type === 'image') {
-							$.ajax({
-				    			url: '${qimageApi}',
-				    			type: 'POST',
-				    			contentType: 'application/json',
-				    			data: JSON.stringify({ questionIdx: q.questionIdx }),
-				    			dataType: 'json'
-							}).done(function(img) {
-								if (img && img.fileUuid) {
-									q.imageData = '/uploads/' + img.fileUuid + img.ext;
-									
-									fetch(q.imageData)
-										.then(res => res.blob())
-										.then(blob => {
-											q.imageFile = new File([blob], img.fileName, {type:blob.type});
-											renderQuestionList();
-										}).catch(e => console.error('이미지 fetch/변환 에러', e));
-								}
-							});
-						}
-					}); */
 				});
-	    		
-	    		
 	    	} else {
 	    		$('#surveyFormGuide').hide();
 	    	}
@@ -600,8 +566,8 @@
 				
 				// questions 배열에서 imageFile, imageData 필드 뺀 clone 배열 준비
 				var cleanQuestions = questions.map(q => {
-					var { type, content, isRequired, qitemList } = q;
-					return { type, content, isRequired, ...(qitemList && { qitemList }) };
+					var { idx, type, content, isRequired, qitemList } = q;
+					return { idx, type, content, isRequired, ...(qitemList && { qitemList }), imageChanged: !!q.imageFile };
 				});
 				
 	    		// 검증 통과 시 게시글 등록 api 실행
