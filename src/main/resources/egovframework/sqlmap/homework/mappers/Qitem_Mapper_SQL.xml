@@ -25,7 +25,7 @@
 			updated_at AS updatedAt
 		FROM qitem
 		WHERE question_idx = #{questionIdx}
-		ORDER BY seq DESC
+		ORDER BY seq ASC
 	</select>
 
 	<!-- 문항 단일 조회 -->

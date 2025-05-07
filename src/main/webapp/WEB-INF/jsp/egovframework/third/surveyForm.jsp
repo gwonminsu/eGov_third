@@ -17,6 +17,8 @@
     <c:url value="/api/survey/create.do" var="createApi"/>
     <c:url value="/api/survey/edit.do" var="editApi"/>
     <c:url value="/api/survey/detail.do" var="detailApi"/>
+    <c:url value="/api/survey/questions.do" var="questionsApi"/>
+    <c:url value="/api/survey/qimage.do" var="qimageApi"/>
     <!-- 데이트피커 이미지 url -->
     <c:url value="/images/datepicker.png" var="datepickerImgUrl"/>
 	
@@ -147,11 +149,84 @@
 	    		$('#formTitle').text('설문지 관리(수정)');
 	    		$('#surveyFormGuide').show();
 	    		$('#idxShow').text(idx);
-	    		// 게시글 상세 정보 가져와서 input에 채워넣기
-	    		$.getJSON('${detailApi}', { idx: idx }, function(item) {
+	    		
+	    		// 설문 메타 정보 가져와서 input에 채워넣기
+	    		$.ajax({
+	    			url: '${detailApi}',
+	    			type: 'POST',
+	    			contentType: 'application/json',
+	    			data: JSON.stringify({ idx: idx }),
+	    			dataType: 'json'
+	    		}).done(function(item) {
 		   	        $('#title').val(item.title);
 		   	        $('#description').html(item.description);
-	    		});
+					$("#datepickerStart").datepicker('setDate', item.startDate);
+					$("#datepickerEnd").datepicker('setDate',   item.endDate);
+					$('input[name="isUse"][value="'+ item.isUse +'"]').prop('checked', true);
+				});
+	    		
+	    		// 질문 목록 가져와서 question 배열에 채워넣기
+	    		$.ajax({
+	    			url: '${questionsApi}',
+	    			type: 'POST',
+	    			contentType: 'application/json',
+	    			data: JSON.stringify({ surveyIdx: idx }),
+	    			dataType: 'json'
+	    		}).done(function(qList) {
+					questions = qList;
+					var calls = questions.map((q, i) => {
+						if (q.type === 'image') {
+							return $.ajax({
+								url: '${qimageApi}',
+					            type: 'POST',
+					            contentType: 'application/json',
+					            data: JSON.stringify({ questionIdx: q.idx })
+							}).done(function(img) {
+								q.imageData = '/uploads/' + img.fileUuid + img.ext;
+							});
+						} else {
+							return $.Deferred().resolve().promise();
+						}
+					});
+					$.when.apply($, calls).always(function(){
+						renderQuestionList();
+					});
+/* 					qList.forEach(function(q) {
+						var obj = {
+								type: q.type,
+								content: q.content,
+								isRequired: q.isRequired,
+								qitemList: q.qitemList
+						};
+						questions.push(obj);
+						renderQuestionList();
+					}); */
+					
+/* 					questions.forEach(function(q, index) {
+						if (q.type === 'image') {
+							$.ajax({
+				    			url: '${qimageApi}',
+				    			type: 'POST',
+				    			contentType: 'application/json',
+				    			data: JSON.stringify({ questionIdx: q.questionIdx }),
+				    			dataType: 'json'
+							}).done(function(img) {
+								if (img && img.fileUuid) {
+									q.imageData = '/uploads/' + img.fileUuid + img.ext;
+									
+									fetch(q.imageData)
+										.then(res => res.blob())
+										.then(blob => {
+											q.imageFile = new File([blob], img.fileName, {type:blob.type});
+											renderQuestionList();
+										}).catch(e => console.error('이미지 fetch/변환 에러', e));
+								}
+							});
+						}
+					}); */
+				});
+	    		
+	    		
 	    	} else {
 	    		$('#surveyFormGuide').hide();
 	    	}
@@ -316,8 +391,8 @@
 								<td>\${contentHtml}</td>
 							</tr>
 						</table>`);
-					// 옵션리스트가 있으면 아래에 로우 추가
-					if(q.qitemList) {
+					// 질문이 객관식 타입이면 아래에 로우 추가
+					if(q.type === 'radio' || q.type === 'dropdown' || q.type === 'check') {
 						var optsHtml = q.qitemList.map(o=>`<div>▪ \${o}</div>`).join('');
 						$tbl.append(`<tr><th>응답 옵션</th><td>\${optsHtml}</td></tr>`);
 					}
