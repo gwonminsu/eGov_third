@@ -87,7 +87,7 @@
 	                $.each(data, function(i, item) {
 	                    var row = '<tr>' +
 								'<td>' + item.title + '</td>' +
-								'<td>' + (item.isUse ? 'Y' : 'N') + '</td>' +
+								'<td>' + (item.isUse ? '사용' : '미사용') + '</td>' +
 								'<td>' + item.userName + '</td>' +
 								'<td>' +
 									'<button onclick="goEdit(\'' + item.idx + '\')">수정</button>' +

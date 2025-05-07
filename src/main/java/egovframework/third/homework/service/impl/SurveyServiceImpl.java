@@ -1,6 +1,7 @@
 package egovframework.third.homework.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,26 +151,43 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 				// 아직 pk가 없으니 신규 질문임
 				questionService.createQuestion(q); // 신규 질문 등록
 			} else {
-				questionService.modifyQuestion(q); // 기존 질문 업데이트
+				// 질문 변경사항 있는지 체크
+				QuestionVO originQ = questionService.getQuestion(q.getIdx());
+			    boolean contentChanged = !originQ.getContent().equals(q.getContent());
+			    boolean requiredChanged = originQ.getIsRequired() != q.getIsRequired();
+			    boolean typeChanged = !originQ.getType().equals(q.getType());
+			    
+			    if (contentChanged || requiredChanged || typeChanged) {
+			    	questionService.modifyQuestion(q); // 기존 질문 업데이트
+			    }
 			}
 			
 			// 객관식 문항은 전부 삭제하고 재등록
 			if (q.getType().equals("radio") || q.getType().equals("dropdown") || q.getType().equals("check")) {
-				// 질문 q의 문항 전부 삭제
-				List<QitemVO> items = qitemService.getQitemList(q.getIdx());
-				for (QitemVO qitem : items) {
-					qitemService.removeQitem(qitem.getIdx());
-				}
-				// 객관식 문항 일괄 등록
-				if (q.getQitemList() != null) {
-					for (int j = 0; j < q.getQitemList().size(); j++) {
-						QitemVO qitem = new QitemVO();
-						qitem.setQuestionIdx(q.getIdx()); // questionIdx를 해당 질문 idx로 설정
-						qitem.setContent(q.getQitemList().get(j));
-						qitem.setSeq(j);
-						qitemService.createQitem(qitem);
+				// 기존 문항과 새 문항 비교
+	            List<QitemVO> existingItems = qitemService.getQitemList(q.getIdx());
+	            List<String> existingContents = new ArrayList<>(); // 기존 문항 내용 리스트
+	            for (QitemVO ei : existingItems) {
+	                existingContents.add(ei.getContent());
+	            }
+	            List<String> newContents = q.getQitemList() != null ? q.getQitemList() : Collections.emptyList(); // 새 문항 내용 리스트
+	            
+	            if (!existingContents.equals(newContents)) {
+					// 질문 q의 문항 전부 삭제
+					for (QitemVO ei : existingItems) {
+						qitemService.removeQitem(ei.getIdx());
 					}
-				}
+					// 객관식 문항 일괄 등록
+					if (q.getQitemList() != null) {
+						for (int j = 0; j < newContents.size(); j++) {
+							QitemVO qitem = new QitemVO();
+							qitem.setQuestionIdx(q.getIdx()); // questionIdx를 해당 질문 idx로 설정
+							qitem.setContent(newContents.get(j));
+							qitem.setSeq(j);
+							qitemService.createQitem(qitem);
+						}
+					}
+	            }
 			}
 			
 			// 이미지도 기존 삭제하고 재등록

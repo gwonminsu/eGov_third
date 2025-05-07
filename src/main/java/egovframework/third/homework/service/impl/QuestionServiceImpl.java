@@ -59,7 +59,7 @@ public class QuestionServiceImpl extends EgovAbstractServiceImpl implements Ques
 	public QuestionVO getQuestion(String idx) throws Exception {
 		QuestionVO vo = questionDAO.selectQuestion(idx);
 		log.info("SELECT 질문({}) 조회 완료", idx);
-		return null;
+		return vo;
 	}
 
 	// 질문 수정

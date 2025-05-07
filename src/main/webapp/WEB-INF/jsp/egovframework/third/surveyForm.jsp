@@ -435,12 +435,13 @@
 					var newType = $('#qTypeSelect').val();
 					var newContent = $('#qContent').val()?.trim();
 					var newIsRequired = $('#isRequiredSwitch').prop('checked');
+					var originalIdx = q.idx;
 					if(!newContent){
 						alert('질문을 입력해주세요');
 						return;
 					}
 					// 배열 업데이트(객관식일경우 옵션리스트 객체를 배열에 추가)
-					var updated = { type: newType, content: newContent, isRequired: newIsRequired };
+					var updated = { idx: originalIdx, type: newType, content: newContent, isRequired: newIsRequired };
 					if(newType === 'radio' || newType === 'dropdown' || newType === 'check') {
 						updated.qitemList = [...currentOptions];
 					}
@@ -570,10 +571,11 @@
 					return { idx, type, content, isRequired, ...(qitemList && { qitemList }), imageChanged: !!q.imageFile };
 				});
 				
-	    		// 검증 통과 시 게시글 등록 api 실행
+	    		// 검증 통과 시 게시글 등록/수정 api 실행
 	    		var payload = {
 	    				survey: $.extend({}, {
 		    				authorIdx: sessionUserIdx,
+		    				editorIdx: sessionUserIdx,
 		    				title: $('#title').val(),
 		    				description: $('#description').val(),
 		    				startDate: startStr,
