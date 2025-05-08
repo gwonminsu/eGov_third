@@ -425,6 +425,10 @@
 					  .append(' <button type="button" id="saveBtn">수정완료</button>');
 				}
 				
+				// 자동 스크롤 애니메이션
+				var targetScroll = $(document).height() - $(window).height();
+				$('html, body').animate({ scrollTop: targetScroll }, 500, 'swing');
+				
 				// 수정완료 클릭 핸들러
 				$('#saveBtn').off('click').on('click', function() {
 					$('#qHint').text('설문지 질문 추가');
@@ -442,7 +446,7 @@
 						updated.qitemList = [...currentOptions];
 					}
 					// 이미지 파일이 있으면 추가
-					if(currentImage) {
+					if(q.imageData) {
 						updated.imageData = currentImageData;
 						updated.imageFile = currentImage;
 					}
