@@ -282,7 +282,7 @@
 	        
 	        // 설문 관리 페이지 이동 버튼 핸들러
 	        $('#btnGoSurveyManage').click(function() {
-	        	if (isAdmin) {
+	        	if (isAdmin == 'true') {
     			    // 설문 관리 페이지로 이동
 					postTo('${surveyManageUrl}', {});
 	        	} else {

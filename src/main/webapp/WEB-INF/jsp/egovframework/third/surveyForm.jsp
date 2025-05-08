@@ -16,6 +16,7 @@
 	<!-- API URL -->
     <c:url value="/api/survey/create.do" var="createApi"/>
     <c:url value="/api/survey/edit.do" var="editApi"/>
+    <c:url value="/api/survey/delete.do" var="deleteApi"/>
     <c:url value="/api/survey/detail.do" var="detailApi"/>
     <c:url value="/api/survey/questions.do" var="questionsApi"/>
     <c:url value="/api/survey/qimage.do" var="qimageApi"/>
@@ -24,7 +25,7 @@
 	
 	<script>
 		var sessionUserIdx = '<c:out value="${sessionScope.loginUser.idx}" default="" />';
-		var sessionUserName = '<c:out value="${sessionScope.loginUser.userName}" default="" />';
+		var isAdmin = '<c:out value="${sessionScope.loginUser.role}" default="" />';
 		
 	    // 검색 변수(파라미터에서 값 받아와서 검색 상태 유지)
 		var currentSearchType = '<c:out value="${param.searchType}" default="title"/>';
@@ -197,9 +198,6 @@
 	    	} else {
 	    		$('#surveyFormGuide').hide();
 	    	}
- 	    	
-	    	// 작성자 input에 세션의 사용자 이름 넣기
-	    	// $('#userName').val(sessionUserName);
 	    	
 	    	// 데이트피커 기본옵션 정의
 	    	var datepickerOptions = {
@@ -603,7 +601,7 @@
 	    		
 	    		// 설문지 등록 요청
 	    		$.ajax({
-	    			url: apiUrl + (mode==='edit' ? '?idx='+encodeURIComponent(idx) : ''),
+	    			url: apiUrl,
 	    			type:'POST',
 	    			contentType: false,
 	    			processData: false,
@@ -631,15 +629,30 @@
 	        });
 	    	
 	        $('#btnDelete').click(function() {
-	        	if(confirm("정말 삭제하시겠습니까?")){
-	        		alert("삭제 처리");
-	        	}else{
-	        		alert("삭제 취소");
+	        	if (isAdmin != 'true') {
+	        		alert('삭제 권한이 없습니다');
+	        		return;
 	        	}
+	        	if (!confirm('정말 삭제하시겠습니까?')) return;
+				$.ajax({
+					url: '${deleteApi}',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({ idx: idx }),
+					success: function(res) {
+						if (res.error) {
+							alert(res.error);
+						} else {
+							alert('설문 삭제가 완료되었습니다');
+							postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+						}
+					}
+				})
+	        	
 			})
 	    	
 	    	$('#btnCancel').click(function() {
-	    		// 게시글 목록 페이지 이동
+	    		// 설문 목록 페이지 이동
 	    		postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 	    	});
 	    	

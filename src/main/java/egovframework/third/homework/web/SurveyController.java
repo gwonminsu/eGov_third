@@ -58,8 +58,6 @@ public class SurveyController {
         String searchKeyword = (String) req.get("searchKeyword");
         Boolean onlyAvailable = (Boolean) req.get("onlyAvailable");
         
-        log.info("현재 넘겨받은 파라미터 값 - pageIndex:{}, recordCountPerPage:{}, searchType:{}, searchKeyword:{}", pageIndex, recordCountPerPage, searchType, searchKeyword);
-        
         // VO 에 페이징 정보만 세팅
         SurveyVO vo = new SurveyVO();
         vo.setPageIndex(pageIndex);
@@ -121,13 +119,10 @@ public class SurveyController {
 
     // 설문 삭제
     @PostMapping(value="/delete.do", consumes="application/json", produces="application/json")
-    public Map<String,String> delete(@RequestBody Map<String,String> param) {
-        try {
-        	surveyService.removeSurvey(param.get("idx"));
-            return Collections.singletonMap("status","OK");
-        } catch(Exception e) {
-            return Collections.singletonMap("error", e.getMessage());
-        }
+    public Map<String,String> delete(@RequestBody Map<String,String> param) throws Exception {
+        String idx = param.get("idx");
+    	surveyService.removeSurvey(idx);
+        return Collections.singletonMap("status","OK");
     }
 	
 }

@@ -47,9 +47,8 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 	@Override
 	public void createSurvey(SurveyVO vo, List<QuestionVO> questionList, List<MultipartFile> files) throws Exception {
 		surveyDAO.insertSurvey(vo); // 설문 먼저 등록
-		log.info("INSERT 설문 등록 성공 idx: {}", vo.getIdx());
 		int imgIdx = 0; // 이미지
-		
+		log.info("INSERT 설문 등록 시도중.. idx: {}", vo.getIdx());
 		// 질문들 등록
 		if (questionList != null) {
 			for (int i = 0; i < questionList.size(); i++) {
@@ -76,6 +75,7 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 				}
 			}
 		}
+		log.info("설문 등록 성공!");
 	}
 
 	// 설문 목록 조회
@@ -110,7 +110,7 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 	@Override
 	public void modifySurvey(SurveyVO vo, List<QuestionVO> questionList, List<MultipartFile> files) throws Exception {
 		surveyDAO.updateSurvey(vo); // 설문 먼저 수정
-		log.info("UPDATE 설문 수정 성공 idx: {}", vo.getIdx());
+		log.info("UPDATE 설문 수정 시도중.. idx: {}", vo.getIdx());
 		
 		int imgIdx = 0; // 이미지
 		
@@ -207,12 +207,29 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 			    }
 			}
 		}
+		log.info("설문 수정 성공!");
 	}
 
-	// 설문 삭제
+	// 설문 삭제 + 질문 삭제 + 문항 삭제 + 이미지 삭제
 	@Override
 	public void removeSurvey(String idx) throws Exception {
-		surveyDAO.deleteSurvey(idx);
+		log.info("DELETE 설문({}) 삭제 시도중...", idx);
+		List<QuestionVO> questions = questionService.getQuestionList(idx); // 질문 목록 가져오기
+		for (QuestionVO q : questions) {
+			QimageVO image = qimageService.getQimageByQuestionIdx(q.getIdx());
+			if (image != null) {
+				qimageService.removeQimage(image.getIdx()); // 질문의 이미지 삭제
+			}
+			List<QitemVO> qitems = qitemService.getQitemList(q.getIdx());
+			if (!qitems.isEmpty()) {
+				for (QitemVO qi : qitems) {
+					qitemService.removeQitem(qi.getIdx()); // 질문의 문항 전부 삭제
+				}
+			}
+			questionService.removeQuestion(q.getIdx()); // 질문 삭제
+		}
+		surveyDAO.deleteSurvey(idx); // 설문 삭제
+		log.info("설문 삭제 성공!");
 	}
 	 
 }
