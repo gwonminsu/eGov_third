@@ -118,7 +118,7 @@ table.form-table textarea {
 	transform: translateX(-50%);
 }
 #switch-text {
-	padding-right: 8px;
+	padding: 0 8px;
 	font-weight: normal;
 }
 .switch-container {

@@ -116,7 +116,6 @@
 								<option value="radio">객관식(라디오)</option>
 								<option value="dropdown">객관식(드롭다운)</option>
 								<option value="check">다중 객관식(체크박스)</option>
-								<option value="image">이미지</option>
 							</select>
 						</td>
 					</tr>
@@ -175,19 +174,20 @@
 	    			dataType: 'json'
 	    		}).done(function(qList) {
 					questions = qList;
-					var calls = questions.map((q, i) => {
-						if (q.type === 'image') {
-							return $.ajax({
-								url: '${qimageApi}',
-					            type: 'POST',
-					            contentType: 'application/json',
-					            data: JSON.stringify({ questionIdx: q.idx })
-							}).done(function(img) {
+					var calls = questions.map(function(q) {
+						return $.ajax({
+							url: '${qimageApi}',
+				            type: 'POST',
+				            contentType: 'application/json',
+				            data: JSON.stringify({ questionIdx: q.idx })
+						}).done(function(img) {
+							if (img && img.fileUuid) {
 								q.imageData = '/uploads/' + img.fileUuid + img.ext;
-							});
-						} else {
-							return $.Deferred().resolve().promise();
-						}
+							}
+						})
+						.fail(function() {
+							// 이미지 없으면 넘어가
+						});
 					});
 					// 모든 qimage 호출 끝나면 렌더링
 					$.when.apply($, calls).always(function(){
@@ -232,6 +232,8 @@
 	    	var currentOptions = []; // 객관식 옵션 객체 리스트
 			var currentImage = null; // 이미지 파일 객체
 			var currentImageData = null; // DataURL 미리보기
+			
+			resetForm(); // 폼 초기화
 	    	
 	    	// 타입-라벨 매핑 객체
 	    	var typeLabels = {
@@ -240,7 +242,6 @@
 				radio: '라디오',
 				dropdown:'드롭다운',
 				check: '체크박스',
-				image: '이미지'
 			};
 	    	
 			// 질문 입력 폼 초기화
@@ -255,8 +256,6 @@
 			    // 이미지 초기화
 			    currentImage = null;
 			    currentImageData = null;
-				$('#optionInputRow, #optionListRow').remove(); // 객관식 타입 로우 제거
-			    $('#imageInputRow, #imagePreviewRow').remove(); // 이미지 타입 로우 제거
 			}
 			
 			// 타입 드롭다운 변경 시
@@ -276,6 +275,18 @@
 			    // 기존 객관식/이미지 관련 로우 제거
 			    $table.find('#optionInputRow, #optionListRow, #imageInputRow, #imagePreviewRow').remove();
 			    
+			    // 파일 추가/미리보기 로우 추가
+				$(`<tr id="imageInputRow">
+						<th>이미지 업로드</th>
+						<td>
+							<input type="file" id="imageInput" accept="image/*"/>
+						</td>
+				   </tr>`).insertAfter('#qInputRow');
+				$(`<tr id="imagePreviewRow">
+						<th>미리보기</th>
+						<td><img id="imagePreview" style="max-width:200px; max-height:200px; display:block"/></td>
+				   </tr>`).insertAfter('#imageInputRow');
+			    
 			    // 객관식 타입이면 옵션 입력/목록 로우 추가
 			    if(type === 'radio' || type === 'dropdown' || type === 'check') {
 					$(`<tr id="optionInputRow">
@@ -284,27 +295,12 @@
 					          <input type="text" id="optionContent" style="width:70%"/>
 					          <button type="button" id="addOptionBtn">추가</button>
 					        </td>
-					      </tr>`).insertAfter('#qInputRow'); // qInputRow 다음에 추가
+					      </tr>`).insertAfter('#imagePreviewRow'); // imagePreviewRow 다음에 추가
 					$(`<tr id="optionListRow">
 					        <th>옵션 리스트</th>
 					        <td><ul id="optionList" style="list-style:none;padding:0;margin:0"></ul></td>
 					      </tr>`).insertAfter('#optionInputRow'); // optionInputRow 다음에 추가
 			    }
-			    
-			    // 이미지 타입이면 파일 추가/미리보기 로우 추가
-			    if(type==='image') {
-					$(`<tr id="imageInputRow">
-					     <th>이미지 업로드</th>
-					     <td>
-					       <input type="file" id="imageInput" accept="image/*"/>
-					     </td>
-					   </tr>`).insertAfter('#qInputRow');
-					$(`<tr id="imagePreviewRow">
-					     <th>미리보기</th>
-					     <td><img id="imagePreview" style="max-width:200px; max-height:200px; display:block"/></td>
-					   </tr>`).insertAfter('#imageInputRow');
-				}
-			    
 			}
 			
 			// 옵션 리스트 렌더링
@@ -358,14 +354,14 @@
 								<td>\${contentHtml}</td>
 							</tr>
 						</table>`);
+					// 이미지데이터가 있으면 아래에 로우 추가
+					if(q.imageData) {
+						$tbl.append(`<tr><th>첨부 이미지</th><td><img src="\${q.imageData}" style="max-width:200px;"/></td></tr>`);
+					}
 					// 질문이 객관식 타입이면 아래에 로우 추가
 					if(q.type === 'radio' || q.type === 'dropdown' || q.type === 'check') {
 						var optsHtml = q.qitemList.map(o=>`<div>▪ \${o}</div>`).join('');
 						$tbl.append(`<tr><th>응답 옵션</th><td>\${optsHtml}</td></tr>`);
-					}
-					// 이미지데이터가 있으면 아래에 로우 추가
-					if(q.imageData) {
-						$tbl.append(`<tr><th>첨부 이미지</th><td><img src="\${q.imageData}" style="max-width:200px;"/></td></tr>`);
 					}
 					$list.append($tbl);
 				});
@@ -387,8 +383,7 @@
 					qObj.qitemList = [...currentOptions];
 				}
 				// 타입이 이미지면 이미지 파일 필수 체크
-			    if(type === 'image') {
-					if(!currentImage) return alert('이미지 파일을 선택해주세요');
+			    if(currentImage) {
 					qObj.imageFile = currentImage; // 서버 전송용
 					qObj.imageData = currentImageData; // 미리보기용
 				}
@@ -446,7 +441,8 @@
 					if(newType === 'radio' || newType === 'dropdown' || newType === 'check') {
 						updated.qitemList = [...currentOptions];
 					}
-					if(newType === 'image') {
+					// 이미지 파일이 있으면 추가
+					if(currentImage) {
 						updated.imageData = currentImageData;
 						updated.imageFile = currentImage;
 					}
@@ -591,7 +587,7 @@
 				var formData = new FormData();
 				formData.append('payload', new Blob([JSON.stringify(payload)],{type:'application/json'}));
 				questions.forEach(q => {
-					if (q.type==='image' && q.imageFile) {
+					if (q.imageFile) {
 						// 키는 전부 동일하게 'files' 로, 순서대로 붙이면 컨트롤러에 List<MultipartFile> 로 들어옴
 						formData.append('files', q.imageFile);
 					}

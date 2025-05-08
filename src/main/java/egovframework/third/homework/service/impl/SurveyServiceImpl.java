@@ -69,8 +69,8 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 					}
 				}
 				
-				// 여기에 질문 타입 이미지에 imgidx로 파일 매핑
-				if (q.getType().equals("image")) {
+				// imgIdx 해당하는 파일이 존재하면 질문에 imgidx로 파일 매핑
+				if (files != null && imgIdx < files.size() && !files.get(imgIdx).isEmpty()) {
 					MultipartFile mf = files.get(imgIdx++);
 					qimageService.createQimage(q.getIdx(), mf); // 이미지를 해당 질문 자식으로 저장
 				}
@@ -191,7 +191,7 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 			}
 			
 			// 이미지도 기존 삭제하고 재등록
-			if (q.getType().equals("image") && Boolean.TRUE.equals(q.getImageChanged())) {
+			if (Boolean.TRUE.equals(q.getImageChanged())) {
 			    // 기존 이미지 조회
 			    QimageVO exist = qimageService.getQimageByQuestionIdx(q.getIdx());
 

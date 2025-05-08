@@ -47,28 +47,46 @@ table.survey-info th {
 	font-weight: bold;
 }
 
-/* 응답 입력 영역 */
-.q-input {
+/* 응답 내용 영역 */
+.q-content {
 	padding-left: 24px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
-.q-input input[type="text"],
-.q-input textarea,
-.q-input select {
-	width: 100%;
+.q-content input[type="text"] {
+	width: 300px;
 	box-sizing: border-box;
 	border: 1px solid #ccc;
 	padding: 6px;
 	background: #f9f9f9;
 	resize: none;
 }
-.q-input label {
-	margin-right: 12px;
+.q-content textarea {
+	width: 80%;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+	padding: 6px;
+	background: #f9f9f9;
+	resize: none;
+}
+.q-content select {
+	width: 250px;
+	box-sizing: border-box;
+	border: 1px solid #ccc;
+	padding: 6px;
+	background: #f9f9f9;
+	resize: none;
+}
+.q-content label {
+	display: block;
+	margin: 0;
 }
 .q-image {
 	max-width: 200px;
 	max-height: 200px;
 	display: block;
-	margin-top: 8px;
+	margin: 12px 0;
 }
 
 /* 버튼 영역 */

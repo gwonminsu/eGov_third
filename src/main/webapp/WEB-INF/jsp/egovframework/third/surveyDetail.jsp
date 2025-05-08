@@ -93,7 +93,7 @@
 				data: JSON.stringify({ surveyIdx: idx }),
 				success: function(list) {
 					var $qList = $('#questionList').empty();
-					list.forEach(function(q,i) {
+					list.forEach(function(q, i) {
 						var requiredMark;
 						if(q.isRequired) {
 							requiredMark = '<span id="required-mark">＊</span>';
@@ -106,17 +106,37 @@
 					    var $hdr = $('<div>').addClass('question-header').append($('<span>').addClass('q-index').text('Q'+(i+1)), $textSpan);
 					    $block.append($hdr);
 					
-					    var $inp = $('<div>').addClass('q-input');
+					    var $content = $('<div>').addClass('q-content');
+					    
+					    var $img = $('<img>').addClass('q-image');
+					    $content.append($img);
+						$.ajax({
+							url: '${qimageApi}',
+							type: 'POST',
+							contentType: 'application/json',
+							data: JSON.stringify({ questionIdx: q.idx }),
+							success: function(imgVo) {
+								if (imgVo && imgVo.fileUuid) {
+									$img.attr('src', '/uploads/' + imgVo.fileUuid + imgVo.ext);
+								} else {
+									$content.find($img).remove();
+								}
+							},
+							error: function() {
+								alert('질문 이미지를 불러올 수 없습니다: ' + i);
+							}
+						});
+					    
 					    switch(q.type) {
 							case 'short':
-								$inp.append($('<input>').attr({type:'text', disabled:true}));
+								$content.append($('<input>').attr({type:'text', disabled:true}));
 								break;
 							case 'long':
-								$inp.append($('<textarea>').attr({rows:4, disabled:true}));
+								$content.append($('<textarea>').attr({rows:4, disabled:true}));
 								break;
 							case 'radio':
 								q.qitemList.forEach(function(opt){
-									$inp.append($('<label>').append($('<input>').attr({type:'radio', disabled:true, name:'r'+i}), ' '+opt+' '));
+									$content.append($('<label>').append($('<input>').attr({type:'radio', disabled:true, name:'r'+i}), ' '+opt+' '));
 								});
 								break;
 							case 'dropdown':
@@ -124,35 +144,17 @@
 								q.qitemList.forEach(function(opt){
 									$sel.append($('<option>').text(opt));
 								});
-								$inp.append($sel);
+								$content.append($sel);
 								break;
 							case 'check':
 								q.qitemList.forEach(function(opt){
-									$inp.append($('<label>').append($('<input>').attr({type:'checkbox', disabled:true}),' '+opt+' '));
-								});
-								break;
-							case 'image':
-								var $img = $('<img>').addClass('q-image');
-								$inp.append($img);
-								$.ajax({
-									url: '${qimageApi}',
-									type: 'POST',
-									contentType: 'application/json',
-									data: JSON.stringify({ questionIdx: q.idx }),
-									success: function(imgVo) {
-										if (imgVo && imgVo.fileUuid) {
-											$img.attr('src', '/uploads/' + imgVo.fileUuid + imgVo.ext);
-										}
-									},
-									error: function() {
-										alert('질문 이미지를 불러올 수 없습니다');
-									}
+									$content.append($('<label>').append($('<input>').attr({type:'checkbox', disabled:true}),' '+opt+' '));
 								});
 								break;
 							default:
-								$inp.append($('<input>').attr({type:'text', disabled:true}));
+								$content.append($('<input>').attr({type:'text', disabled:true}));
 					    }
-					    $block.append($inp);
+					    $block.append($content);
 					    $qList.append($block);
 					});
 				},
