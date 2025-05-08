@@ -4,14 +4,13 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>설문 참여(상세)</title>
+	<title>설문 프리뷰(상세)</title>
 	<link rel="stylesheet" href="<c:url value='/css/surveyDetail.css'/>" />
 	<script src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
 	
 	<!-- API URL -->
 	<c:url value="/api/survey/detail.do" var="detailApi"/>
 	<c:url value="/api/survey/questions.do" var="questionsApi"/>
-	<c:url value="/api/survey/qimage.do" var="qimageApi"/>
 	
 	<!-- 목록 페이지 URL -->
 	<c:url value="/surveyList.do" var="listUrl"/>
@@ -37,20 +36,21 @@
 </head>
 <body>
 
-	<h2>설문 참여(상세)</h2>
+	<h2>설문 프리뷰(상세)</h2>
 	
 	<!-- 설문 메타 정보가 들어갈 영역 -->
 	<table class="survey-info">
 		<tr><th>제목</th><td id="svTitle"></td></tr>
 		<tr><th>개요</th><td id="svDesc"></td></tr>
+		<tr><th>설문 등록자</th><td id="svAuthor"></td></tr>
 		<tr>
 			<th>설문 기간</th>
 			<td><span id="svStart"></span> ~ <span id="svEnd"></span></td>
 		</tr>
 	</table>
 	
-	<!-- 질문 리스트 렌더링 영역 -->
-	<div id="questionList"></div>
+	<!-- 질문 정보 렌더링 영역 -->
+	<div id="questionInfo"></div>
 	
 	<div class="btn-area">
 		<button type="button" id="btnList">목록</button>
@@ -77,6 +77,7 @@
 				success: function(sv) {
 					$('#svTitle').text(sv.title);
 					$('#svDesc').text(sv.description);
+					$('#svAuthor').text(sv.userName);
 					$('#svStart').text(sv.startDate.substr(0,10));
 					$('#svEnd').text(sv.endDate.substr(0,10));
 				},
@@ -92,71 +93,28 @@
 				contentType: 'application/json',
 				data: JSON.stringify({ surveyIdx: idx }),
 				success: function(list) {
-					var $qList = $('#questionList').empty();
-					list.forEach(function(q, i) {
-						var requiredMark;
-						if(q.isRequired) {
-							requiredMark = '<span id="required-mark">＊</span>';
-						} else {
-							requiredMark = '';
+					// 타입별 카운트 초기화
+					var counts = {
+						short: 0,
+						long: 0,
+						radio: 0,
+						dropdown: 0,
+						check: 0
+					};
+					list.forEach(function(q){
+						if (counts.hasOwnProperty(q.type)) {
+							counts[q.type]++;
 						}
-						var $textSpan = $('<span>').addClass('q-text').text(q.content);
-						$textSpan.append(requiredMark); // 질문 내용 옆에 필수 마크 추가
-					    var $block = $('<div>').addClass('question-block');
-					    var $hdr = $('<div>').addClass('question-header').append($('<span>').addClass('q-index').text('Q'+(i+1)), $textSpan);
-					    $block.append($hdr);
-					
-					    var $content = $('<div>').addClass('q-content');
-					    
-					    var $img = $('<img>').addClass('q-image');
-					    $content.append($img);
-						$.ajax({
-							url: '${qimageApi}',
-							type: 'POST',
-							contentType: 'application/json',
-							data: JSON.stringify({ questionIdx: q.idx }),
-							success: function(imgVo) {
-								if (imgVo && imgVo.fileUuid) {
-									$img.attr('src', '/uploads/' + imgVo.fileUuid + imgVo.ext);
-								} else {
-									$content.find($img).remove();
-								}
-							},
-							error: function() {
-								alert('질문 이미지를 불러올 수 없습니다: ' + i);
-							}
-						});
-					    
-					    switch(q.type) {
-							case 'short':
-								$content.append($('<input>').attr({type:'text', disabled:true}));
-								break;
-							case 'long':
-								$content.append($('<textarea>').attr({rows:4, disabled:true}));
-								break;
-							case 'radio':
-								q.qitemList.forEach(function(opt){
-									$content.append($('<label>').append($('<input>').attr({type:'radio', disabled:true, name:'r'+i}), ' '+opt+' '));
-								});
-								break;
-							case 'dropdown':
-								var $sel = $('<select>').attr('disabled',true).append($('<option>').text('선택'));
-								q.qitemList.forEach(function(opt){
-									$sel.append($('<option>').text(opt));
-								});
-								$content.append($sel);
-								break;
-							case 'check':
-								q.qitemList.forEach(function(opt){
-									$content.append($('<label>').append($('<input>').attr({type:'checkbox', disabled:true}),' '+opt+' '));
-								});
-								break;
-							default:
-								$content.append($('<input>').attr({type:'text', disabled:true}));
-					    }
-					    $block.append($content);
-					    $qList.append($block);
 					});
+					// 간단한 리스트로 출력
+					var html = '<ul class="type-counts">';
+					html += '<li>단답형 질문: ' + counts.short + '개</li>';
+					html += '<li>서술형 질문: ' + counts.long + '개</li>';
+					html += '<li>라디오 객관식 질문: ' + counts.radio + '개</li>';
+					html += '<li>선택기 객관식 질문: ' + counts.dropdown + '개</li>';
+					html += '<li>체크박스 질문: ' + counts.check + '개</li>';
+					html += '</ul>';
+					$('#questionInfo').html(html);
 				},
 				error: function() {
 					alert('질문 목록을 불러올 수 없습니다');

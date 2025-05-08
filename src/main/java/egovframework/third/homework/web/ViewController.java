@@ -67,4 +67,10 @@ public class ViewController {
 		return "surveyDetail";
 	}
 	
+	// 설문조사 참여 페이지
+	@RequestMapping(value = "/surveyParticipate.do")
+	public String showSurveyParticipate() {
+		return "surveyParticipate";
+	}
+	
 }

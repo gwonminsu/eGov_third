@@ -18,75 +18,24 @@ table.survey-info th {
 	text-align: center;
 }
 
-/* 질문 블록 */
-#questionList .question-block {
+/* 질문 정보 블록 */
+#questionInfo {
 	border: 1px solid #ddd;
 	border-radius: 4px;
+	background: #fff;
+	padding: 16px;
 	margin-top: 16px;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-	background: #fff;
-	padding: 12px;
 }
-
-/* 질문 헤더 */
-.question-header {
-	display: flex;
-	align-items: center;
-	margin-bottom: 8px;
-}
-.question-header .q-index {
-	font-weight: bold;
-	margin-right: 8px;
-}
-.question-header .q-text {
-	flex: 1;
-}
-#required-mark {
-	color: #e74c3c;
-	margin-left: 4px;
-	font-weight: bold;
-}
-
-/* 응답 내용 영역 */
-.q-content {
-	padding-left: 24px;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-}
-.q-content input[type="text"] {
-	width: 300px;
-	box-sizing: border-box;
-	border: 1px solid #ccc;
-	padding: 6px;
-	background: #f9f9f9;
-	resize: none;
-}
-.q-content textarea {
-	width: 80%;
-	box-sizing: border-box;
-	border: 1px solid #ccc;
-	padding: 6px;
-	background: #f9f9f9;
-	resize: none;
-}
-.q-content select {
-	width: 250px;
-	box-sizing: border-box;
-	border: 1px solid #ccc;
-	padding: 6px;
-	background: #f9f9f9;
-	resize: none;
-}
-.q-content label {
-	display: block;
+.type-counts {
+	list-style: none;
+	padding: 0;
 	margin: 0;
 }
-.q-image {
-	max-width: 200px;
-	max-height: 200px;
-	display: block;
-	margin: 12px 0;
+.type-counts li {
+	margin-bottom: 8px;
+	font-size: 1rem;
+	color: #333;
 }
 
 /* 버튼 영역 */
