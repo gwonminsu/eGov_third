@@ -19,22 +19,22 @@ public class QimageDAO {
 	}
     
     // 질문 idx로 질문 이미지 조회
-    public QimageVO selectQimageByQuestionIdx(String questionIdx) {
+    public QimageVO selectQimageByQuestionIdx(String questionIdx) throws Exception {
         return sqlSession.selectOne("qimageDAO.selectQimageByQuestionIdx", questionIdx);
     }
     
     // 질문 이미지 단일 조회
-    public QimageVO selectQimage(String idx) {
+    public QimageVO selectQimage(String idx) throws Exception {
         return sqlSession.selectOne("qimageDAO.selectQimage", idx);
     }
     
     // 질문 이미지 삭제
-    public void deleteQimage(String idx) {
+    public void deleteQimage(String idx) throws Exception {
         sqlSession.delete("qimageDAO.deleteQimage", idx);
     }
         
     // 질문에 있는 질문 이미지 삭제
-    public void deleteQimageByQuestionIdx(String questionIdx) {
+    public void deleteQimageByQuestionIdx(String questionIdx) throws Exception {
         sqlSession.update("qimageDAO.deleteQimageByQuestionIdx", questionIdx);
     }
     

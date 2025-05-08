@@ -32,17 +32,17 @@ public class SurveyDAO {
     }
     
     // 설문 상세 조회
-    public SurveyVO selectSurvey(String idx) {
+    public SurveyVO selectSurvey(String idx) throws Exception {
         return sqlSession.selectOne("surveyDAO.selectSurvey", idx);
     }
     
     // 설문 수정
-    public void updateSurvey(SurveyVO vo) {
+    public void updateSurvey(SurveyVO vo) throws Exception {
         sqlSession.update("surveyDAO.updateSurvey", vo);
     }
     
     // 설문 삭제
-    public void deleteSurvey(String idx) {
+    public void deleteSurvey(String idx) throws Exception {
         sqlSession.delete("surveyDAO.deleteSurvey", idx);
     }
 }

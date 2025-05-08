@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="surveyResponseDAO">
+
+	<!-- 설문 응답 기록 등록 -->
+	<insert id="insertSurveyResponse" parameterType="surveyResponseVO">
+		<selectKey keyProperty="idx" resultType="String" order="BEFORE">
+			SELECT 'RESP-' || (COALESCE(MAX((SUBSTRING(idx FROM 6))::int), 0)+ 1)
+			FROM survey_response
+		</selectKey>
+		INSERT INTO survey_response
+			(idx, survey_idx, user_idx, created_at)
+		VALUES
+			(#{idx}, #{surveyIdx}, #{userIdx}, NOW())
+	</insert>
+
+	<!-- 설문 응답 기록 단일 조회 -->
+	<select id="selectSurveyResponse" parameterType="String" resultType="surveyResponseVO">
+		SELECT
+			idx,
+			survey_idx AS surveyIdx,
+			user_idx AS userIdx,
+			created_at AS createdAt
+		FROM survey_response
+		WHERE idx = #{idx}
+	</select>
+	
+</mapper>

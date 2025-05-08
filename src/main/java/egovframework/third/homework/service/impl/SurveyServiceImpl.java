@@ -62,7 +62,7 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 					for (int j = 0; j < q.getQitemList().size(); j++) {
 						QitemVO qitem = new QitemVO();
 						qitem.setQuestionIdx(q.getIdx()); // questionIdx를 해당 질문 idx로 설정
-						qitem.setContent(q.getQitemList().get(j));
+						qitem.setContent(q.getQitemList().get(j).getContent());
 						qitem.setSeq(j);
 						qitemService.createQitem(qitem);
 					}
@@ -170,7 +170,12 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 	            for (QitemVO ei : existingItems) {
 	                existingContents.add(ei.getContent());
 	            }
-	            List<String> newContents = q.getQitemList() != null ? q.getQitemList() : Collections.emptyList(); // 새 문항 내용 리스트
+	            List<String> newContents = new ArrayList<>(); // 새 문항 내용 리스트
+	            if (q.getQitemList() != null) {
+	            	for (QitemVO item : q.getQitemList()) {
+	            		newContents.add(item.getContent());
+	            	}
+	            }
 	            
 	            if (!existingContents.equals(newContents)) {
 					// 질문 q의 문항 전부 삭제

@@ -20,6 +20,8 @@
 	<c:url value="/surveyParticipate.do" var="participateUrl"/>
 	
 	<script>
+		var sessionUserIdx = '<c:out value="${sessionScope.loginUser.idx}" default="" />';
+		
 	    // 검색 변수(파라미터에서 값 받아와서 검색 상태 유지)
 		var currentSearchType = '<c:out value="${param.searchType}" default="title"/>';
 		var currentSearchKeyword = '<c:out value="${param.searchKeyword}" default=""/>';
@@ -105,8 +107,9 @@
 						}
 						var $textSpan = $('<span>').addClass('q-text').text(q.content);
 						$textSpan.append(requiredMark); // 질문 내용 옆에 필수 마크 추가
-					    var $block = $('<div>').addClass('question-block');
-					    var $hdr = $('<div>').addClass('question-header').append($('<span>').addClass('q-index').text('Q'+(i+1)), $textSpan);
+					    var $block = $('<div>').addClass('question-block').attr('data-q-idx', q.idx).attr('data-q-type', q.type);
+					    var $hdr = $('<div>').addClass('question-header')
+					    						.append($('<span>').addClass('q-index').text('Q'+(i+1)), $textSpan);
 					    $block.append($hdr);
 					
 					    var $content = $('<div>').addClass('q-content');
@@ -132,26 +135,27 @@
 					    
 					    switch(q.type) {
 							case 'short':
-								$content.append($('<input>').attr({type:'text'}));
+								$content.append($('<input>').attr({type:'text', name:'ans_' + q.idx}));
 								break;
 							case 'long':
-								$content.append($('<textarea>').attr({rows:4}));
+								$content.append($('<textarea>').attr({rows:4, name:'ans_' + q.idx}));
 								break;
 							case 'radio':
 								q.qitemList.forEach(function(opt){
-									$content.append($('<label>').append($('<input>').attr({type:'radio', name:'r'+i}), ' '+opt+' '));
+									console.log(JSON.stringify(opt));
+									$content.append($('<label>').append($('<input>').attr({type: 'radio', name:'ans_' + q.idx, value: opt.idx}), ' '+opt.content+' '));
 								});
 								break;
 							case 'dropdown':
-								var $sel = $('<select>').append($('<option>').text('선택'));
+								var $sel = $('<select>').attr({name:'ans_' + q.idx}).append($('<option>').text('선택'));
 								q.qitemList.forEach(function(opt){
-									$sel.append($('<option>').text(opt));
+									$sel.append($('<option>').attr('value', opt.idx).text(opt.content));
 								});
 								$content.append($sel);
 								break;
 							case 'check':
 								q.qitemList.forEach(function(opt){
-									$content.append($('<label>').append($('<input>').attr({type:'checkbox'}),' '+opt+' '));
+									$content.append($('<label>').append($('<input>').attr({type:'checkbox', name:'ans_' + q.idx, value: opt.idx}),' '+opt.content+' '));
 								});
 								break;
 							default:
@@ -170,9 +174,57 @@
 			$('#btnPrev').click(function() {
 				postTo('${detailUrl}', { idx: idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 			});
-			// 설문 참여 버튼
+			// 설문 답변 제출 버튼
 			$('#btnDone').click(function() {
-				alert('완료');
+				  var payload = {
+					  surveyResponse: {
+						  surveyIdx: idx,
+						  userIdx: sessionUserIdx
+					  },
+					  answerList: []
+				  };
+			    
+			    $('#questionList .question-block').each(function() {
+			        var $b = $(this);
+			        var qIdx = $b.data('q-idx');
+			        var type = $b.data('q-type');
+			        
+			        if (type === 'check') {
+			        	$b.find('input:checkbox:checked').each(function() {
+			        		// 체크된 항목 정보들 배열에 추가
+			        		payload.answerList.push({ questionIdx: qIdx, qitemIdx: $(this).val(), content: null })
+			        	});
+			        } else if (type === 'radio') {
+			        	var sel = $b.find('input:radio:checked').val();
+			        	// 체크된 항목 정보 배열에 추가
+			            payload.answerList.push({ questionIdx: qIdx, qitemIdx: sel, content: null });
+			        } else if (type === 'dropdown') {
+			        	var sel = $b.find('select').val();
+			        	payload.answerList.push({ questionIdx: qIdx, qitemIdx: sel, content: null });
+			        } else if (type === 'short') {
+			        	var txt = $b.find('input[name="ans_' + qIdx + '"]').val();
+			        	payload.answerList.push({ questionIdx: qIdx, qitemIdx: null, content: txt });
+			        } else if (type === 'long') {
+			        	var txt = $b.find('textarea[name="ans_' + qIdx + '"]').val();
+			        	payload.answerList.push({ questionIdx: qIdx, qitemIdx: null, content: txt });
+			        }
+			    });
+			
+	        	console.log("현재 배열 상태: " + JSON.stringify(payload));
+	        	
+	        	$.ajax({
+	        		url: '${submitApi}',
+	        		type: 'POST',
+	        		contentType:'application/json',
+	                data: JSON.stringify(payload),
+	                success: function(){
+	                    alert('제출 완료');
+	                    postTo('${detailUrl}', { idx: idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+	                },
+	                error: function(){
+	                    alert('제출 실패');
+	                }
+	        	});
 			});
 		});
 	</script>

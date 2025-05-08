@@ -21,22 +21,22 @@ public class QitemDAO {
 	}
     
     // 질문 idx로 질문 목록 조회
-    public List<QitemVO> selectQitemListByQuestionIdx(String questionIdx) {
+    public List<QitemVO> selectQitemListByQuestionIdx(String questionIdx) throws Exception {
         return sqlSession.selectList("qitemDAO.selectQitemListByQuestionIdx", questionIdx);
     }
     
     // 질문 단일 조회
-    public QitemVO selectQitem(String idx) {
+    public QitemVO selectQitem(String idx) throws Exception {
         return sqlSession.selectOne("qitemDAO.selectQitem", idx);
     }
     
     // 질문 수정
-    public void updateQitem(QitemVO vo) {
+    public void updateQitem(QitemVO vo) throws Exception {
         sqlSession.update("qitemDAO.updateQitem", vo);
     }
     
     // 질문 삭제
-    public void deleteQitem(String idx) {
+    public void deleteQitem(String idx) throws Exception {
         sqlSession.delete("qitemDAO.deleteQitem", idx);
     }
 }

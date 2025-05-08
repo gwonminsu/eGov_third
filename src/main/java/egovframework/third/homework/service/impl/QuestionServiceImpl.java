@@ -45,11 +45,7 @@ public class QuestionServiceImpl extends EgovAbstractServiceImpl implements Ques
 		for (QuestionVO q : list) {
 			// 객관식 문항을 순서대로 세팅
             List<QitemVO> items = qitemDAO.selectQitemListByQuestionIdx(q.getIdx());
-            List<String> optionList = new ArrayList<>();
-            for (QitemVO item: items) {
-            	optionList.add(item.getContent());
-            }
-            q.setQitemList(optionList);
+            q.setQitemList(items);
 		}
 		return list;
 	}

@@ -21,22 +21,22 @@ public class QuestionDAO {
 	}
     
     // 설문 idx로 질문 목록 조회
-    public List<QuestionVO> selectQuestionListBySurveyIdx(String surveyIdx) {
+    public List<QuestionVO> selectQuestionListBySurveyIdx(String surveyIdx) throws Exception {
         return sqlSession.selectList("questionDAO.selectQuestionListBySurveyIdx", surveyIdx);
     }
     
     // 질문 단일 조회
-    public QuestionVO selectQuestion(String idx) {
+    public QuestionVO selectQuestion(String idx) throws Exception {
         return sqlSession.selectOne("questionDAO.selectQuestion", idx);
     }
     
     // 질문 수정
-    public void updateQuestion(QuestionVO vo) {
+    public void updateQuestion(QuestionVO vo) throws Exception {
         sqlSession.update("questionDAO.updateQuestion", vo);
     }
     
     // 질문 삭제
-    public void deleteQuestion(String idx) {
+    public void deleteQuestion(String idx) throws Exception {
         sqlSession.delete("questionDAO.deleteQuestion", idx);
     }
 }
