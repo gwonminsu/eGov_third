@@ -107,7 +107,10 @@
 						}
 						var $textSpan = $('<span>').addClass('q-text').text(q.content);
 						$textSpan.append(requiredMark); // 질문 내용 옆에 필수 마크 추가
-					    var $block = $('<div>').addClass('question-block').attr('data-q-idx', q.idx).attr('data-q-type', q.type);
+					    var $block = $('<div>').addClass('question-block')
+					    							.attr('data-q-idx', q.idx)
+					    							.attr('data-q-type', q.type)
+					    							.attr('data-q-required', q.isRequired);
 					    var $hdr = $('<div>').addClass('question-header')
 					    						.append($('<span>').addClass('q-index').text('Q'+(i+1)), $textSpan);
 					    $block.append($hdr);
@@ -176,13 +179,70 @@
 			});
 			// 설문 답변 제출 버튼
 			$('#btnDone').click(function() {
-				  var payload = {
-					  surveyResponse: {
-						  surveyIdx: idx,
-						  userIdx: sessionUserIdx
-					  },
-					  answerList: []
-				  };
+				// 제출 전 필수 응답 누락 체크
+				var missing = [];
+				$('#questionList .question-block').each(function(i) {
+					var $b = $(this);
+					var required = $b.data('q-required');
+					if (!required) return; // 필수 문항 아니면 건뛰
+					var type = $b.data('q-type');
+					var answered = false;
+					
+					switch(type) {
+						case 'short':
+							answered = $b.find('input[type="text"]').val().trim() !== '';
+							break;
+						case 'long':
+							answered = $b.find('textarea').val().trim() !== '';
+							break;
+						case 'radio':
+							answered = $b.find('input[type="radio"]:checked').length > 0;
+							break;
+						case 'dropdown':
+							answered = $b.find('select').val() !== '선택';
+							break;
+						case 'check':
+							answered = $b.find('input[type="checkbox"]:checked').length > 0;
+							break;
+					}
+					
+					if (!answered) missing.push(i+1);
+				});
+
+				if (missing.length) {
+					alert('필수 질문 ' + missing.join(', ') + '번에 모두 응답해 주세요.');
+					return;  // 여기서 제출 중단
+				}
+				
+				// 필수 문항이 없더라도 최소 하나는 응답했는지 체크
+				var tmpAnswers = [];
+				$('#questionList .question-block').each(function() {
+					var $b = $(this),
+						qIdx = $b.data('q-idx'),
+						type = $b.data('q-type');
+					if (type === 'short' && $b.find('input[type="text"]').val().trim() !== '') {
+						tmpAnswers.push(true);
+					} else if (type === 'long' && $b.find('textarea').val().trim() !== '') {
+						tmpAnswers.push(true);
+					} else if ((type === 'radio' || type === 'check') && $b.find('input:checked').length > 0) {
+						tmpAnswers.push(true);
+					} else if (type === 'dropdown' && $b.find('select').val() !== '선택') {
+						tmpAnswers.push(true);
+					}
+				});
+				if (tmpAnswers.length === 0) {
+					alert('적어도 하나의 질문에는 응답해 주세요.');
+					return;
+				}
+				
+				// 체크 끝났으니 여기서 부터 제출 처리
+				var payload = {
+					surveyResponse: {
+						surveyIdx: idx,
+						userIdx: sessionUserIdx
+					},
+					answerList: []
+				};
 			    
 			    $('#questionList .question-block').each(function() {
 			        var $b = $(this);
