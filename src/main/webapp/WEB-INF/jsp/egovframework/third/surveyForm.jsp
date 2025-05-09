@@ -174,6 +174,10 @@
 	    			data: JSON.stringify({ surveyIdx: idx }),
 	    			dataType: 'json'
 	    		}).done(function(qList) {
+	    			// qitemList가 vo 객체 배열로 오기 때문에 content 배열로 가공
+	    			qList.forEach(question => {
+	    				question.qitemList = question.qitemList.map(item => item.content); // qitemList의 내용을 content로 덮어쓰기
+	    			});
 					questions = qList;
 					var calls = questions.map(function(q) {
 						return $.ajax({
@@ -567,7 +571,7 @@
 				// questions 배열에서 imageFile, imageData 필드 뺀 clone 배열 준비
 				var cleanQuestions = questions.map(q => {
 					var { idx, type, content, isRequired, qitemList } = q;
-					return { idx, type, content, isRequired, ...(qitemList && { qitemList }), imageChanged: !!q.imageFile };
+					return { idx, type, content, isRequired, ...(qitemList && { qitemList: qitemList.map((opt) => ({ content: opt })) }), imageChanged: !!q.imageFile };
 				});
 				
 	    		// 검증 통과 시 게시글 등록/수정 api 실행
