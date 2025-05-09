@@ -73,4 +73,10 @@ public class ViewController {
 		return "surveyParticipate";
 	}
 	
+	// 설문조사 통계 페이지
+	@RequestMapping(value = "/surveyStats.do")
+	public String showSurveyStats() {
+		return "surveyStats";
+	}
+	
 }

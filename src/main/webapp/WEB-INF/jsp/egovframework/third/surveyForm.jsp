@@ -606,12 +606,10 @@
 					var { idx, type, content, isRequired, qitemList } = q;
 					return { idx, type, content, isRequired, ...(qitemList && { qitemList: qitemList.map((opt) => ({ content: opt })) }), imageChanged: !!q.imageFile };
 				});
-				
 	        	// 설문에 응답 이력이 있고 질문이 변경되었으면 차단
 				if (mode==='edit' && hasResponded) {
-					var nowJSON = JSON.stringify(cleanQuestions);
-					if (nowJSON !== JSON.stringify(cleanOriginQuestions)) {
-						alert('해당 설문에 이미 응답 이력이 있어 질문을 수정할 수 없습니다. 메타데이터만 변경 가능합니다.');
+					if (JSON.stringify(cleanQuestions) !== JSON.stringify(cleanOriginQuestions)) {
+						alert('해당 설문에 이미 응답 이력이 있어 질문을 수정할 수 없습니다. 설문 메타데이터만 변경 가능합니다.');
 						e.preventDefault();
 						return false;
 					}

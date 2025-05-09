@@ -109,10 +109,10 @@
 		// 수정 버튼 헬퍼 메서드
 		function goEdit(idx) {
 			postTo('${surveyFormUrl}', {
-				idx:            idx,
-				searchType:     currentSearchType,
-				searchKeyword:  currentSearchKeyword,
-				pageIndex:      currentPageIndex
+				idx: idx,
+				searchType: currentSearchType,
+				searchKeyword: currentSearchKeyword,
+				pageIndex: currentPageIndex
 			});
 		}
 		// 통계 조회 버튼 헬퍼 메서드
