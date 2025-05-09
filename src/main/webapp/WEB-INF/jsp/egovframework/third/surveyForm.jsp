@@ -20,6 +20,7 @@
     <c:url value="/api/survey/detail.do" var="detailApi"/>
     <c:url value="/api/survey/questions.do" var="questionsApi"/>
     <c:url value="/api/survey/qimage.do" var="qimageApi"/>
+    <c:url value="/api/answer/check.do" var="checkResponseApi"/>
     <!-- 데이트피커 이미지 url -->
     <c:url value="/images/datepicker.png" var="datepickerImgUrl"/>
 	
@@ -141,11 +142,28 @@
 	<script>
 		// JSP EL로 POST 폼 파라미터 idx 바로 읽기
 		var idx = '${param.idx}';  
-		var mode   = idx ? 'edit' : 'create';
+		var mode = idx ? 'edit' : 'create';
 		// 모드에 따라 apiUrl 주소 변경
 		var apiUrl = mode === 'edit' ? '${editApi}' : '${createApi}';	
+		// 설문 응답 여부
+		var hasResponded = false;
+		var originQuestions = [];
 	
 	    $(function(){
+			// 설문 응답 여부 조회
+			$.ajax({
+				url: '${checkResponseApi}',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify({ surveyIdx: idx, userIdx: sessionUserIdx }),
+				success: function(res) {
+					hasResponded = res.hasResponded;
+				},
+				error: function(){
+					console.error('응답 체크 실패');
+				}
+			});
+	    	
  	    	if (mode === 'edit') {
 	    		$('#formTitle').text('설문지 관리(수정)');
 	    		$('#surveyFormGuide').show();
@@ -178,6 +196,7 @@
 	    			qList.forEach(question => {
 	    				question.qitemList = question.qitemList.map(item => item.content); // qitemList의 내용을 content로 덮어쓰기
 	    			});
+	    			originQuestions = JSON.stringify(qList);
 					questions = qList;
 					var calls = questions.map(function(q) {
 						return $.ajax({
@@ -556,7 +575,7 @@
 	    	/* --------------------------- 질문 리스트 관련 스크립트 끝 --------------------------------- */
 			
 	    	
-	        $('#btnSubmit').click(function(){
+	        $('#btnSubmit').click(function(e){
 	        	// 폼 검증(하나라도 인풋이 비어있으면 알림)
 	    		if (!$('#title')[0].reportValidity()) return;
 	    		if (!$('#description')[0].reportValidity()) return;
@@ -581,6 +600,22 @@
 					var { idx, type, content, isRequired, qitemList } = q;
 					return { idx, type, content, isRequired, ...(qitemList && { qitemList: qitemList.map((opt) => ({ content: opt })) }), imageChanged: !!q.imageFile };
 				});
+				
+				// 비교용 원본 배열 준비
+				var cleanOriginQuestions = JSON.parse(originQuestions).map(q => {
+					var { idx, type, content, isRequired, qitemList } = q;
+					return { idx, type, content, isRequired, ...(qitemList && { qitemList: qitemList.map((opt) => ({ content: opt })) }), imageChanged: !!q.imageFile };
+				});
+				
+	        	// 설문에 응답 이력이 있고 질문이 변경되었으면 차단
+				if (mode==='edit' && hasResponded) {
+					var nowJSON = JSON.stringify(cleanQuestions);
+					if (nowJSON !== JSON.stringify(cleanOriginQuestions)) {
+						alert('해당 설문에 이미 응답 이력이 있어 질문을 수정할 수 없습니다. 메타데이터만 변경 가능합니다.');
+						e.preventDefault();
+						return false;
+					}
+				}
 				
 	    		// 검증 통과 시 게시글 등록/수정 api 실행
 	    		var payload = {
