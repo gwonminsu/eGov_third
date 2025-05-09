@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import egovframework.third.homework.service.AnswerService;
 import egovframework.third.homework.service.AnswerVO;
+import egovframework.third.homework.service.SurveyResponseService;
 import egovframework.third.homework.service.SurveyResponseVO;
 
 @RestController
@@ -31,6 +32,9 @@ public class AnswerController {
 
     @Resource(name="answerService")
     private AnswerService answerService;
+    
+    @Resource(name="surveyResponseService")
+    private SurveyResponseService surveyResponseService;
 
     // 설문의 질문에 대한 답변 목록 일괄 등록(해당 설문의 응답 기록 등록 작업 포함)
     @PostMapping(value="/submit.do", consumes="application/json", produces="application/json")
@@ -40,5 +44,12 @@ public class AnswerController {
         answerService.createAnswerList(sRes, answerList);
         return Collections.singletonMap("status","OK");
     }
+    
+    // 사용자 설문 응답 여부 조회
+    @PostMapping(value="/check.do", consumes="application/json", produces="application/json")
+	public Map<String,Boolean> check(@RequestBody Map<String,String> param) throws Exception {
+		boolean done = surveyResponseService.hasResponded(param.get("surveyIdx"), param.get("userIdx"));
+		return Collections.singletonMap("hasResponded", done);
+	}
 	
 }

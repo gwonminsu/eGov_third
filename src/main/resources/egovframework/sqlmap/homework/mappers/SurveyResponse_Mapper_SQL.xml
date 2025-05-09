@@ -25,6 +25,13 @@
 		WHERE idx = #{idx}
 	</select>
 	
+	<!-- 사용자가 설문 응답 여부용 카운트 조회 -->
+	<select id="countBySurveyAndUser" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		FROM survey_response
+		WHERE survey_idx = #{surveyIdx} AND user_idx = #{userIdx}
+	</select>
+	
 	<!-- 설문의 모든 응답 기록 삭제 -->
 	<delete id="deleteSurveyResponseBySurveyIdx" parameterType="String">
 		DELETE FROM survey_response WHERE survey_idx = #{surveyIdx}

@@ -11,6 +11,7 @@
 	<!-- API URL -->
 	<c:url value="/api/survey/detail.do" var="detailApi"/>
 	<c:url value="/api/survey/questions.do" var="questionsApi"/>
+	<c:url value="/api/answer/check.do" var="checkResponseApi"/>
 	
 	<!-- 목록 페이지 URL -->
 	<c:url value="/surveyList.do" var="listUrl"/>
@@ -18,6 +19,8 @@
 	<c:url value="/surveyParticipate.do" var="participateUrl"/>
 	
 	<script>
+		var sessionUserIdx = '<c:out value="${sessionScope.loginUser.idx}" default="" />';
+	
 	    // 검색 변수(파라미터에서 값 받아와서 검색 상태 유지)
 		var currentSearchType = '<c:out value="${param.searchType}" default="title"/>';
 		var currentSearchKeyword = '<c:out value="${param.searchKeyword}" default=""/>';
@@ -68,6 +71,22 @@
 		}
 	
 		$(function(){
+			// 설문 응답 여부 조회
+			$.ajax({
+				url: '${checkResponseApi}',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify({ surveyIdx: idx, userIdx: sessionUserIdx }),
+				success: function(res) {
+					if (res.hasResponded) {
+						$('#btnGo').prop('disabled', true).text('이미 참여한 설문');
+					}
+				},
+				error: function(){
+					console.error('응답 체크 실패');
+				}
+			});
+			
 			// 설문 기본 정보 조회
 			$.ajax({
 				url: '${detailApi}',
