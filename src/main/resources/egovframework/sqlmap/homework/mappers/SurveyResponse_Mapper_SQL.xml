@@ -25,4 +25,9 @@
 		WHERE idx = #{idx}
 	</select>
 	
+	<!-- 설문의 모든 응답 기록 삭제 -->
+	<delete id="deleteSurveyResponseBySurveyIdx" parameterType="String">
+		DELETE FROM survey_response WHERE survey_idx = #{surveyIdx}
+	</delete>
+	
 </mapper>

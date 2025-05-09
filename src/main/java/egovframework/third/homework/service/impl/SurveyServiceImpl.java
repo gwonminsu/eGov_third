@@ -1,7 +1,6 @@
 package egovframework.third.homework.service.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +13,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import egovframework.third.homework.service.AnswerService;
 import egovframework.third.homework.service.QimageService;
 import egovframework.third.homework.service.QimageVO;
 import egovframework.third.homework.service.QitemService;
 import egovframework.third.homework.service.QitemVO;
 import egovframework.third.homework.service.QuestionService;
 import egovframework.third.homework.service.QuestionVO;
+import egovframework.third.homework.service.SurveyResponseService;
 import egovframework.third.homework.service.SurveyService;
 import egovframework.third.homework.service.SurveyVO;
 
@@ -42,6 +43,12 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
     
     @Resource(name="qimageService")
     private QimageService qimageService;
+    
+    @Resource(name="answerService")
+    private AnswerService answerService;
+    
+    @Resource(name="surveyResponseService")
+    private SurveyResponseService surveyResponseService;
 
 	// 설문 등록(해당 설문의 질문과 문항/이미지 등록 작업 포함)
 	@Override
@@ -215,12 +222,17 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 		log.info("설문 수정 성공!");
 	}
 
-	// 설문 삭제 + 질문 삭제 + 문항 삭제 + 이미지 삭제
+	// 설문 삭제 + 질문 삭제 + 문항 삭제 + 이미지 삭제 + 설문 응답 기록 삭제 + 설문 답변 삭제
 	@Override
 	public void removeSurvey(String idx) throws Exception {
 		log.info("DELETE 설문({}) 삭제 시도중...", idx);
+		// 먼저 설문 응답 기록부터 삭제
+		surveyResponseService.removeSurveyResponseList(idx);
+		
+		// 질문들 삭제
 		List<QuestionVO> questions = questionService.getQuestionList(idx); // 질문 목록 가져오기
 		for (QuestionVO q : questions) {
+			answerService.removeAnswerList(q.getIdx()); // 질문의 모든 답변 삭제
 			QimageVO image = qimageService.getQimageByQuestionIdx(q.getIdx());
 			if (image != null) {
 				qimageService.removeQimage(image.getIdx()); // 질문의 이미지 삭제

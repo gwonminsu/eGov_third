@@ -30,4 +30,9 @@ public class AnswerDAO {
         return sqlSession.selectOne("answerDAO.selectAnswer", idx);
     }
     
+    // 질문 idx에 해당하는 답변들 삭제
+    public void deleteAnswerByQuestionIdx(String questionIdx) throws Exception {
+    	sqlSession.delete("answerDAO.deleteAnswerByQuestionIdx", questionIdx);
+    }
+    
 }

@@ -51,5 +51,13 @@ public class AnswerServiceImpl extends EgovAbstractServiceImpl implements Answer
 		log.info("SELECT 답변({}) 조회 완료", idx);
 		return vo;
 	}
+	
+	// 질문 idx로 질문에 대한 응답 전부 삭제
+	@Override
+	public void removeAnswerList(String questionIdx) throws Exception {
+		answerDAO.deleteAnswerByQuestionIdx(questionIdx);
+		log.info("DELETE 질문({})에 대한 답변들 삭제 완료", questionIdx);
+		
+	}
 
 }

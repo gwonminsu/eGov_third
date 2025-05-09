@@ -23,4 +23,9 @@ public class SurveyResponseDAO {
         return sqlSession.selectOne("surveyResponseDAO.SurveyResponse", idx);
     }
     
+    // 설문조사 idx에 해당하는 응답 기록 삭제
+    public void deleteSurveyResponseBySurveyIdx(String surveyIdx) throws Exception {
+    	sqlSession.delete("surveyResponseDAO.deleteSurveyResponseBySurveyIdx", surveyIdx);
+    }
+    
 }

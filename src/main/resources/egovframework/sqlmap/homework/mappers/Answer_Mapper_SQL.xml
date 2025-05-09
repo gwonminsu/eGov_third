@@ -41,4 +41,9 @@
 		ORDER BY created_at ASC
 	</select>
 	
+	<!-- 질문의 모든 답변 삭제 -->
+	<delete id="deleteAnswerByQuestionIdx" parameterType="String">
+		DELETE FROM answer WHERE question_idx = #{questionIdx}
+	</delete>
+	
 </mapper>
