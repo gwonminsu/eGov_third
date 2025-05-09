@@ -197,16 +197,24 @@
 			        } else if (type === 'radio') {
 			        	var sel = $b.find('input:radio:checked').val();
 			        	// 체크된 항목 정보 배열에 추가
-			            payload.answerList.push({ questionIdx: qIdx, qitemIdx: sel, content: null });
+			        	if (sel !== undefined) { // 체크된거 없으면
+			        		payload.answerList.push({ questionIdx: qIdx, qitemIdx: sel, content: null });
+			        	}
 			        } else if (type === 'dropdown') {
 			        	var sel = $b.find('select').val();
-			        	payload.answerList.push({ questionIdx: qIdx, qitemIdx: sel, content: null });
+			        	if (sel && sel !== '선택') { // '선택'이 아니고 빈 문자열도 아닐 때만
+			        		payload.answerList.push({ questionIdx: qIdx, qitemIdx: sel, content: null });
+			        	}
 			        } else if (type === 'short') {
 			        	var txt = $b.find('input[name="ans_' + qIdx + '"]').val();
-			        	payload.answerList.push({ questionIdx: qIdx, qitemIdx: null, content: txt });
+			        	if (txt) {
+			        		payload.answerList.push({ questionIdx: qIdx, qitemIdx: null, content: txt });
+			        	}
 			        } else if (type === 'long') {
 			        	var txt = $b.find('textarea[name="ans_' + qIdx + '"]').val();
-			        	payload.answerList.push({ questionIdx: qIdx, qitemIdx: null, content: txt });
+			        	if (txt) {
+			        		payload.answerList.push({ questionIdx: qIdx, qitemIdx: null, content: txt });
+			        	}
 			        }
 			    });
 			
