@@ -281,7 +281,7 @@
 				$(`<tr id="imageInputRow">
 						<th>이미지 업로드</th>
 						<td>
-							<input type="file" id="imageInput" accept="image/*"/>
+							<input type="file" id="imageInput" accept="image/jpeg,image/png,image/gif,image/bmp,image/svg+xml"/>
 						</td>
 				   </tr>`).insertAfter('#qInputRow');
 				$(`<tr id="imagePreviewRow">
@@ -526,11 +526,19 @@
 					$('#imagePreview').attr('src','');
 					return;
 				}
-				if(!file.type.startsWith('image/')) {
-					alert('이미지 파일이 아닙니다');
+			    // 허용할 확장자 리스트
+			    var allowed = ['jpg','jpeg','png','gif','bmp','svg'];
+			    var ext = file.name.split('.').pop().toLowerCase();
+				if(allowed.indexOf(ext) < 0) {
+					alert('지원하지 않는 파일 형식입니다. JPG, PNG, GIF, BMP, SVG만 가능합니다.');
 					$(this).val('');
 					return;
 				}
+			    if (!file.type.startsWith('image/')) {
+			        alert('이미지 파일이 아닙니다');
+			        $(this).val('');
+			        return;
+			    }
 				currentImage = file;
 				var reader = new FileReader();
 				reader.onload = function(e) {
