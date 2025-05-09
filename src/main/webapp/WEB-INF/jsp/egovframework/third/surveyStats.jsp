@@ -63,7 +63,7 @@
 		// 설문 idx가 파라미터에 없으면
 		if (!idx) {
 			alert('잘못된 접근입니다');
-			postTo('${listUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+			postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 		}
 	
 		$(function(){
@@ -92,7 +92,30 @@
 				contentType: 'application/json',
 				data: JSON.stringify({ surveyIdx: idx }),
 				success: function(list) {
-					// 여기에 각 질문에 대한 답변 통계 렌더링을 할 예정
+					var $container = $('#questionStatsInfo').empty();
+					list.forEach(function(q, i) {
+						// 질문 블록
+						var $block = $('<div>')
+										.addClass('question-block')
+										.attr('data-q-idx', q.idx)
+										.attr('data-q-type', q.type);
+						
+						// 헤더
+						var $hdr = $('<div>').addClass('question-header').append($('<span>')
+												.addClass('q-index').text('Q' + (i+1) + '.'), $('<span>')
+												.addClass('q-text').text(q.content));
+						$block.append($hdr);
+						
+						// 콘텐츠(차트 캔버스)
+						var $content = $('<div>').addClass('q-content');
+						var $canvas  = $('<canvas>').attr('id', 'chart-' + q.idx);
+						$content.append($canvas);
+						$block.append($content);
+						
+						$container.append($block);
+						
+						// 통계 데이터 조회 예정 후 차트 그릴 예정
+					});
 				},
 				error: function() {
 					alert('질문 목록을 불러올 수 없습니다');
