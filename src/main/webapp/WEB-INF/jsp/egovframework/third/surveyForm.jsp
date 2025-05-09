@@ -609,6 +609,7 @@
 	    			type:'POST',
 	    			contentType: false,
 	    			processData: false,
+	    			dataType: 'json',
 	    			data: formData,
 	    			success: function(res){
 						if (res.error) {

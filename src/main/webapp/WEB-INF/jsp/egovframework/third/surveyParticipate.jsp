@@ -135,7 +135,7 @@
 					    
 					    switch(q.type) {
 							case 'short':
-								$content.append($('<input>').attr({type:'text', name:'ans_' + q.idx}));
+								$content.append($('<input>').attr({type:'text', name:'ans_' + q.idx, maxlength: '25'}));
 								break;
 							case 'long':
 								$content.append($('<textarea>').attr({rows:4, name:'ans_' + q.idx}));
