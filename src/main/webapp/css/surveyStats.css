@@ -71,6 +71,18 @@ table.survey-info th {
     margin-bottom: 6px;
     padding: 4px 8px;
 }
+.q-content .count-circle {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background: #bdc3c7;
+    color: #fff;
+    text-align: center;
+    font-size: 12px;
+}
 
 /* 버튼 영역 */
 .btn-area {

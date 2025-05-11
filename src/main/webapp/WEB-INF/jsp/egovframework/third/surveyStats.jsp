@@ -127,11 +127,18 @@
                             	
                             	if(q.type === 'short' || q.type === 'long') {
                             		// 주관식 타입일 경우 모든 답변 나열
-                            		var $list = $('<div>').addClass('answer-list');
+                            		var contentCounts = {}; // 내용 중복 개수 카운트
                             		ansList.forEach(a => {
-                            			if (a.content && a.content.trim()) {
-                            				$list.append($('<div>').addClass('answer-item').text(a.content));
-                            			}
+                                        var txt = (a.content||'').trim();
+                                        if (txt) contentCounts[txt] = (contentCounts[txt]||0) + 1;
+                                    });
+                            		var $list = $('<div>').addClass('answer-list');
+                            		Object.keys(contentCounts).forEach(function(txt) {
+                            			var cnt = contentCounts[txt];
+                                        var $item = $('<div>').addClass('answer-item')
+                                        						.append($('<span>').addClass('count-circle').text(cnt))
+                                        						.append($('<span>').text(txt));
+                                        $list.append($item);
                             		});
                             		$content.append($list);
                             	} else {
