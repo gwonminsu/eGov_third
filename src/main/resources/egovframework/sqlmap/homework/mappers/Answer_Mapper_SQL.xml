@@ -28,13 +28,13 @@
 	</select>
 	
 	<!-- 질문 idx로 답변 목록 조회 -->
-	<select id="selectAnswerByQuestionIdx" parameterType="String" resultType="answerVO">
+	<select id="selectAnswerListByQuestionIdx" parameterType="String" resultType="answerVO">
 		SELECT
 			idx,
 			question_idx AS questionIdx,
 			qitem_idx AS qitemIdx,
 			content,
-			user_idx AS userIdx
+			user_idx AS userIdx,
 			created_at AS createdAt
 		FROM answer
 		WHERE question_idx = #{questionIdx}

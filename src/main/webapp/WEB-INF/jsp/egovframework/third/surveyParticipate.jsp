@@ -145,7 +145,6 @@
 								break;
 							case 'radio':
 								q.qitemList.forEach(function(opt){
-									console.log(JSON.stringify(opt));
 									$content.append($('<label>').append($('<input>').attr({type: 'radio', name:'ans_' + q.idx, value: opt.idx}), ' '+opt.content+' '));
 								});
 								break;
@@ -209,6 +208,7 @@
 					if (!answered) missing.push(i+1);
 				});
 
+				console.log('missing: ' + JSON.stringify(missing));
 				if (missing.length) {
 					alert('필수 질문 ' + missing.join(', ') + '번에 모두 응답해 주세요.');
 					return;  // 여기서 제출 중단

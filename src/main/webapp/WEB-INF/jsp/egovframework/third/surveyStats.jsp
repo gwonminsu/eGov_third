@@ -11,6 +11,7 @@
 	<!-- API URL -->
 	<c:url value="/api/survey/detail.do" var="detailApi"/>
 	<c:url value="/api/survey/questions.do" var="questionsApi"/>
+	<c:url value="/api/answer/stats.do" var="statsApi"/>
 	
 	<!-- 설문관리(목록) 페이지 URL -->
 	<c:url value="/surveyManage.do" var="surveyManageUrl"/>
@@ -106,15 +107,58 @@
 												.addClass('q-text').text(q.content));
 						$block.append($hdr);
 						
-						// 콘텐츠(차트 캔버스)
-						var $content = $('<div>').addClass('q-content');
-						var $canvas  = $('<canvas>').attr('id', 'chart-' + q.idx);
-						$content.append($canvas);
+						// 콘텐츠(응답 개수 + 세부)
+						var $content = $('<div>').addClass('q-content').append($('<div>').addClass('response-count').text('응답 0개'));
 						$block.append($content);
-						
 						$container.append($block);
 						
-						// 통계 데이터 조회 예정 후 차트 그릴 예정
+						// 통계 데이터 조회(답변 목록)
+						$.ajax({
+							url: '${statsApi}',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ questionIdx: q.idx }),
+                            success: function(ansList) {
+                            	console.log(JSON.stringify(ansList));
+                            	var users = {}; // 대답 사용자 수 체크용
+                            	ansList.forEach(a => { users[a.userIdx] = true; }); // userIdx를 key로 객체에 저장(중복 제거 효과 있음)
+                            	var respCount = Object.keys(users).length; // 배열로 변환해서 길이 체크
+                            	$content.find('.response-count').text('응답 ' + respCount + '개');
+                            	
+                            	if(q.type === 'short' || q.type === 'long') {
+                            		// 주관식 타입일 경우 모든 답변 나열
+                            		var $list = $('<div>').addClass('answer-list');
+                            		ansList.forEach(a => {
+                            			if (a.content && a.content.trim()) {
+                            				$list.append($('<div>').addClass('answer-item').text(a.content));
+                            			}
+                            		});
+                            		$content.append($list);
+                            	} else {
+                            		// 객관식 타입일 경우 각 옵션별 응답자 수
+                            		var counts = {};
+                            		ansList.forEach(a => { // 각 옵션 id에 응답자id 배열 저장
+                            			counts[a.qitemIdx] = counts[a.qitemIdx] || {};
+                            			counts[a.qitemIdx][a.userIdx] = true;
+                            		})
+                                    q.qitemList.forEach(opt => {
+                                        var num = 0;
+                                        if (counts[opt.idx]) {
+                                            num = Object.keys(counts[opt.idx]).length; // 옵션 id에 해당하는 사용자 수 계산
+                                        }
+                                        $content.append($('<div>').addClass('option-stats').text(opt.content + ' : ' + num + '명'));
+                                        
+                                        console.log('옵션 내용: ' + opt.content + ', 응답자 수: ' + num + '명');
+                                    });
+                            	}
+                            },
+                            error: function() {
+                            	$content.append($('<div>').addClass('error').text('통계를 불러올 수 없습니다'));
+                            }
+						});
+						
+/* 						var $canvas  = $('<canvas>').attr('id', 'chart-' + q.idx);
+						$content.append($canvas); */
 					});
 				},
 				error: function() {

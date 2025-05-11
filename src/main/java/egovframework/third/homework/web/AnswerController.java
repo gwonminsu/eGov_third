@@ -51,5 +51,13 @@ public class AnswerController {
 		boolean done = surveyResponseService.hasResponded(param.get("surveyIdx"), param.get("userIdx"));
 		return Collections.singletonMap("hasResponded", done);
 	}
+    
+    // 각 질문별 통계를 위한 답변 데이터 조회
+    @PostMapping(value="/stats.do", consumes="application/json", produces="application/json")
+    public List<AnswerVO> getStats(@RequestBody Map<String,String> payload) throws Exception {
+    	String questionIdx = payload.get("questionIdx");
+    	return answerService.getAnswerList(questionIdx); // 질문에 대한 모든 응답 조회
+    }
+    
 	
 }
