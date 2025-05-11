@@ -17,6 +17,8 @@
 	<c:url value="/surveyList.do" var="listUrl"/>
 	<!-- 참여 페이지 URL (설문 참여 폼) -->
 	<c:url value="/surveyParticipate.do" var="participateUrl"/>
+	<!-- 로그인 페이지 url -->
+	<c:url value="/login.do" var="loginUrl"/>
 	
 	<script>
 		var sessionUserIdx = '<c:out value="${sessionScope.loginUser.idx}" default="" />';
@@ -146,7 +148,12 @@
 			});
 			// 설문 참여 버튼
 			$('#btnGo').click(function() {
-				postTo('${participateUrl}', { idx: idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+				if(!sessionUserIdx) {
+					alert('먼저 로그인 하고 참여해 주세요');
+					postTo('${loginUrl}', {});
+				} else {
+					postTo('${participateUrl}', { idx: idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+				}
 			});
 		});
 	</script>
