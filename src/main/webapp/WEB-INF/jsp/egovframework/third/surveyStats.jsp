@@ -223,9 +223,12 @@
 									var $tab = $(`
 										<div class="tab">
 											<ul class="tabnav">
-												<li><a href="#pie-\${q.idx}">파이차트</a></li>
-												<li><a href="#doughnut-\${q.idx}">도넛차트</a></li>
-												<li><a href="#bar-\${q.idx}">막대차트</a></li>
+												<li><a href="#pie-\${q.idx}">파이 차트</a></li>
+												<li><a href="#doughnut-\${q.idx}">도넛 차트</a></li>
+												<li><a href="#polar-\${q.idx}">극 면적 차트</a></li>
+												<li><a href="#bar-\${q.idx}">막대 차트</a></li>
+												<li><a href="#line-\${q.idx}">라인 차트</a></li>
+												<li><a href="#radar-\${q.idx}">레이더 차트</a></li>
 											</ul>
 											<div class="tabcontent">
 												<div id="pie-\${q.idx}">
@@ -234,8 +237,17 @@
 												<div id="doughnut-\${q.idx}">
 													<canvas id="chart-doughnut-\${q.idx}"></canvas>
 												</div>
+												<div id="polar-\${q.idx}">
+													<canvas id="chart-polar-\${q.idx}"></canvas>
+												</div>
 												<div id="bar-\${q.idx}">
 													<canvas id="chart-bar-\${q.idx}"></canvas>
+												</div>
+												<div id="line-\${q.idx}">
+													<canvas id="chart-line-\${q.idx}"></canvas>
+												</div>
+												<div id="radar-\${q.idx}">
+													<canvas id="chart-radar-\${q.idx}"></canvas>
 												</div>
 											</div>
 										</div>
@@ -314,7 +326,7 @@
                             		});
                             		chartInstances['pie-' + q.idx] = pieChart;
                             		
-                            		// 파이 차트 그리기
+                            		// 도넛 차트 그리기
                             		var doughnutCtx = $('#chart-doughnut-' + q.idx).get(0).getContext('2d');
                             		var doughnutChart = new Chart(doughnutCtx, {
                                         type: 'doughnut',
@@ -363,8 +375,50 @@
                             		});
                             		chartInstances['doughnut-' + q.idx] = doughnutChart;
                             		
-                            		// 막대차트 그리기
-                            		var barCtx = document.getElementById('chart-bar-' + q.idx).getContext('2d');
+                            		// 극 면적 차트 그리기
+                            		var polarCtx = $('#chart-polar-' + q.idx).get(0).getContext('2d');
+									var polarChart = new Chart(polarCtx, {
+										type: 'polarArea',
+										data: {
+											labels: labels,
+											datasets: [{
+												data: respData,
+												backgroundColor: [
+													'#FF6633','#FFB399','#FF33FF','#FFFF99','#00B3E6',
+													'#E6B333','#3366E6','#999966','#99FF99','#B34D4D',
+													'#80B300','#809900','#E6B3B3','#6680B3','#66991A',
+													'#FF99E6','#CCFF1A','#FF1A66','#E6331A','#33FFCC'
+												]
+											}]
+										},
+										options: {
+											responsive: true,
+											maintainAspectRatio: false,
+											scales: {
+												r: {
+													ticks: { stepSize: 1 },
+													beginAtZero: true
+												}
+											},
+											plugins: {
+												legend: {
+													display: true,
+													position: 'right',
+													labels: { boxWidth: 12, padding: 8 }
+												},
+												datalabels: {
+													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0,
+													formatter: value => value + '명',
+													color: '#fff',
+													font: { weight: 'bold', size: 12 }
+												}
+											}
+										}
+									});
+                            		chartInstances['polar-' + q.idx] = polarChart;
+                            		
+                            		// 막대 차트 그리기
+                            		var barCtx = $('#chart-bar-' + q.idx).get(0).getContext('2d');
                             		var barChart = new Chart(barCtx, {
 									type: 'bar',
 									data: {
@@ -377,6 +431,87 @@
 									}
                             		});
                             		chartInstances['bar-' + q.idx] = barChart;
+                            		
+                            		// 라인 차트 그리기
+                            		var lineCtx = $('#chart-line-' + q.idx).get(0).getContext('2d');
+									var lineChart = new Chart(lineCtx, {
+										type: 'line',
+										data: {
+											labels: labels,
+											datasets: [{
+												label: '응답 수',
+												data: respData,
+												fill: false,
+												borderColor: '#3366E6',
+												tension: 0.4
+											}]
+										},
+										options: {
+											responsive: true,
+											maintainAspectRatio: false,
+											scales: {
+												x: { display: true },
+												y: { beginAtZero: true }
+											},
+											plugins: {
+												legend: {
+													display: true,
+													position: 'top'
+												},
+												datalabels: {
+													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0,
+													color: '#333',
+													formatter: (value) => value,
+													anchor: 'end',
+													align: 'top'
+												}
+											}
+										}
+									});
+									chartInstances['line-' + q.idx] = lineChart;
+									
+									// 레이더 차트 그리기
+									var radarCtx = $('#chart-radar-' + q.idx).get(0).getContext('2d');
+									var radarChart = new Chart(radarCtx, {
+										type: 'radar',
+										data: {
+											labels: labels,
+											datasets: [{
+												label: '응답 수',
+												data: respData,
+												backgroundColor: 'rgba(54,162,235,0.2)',
+												borderColor: '#36A2EB',
+												borderWidth: 1,
+												pointBackgroundColor: '#36A2EB',
+												pointBorderColor: '#fff'
+											}]
+										},
+										options: {
+											responsive: true,
+											maintainAspectRatio: false,
+											scales: {
+												r: {
+													beginAtZero: true,
+													ticks: {
+														stepSize: 1
+													}
+												}
+											},
+											plugins: {
+												legend: {
+													display: true,
+													position: 'top'
+												},
+												datalabels: {
+													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0,
+													formatter: value => value,
+													anchor: 'end',
+													align: 'top'
+												}
+											}
+										}
+									});
+									chartInstances['radar-' + q.idx] = radarChart;
                             		
                             	}
                             },

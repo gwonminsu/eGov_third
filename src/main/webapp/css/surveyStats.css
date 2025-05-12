@@ -54,7 +54,6 @@ table.survey-info th {
 .q-content {
     position: relative;
     width: 100%;
-/*     min-height: 200px; */
 }
 .q-content .response-count {
     font-weight: bold;
@@ -111,7 +110,7 @@ table.survey-info th {
 	display: inline-block;
 	margin: 0;
 	padding: 0;
-	width: 100px;
+	width: 125px;
     list-style: none;
     background: #f8f8f8;
     border-right: 1px solid #ddd;
