@@ -27,7 +27,8 @@
 			s.end_date AS endDate,
 			s.is_use AS isUse,
 			s.created_at AS createdAt,
-			s.updated_at AS updatedAt
+			s.updated_at AS updatedAt,
+			COUNT(*) OVER() - ROW_NUMBER() OVER(ORDER BY s.created_at DESC) + 1 AS number
 		FROM survey s
 		JOIN "user" u
 			ON s.author_idx = u.idx

@@ -602,10 +602,13 @@
 				});
 				
 				// 비교용 원본 배열 준비
-				var cleanOriginQuestions = JSON.parse(originQuestions).map(q => {
-					var { idx, type, content, isRequired, qitemList } = q;
-					return { idx, type, content, isRequired, ...(qitemList && { qitemList: qitemList.map((opt) => ({ content: opt })) }), imageChanged: !!q.imageFile };
-				});
+				if (mode === 'edit') {
+					var cleanOriginQuestions = JSON.parse(originQuestions).map(q => {
+						var { idx, type, content, isRequired, qitemList } = q;
+						return { idx, type, content, isRequired, ...(qitemList && { qitemList: qitemList.map((opt) => ({ content: opt })) }), imageChanged: !!q.imageFile };
+					});
+				}
+
 	        	// 설문에 응답 이력이 있고 질문이 변경되었으면 차단
 				if (mode==='edit' && hasResponded) {
 					if (JSON.stringify(cleanQuestions) !== JSON.stringify(cleanOriginQuestions)) {

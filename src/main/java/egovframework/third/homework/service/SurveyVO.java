@@ -45,4 +45,6 @@ public class SurveyVO {
 	private int firstIndex; // 조회 시작 위치
 	private int recordCountPerPage; // 페이지당 레코드 건수
 	
+	private int number; // 순번
+	
 }

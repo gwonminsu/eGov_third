@@ -89,7 +89,7 @@
 	                $tbody.empty();
 	                $.each(data, function(i, item) {
 	                    var row = '<tr>' +
-								'<td>' + item.idx + '</td>' +
+								'<td>' + item.number + '</td>' +
 								'<td>' +
 									'<a href="javascript:void(0)" ' +
 										'onclick="postTo(' +
@@ -212,7 +212,7 @@
     <table id="surveyListTbl" border="1">
     	<thead>
 	        <tr>
-	            <th>Idx</th>
+	            <th>순번</th>
 	            <th>제목</th>
 	            <th>개요</th>
 	            <th>설문 시작일</th>
