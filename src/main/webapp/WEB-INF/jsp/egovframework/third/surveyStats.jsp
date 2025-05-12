@@ -229,12 +229,13 @@
 													formatter: (value, ctx) => {
 														var data = ctx.chart.data.datasets[0].data;
 														var sum = data.reduce((a, b) => a + b, 0);
-														return ((value / sum) * 100).toFixed(1) + '%';
+														return ((value / sum) * 100).toFixed(1) + '%\n(' + value + '명)';
 													},
 													font: {
 														weight: 'bold',
 														size: 12
 													},
+													textAlign: 'center',
 													anchor: 'center',
 													align: 'center'
 												}
