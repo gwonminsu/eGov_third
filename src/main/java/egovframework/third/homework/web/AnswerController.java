@@ -45,6 +45,13 @@ public class AnswerController {
         return Collections.singletonMap("status","OK");
     }
     
+    // 설문에 응답한 사용자 수 조회
+    @PostMapping(value="/count.do", consumes="application/json", produces="application/json")
+	public Map<String, Integer> getCount(@RequestBody Map<String,String> param) throws Exception {
+		int num = surveyResponseService.getResponseCount(param.get("surveyIdx"));
+		return Collections.singletonMap("responseNum", num);
+	}
+    
     // 사용자 설문 응답 여부 조회
     @PostMapping(value="/check.do", consumes="application/json", produces="application/json")
 	public Map<String,Boolean> check(@RequestBody Map<String,String> param) throws Exception {

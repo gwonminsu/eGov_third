@@ -25,6 +25,13 @@
 		WHERE idx = #{idx}
 	</select>
 	
+	<!-- 설문 응답자 카운트 조회 -->
+	<select id="countBySurveyIdx" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		FROM survey_response
+		WHERE survey_idx = #{surveyIdx}
+	</select>
+	
 	<!-- 사용자가 설문 응답 여부용 카운트 조회 -->
 	<select id="countBySurveyAndUser" parameterType="String" resultType="int">
 		SELECT COUNT(*)

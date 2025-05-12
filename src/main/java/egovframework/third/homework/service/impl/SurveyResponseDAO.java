@@ -25,6 +25,11 @@ public class SurveyResponseDAO {
         return sqlSession.selectOne("surveyResponseDAO.SurveyResponse", idx);
     }
     
+    // 설문 응답자 수 조회
+    public int countBySurveyIdx(String surveyIdx) throws Exception {
+    	return sqlSession.selectOne("surveyResponseDAO.countBySurveyIdx", surveyIdx);
+    }
+    
     // 사용자 설문 응답 여부 조회
     public int countBySurveyAndUser(Map<String,String> param) throws Exception {
     	int count = sqlSession.selectOne("surveyResponseDAO.countBySurveyAndUser", param);

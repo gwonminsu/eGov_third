@@ -21,6 +21,14 @@ public class SurveyResponseServiceImpl extends EgovAbstractServiceImpl implement
 	@Resource(name = "surveyResponseDAO")
 	private SurveyResponseDAO sResDAO;
 	
+	// 설문에 응답한 사용자 수 조회
+	@Override
+	public int getResponseCount(String surveyIdx) throws Exception {
+		int num = sResDAO.countBySurveyIdx(surveyIdx);
+		log.info("SELECT 설문({})에 응답한 사용자 수 조회: {}명", surveyIdx, num);
+		return num;
+	}
+	
 	// 사용자 설문 응답 여부 조회
 	@Override
 	public boolean hasResponded(String surveyIdx, String userIdx) throws Exception {

@@ -15,6 +15,7 @@
 	<c:url value="/api/survey/questions.do" var="questionsApi"/>
 	<c:url value="/api/answer/stats.do" var="statsApi"/>
 	<c:url value="/api/survey/qimage.do" var="qimageApi"/>
+	<c:url value="/api/answer/count.do" var="countResponseApi"/>
 	
 	<!-- 설문관리(목록) 페이지 URL -->
 	<c:url value="/surveyManage.do" var="surveyManageUrl"/>
@@ -51,6 +52,7 @@
 			<th>설문 기간</th>
 			<td><span id="svStart"></span> ~ <span id="svEnd"></span></td>
 		</tr>
+		<tr><th>참여 인원</th><td id="svParticipateNum"></td></tr>
 	</table>
 	
 	<!-- 각 질문 통계 정보 렌더링 영역 -->
@@ -90,6 +92,22 @@
 				},
 				error: function() {
 					alert('설문 정보를 불러올 수 없습니다');
+				}
+			});
+			
+			// 설문에 응답한 사용자 수 조회
+			$.ajax({
+				url: '${countResponseApi}',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify({ surveyIdx: idx }),
+				success: function(res) {
+					if (res.responseNum) {
+						$('#svParticipateNum').text(res.responseNum + '명');
+					}
+				},
+				error: function(){
+					console.error('응답 개수 조회 실패');
 				}
 			});
 
