@@ -31,19 +31,22 @@ table.survey-info th {
 /* 질문 헤더 */
 .question-header {
     display: flex;
-    align-items: center;
     margin-bottom: 8px;
 }
 .question-header .q-index {
     font-weight: bold;
     margin-right: 8px;
 }
+.question-header .q-type {
+	color: #797979;
+}
 .question-header .q-text {
     flex: 1;
+    color: #000000;
 }
 #required-mark {
     color: #e74c3c;
-    margin-left: 4px;
+    margin: 0 2px;
     font-weight: bold;
 }
 
@@ -82,6 +85,11 @@ table.survey-info th {
     color: #fff;
     text-align: center;
     font-size: 12px;
+}
+.q-content .q-image {
+	max-width: 200px;
+	display: block;
+	margin: 12px 0;
 }
 
 /* 버튼 영역 */

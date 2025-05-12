@@ -12,6 +12,7 @@
 	<c:url value="/api/survey/detail.do" var="detailApi"/>
 	<c:url value="/api/survey/questions.do" var="questionsApi"/>
 	<c:url value="/api/answer/stats.do" var="statsApi"/>
+	<c:url value="/api/survey/qimage.do" var="qimageApi"/>
 	
 	<!-- 설문관리(목록) 페이지 URL -->
 	<c:url value="/surveyManage.do" var="surveyManageUrl"/>
@@ -95,6 +96,13 @@
 				success: function(list) {
 					var $container = $('#questionStatsInfo').empty();
 					list.forEach(function(q, i) {
+						var typeLabels = { short: '단답형', long: '장문형', radio: '라디오', dropdown:'드롭다운', check: '체크박스' };
+						var $requiredMark;
+						if(q.isRequired) {
+							$requiredMark = '<span id="required-mark">＊</span>';
+						} else {
+							$requiredMark = '';
+						}
 						// 질문 블록
 						var $block = $('<div>')
 										.addClass('question-block')
@@ -102,13 +110,37 @@
 										.attr('data-q-type', q.type);
 						
 						// 헤더
-						var $hdr = $('<div>').addClass('question-header').append($('<span>')
-												.addClass('q-index').text('Q' + (i+1) + '.'), $('<span>')
-												.addClass('q-text').text(q.content));
+						var $hdr = $('<div>').addClass('question-header').append(
+								$('<span>').addClass('q-index').text('Q' + (i+1) + '.'),
+								$('<span>').addClass('q-type').text('[' + typeLabels[q.type] + '] ')
+									.append($('<span>').addClass('q-text').text(q.content))
+									.append($requiredMark)
+							);
 						$block.append($hdr);
 						
+						// 이미지 렌더링
+					    var $img = $('<img>').addClass('q-image');
+						$.ajax({
+							url: '${qimageApi}',
+							type: 'POST',
+							contentType: 'application/json',
+							data: JSON.stringify({ questionIdx: q.idx }),
+							success: function(imgVo) {
+								if (imgVo && imgVo.fileUuid) {
+									$img.attr('src', '/uploads/' + imgVo.fileUuid + imgVo.ext);
+								} else {
+									$content.find($img).remove();
+								}
+							},
+							error: function() {
+								alert('질문 이미지를 불러올 수 없습니다: ' + i);
+							}
+						});
+						
 						// 콘텐츠(응답 개수 + 세부)
-						var $content = $('<div>').addClass('q-content').append($('<div>').addClass('response-count').text('응답 0개'));
+						var $content = $('<div>').addClass('q-content');
+						var $respNum = $('<div>').addClass('response-count').text('응답 0개');
+						$content.append($img).append($respNum);
 						$block.append($content);
 						$container.append($block);
 						
