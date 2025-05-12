@@ -94,6 +94,8 @@ table.survey-info th {
 .q-content .no-data {
     background: #ffcece;
     border-radius: 4px;
+    color: #5a5a5a;
+    text-align: center;
     padding: 8px;
 }
 .tab {

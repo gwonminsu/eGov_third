@@ -182,8 +182,7 @@
                             	
                         		// 응답받은 데이터 없으면 return
                         		if (respCount === 0) {
-                        		    // 차트 대신 메시지 노출
-                        		    $content.append($('<div>').addClass('no-data').text('응답한 데이터 없음'));
+                        		    $content.append($('<div>').addClass('no-data').text('아직 응답한 데이터가 없습니다'));
                         		    return;
                         		}
                             	
@@ -225,11 +224,15 @@
 										<div class="tab">
 											<ul class="tabnav">
 												<li><a href="#pie-\${q.idx}">파이차트</a></li>
+												<li><a href="#doughnut-\${q.idx}">도넛차트</a></li>
 												<li><a href="#bar-\${q.idx}">막대차트</a></li>
 											</ul>
 											<div class="tabcontent">
 												<div id="pie-\${q.idx}">
 													<canvas id="chart-pie-\${q.idx}"></canvas>
+												</div>
+												<div id="doughnut-\${q.idx}">
+													<canvas id="chart-doughnut-\${q.idx}"></canvas>
 												</div>
 												<div id="bar-\${q.idx}">
 													<canvas id="chart-bar-\${q.idx}"></canvas>
@@ -310,6 +313,55 @@
                                         }
                             		});
                             		chartInstances['pie-' + q.idx] = pieChart;
+                            		
+                            		// 파이 차트 그리기
+                            		var doughnutCtx = $('#chart-doughnut-' + q.idx).get(0).getContext('2d');
+                            		var doughnutChart = new Chart(doughnutCtx, {
+                                        type: 'doughnut',
+                                        data: {
+                                            labels: labels,
+                                            datasets: [{
+                                                data: respData,
+                                                backgroundColor: [
+                                                    '#FF6633','#FFB399','#FF33FF','#FFFF99','#00B3E6',
+                                                    '#E6B333','#3366E6','#999966','#99FF99','#B34D4D',
+                                                    '#80B300','#809900','#E6B3B3','#6680B3','#66991A',
+                                                    '#FF99E6','#CCFF1A','#FF1A66','#E6331A','#33FFCC'
+                                                ]
+                                            }]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                            	legend: {
+                                            		display: true,
+                                            		position: 'right',
+                                            		align: 'center',
+                                            		labels: { boxWidth: 12, padding: 8 }
+                                            	},
+												datalabels: {
+													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0, // 0인 값은 라벨 나오지 않게
+													color: '#fff',
+													formatter: (value, ctx) => {
+														var label = ctx.chart.data.labels[ctx.dataIndex];
+														var data = ctx.chart.data.datasets[0].data;
+														var sum = data.reduce((a, b) => a + b, 0);
+														var percent = ((value / sum) * 100).toFixed(1) + '%';
+														return label + '\n' + percent + '\n(' + value + '명)';
+													},
+													font: {
+														weight: 'bold',
+														size: 12
+													},
+													textAlign: 'center',
+													anchor: 'center',
+													align: 'center'
+												}
+                                            }
+                                        }
+                            		});
+                            		chartInstances['doughnut-' + q.idx] = doughnutChart;
                             		
                             		// 막대차트 그리기
                             		var barCtx = document.getElementById('chart-bar-' + q.idx).getContext('2d');
