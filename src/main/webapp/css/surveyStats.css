@@ -92,7 +92,7 @@ table.survey-info th {
 	margin: 12px 0;
 }
 .q-content .no-data {
-    background: #f0f0f0;
+    background: #ffcece;
     border-radius: 4px;
     padding: 8px;
 }
