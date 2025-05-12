@@ -199,13 +199,44 @@
                             		console.log('데이터: ' + JSON.stringify(respData));
                             		
                             		// 차트 그리기
-                            		var $canvas = $('<canvas>').attr('id', 'chart-' + q.idx); // 차트용 캔버스
-                            		var $chart = $('<div>').addClass('chart-area');
-                            		$chart.append($canvas);
-                            		$content.append($chart);
+									// var $canvas = $('<canvas>').attr('id', 'chart-' + q.idx); // 차트용 캔버스
+                            		// var $chart = $('<div>').addClass('chart-area');
+                            		// $chart.append($canvas);
+									var $tab = $(`
+										<div class="tab">
+											<ul class="tabnav">
+												<li><a href="#pie-\${q.idx}">파이차트</a></li>
+												<li><a href="#bar-\${q.idx}">막대차트</a></li>
+											</ul>
+											<div class="tabcontent">
+												<div id="pie-\${q.idx}">
+													<canvas id="chart-pie-\${q.idx}"></canvas>
+												</div>
+												<div id="bar-\${q.idx}">
+													<canvas id="chart-bar-\${q.idx}"></canvas>
+												</div>
+											</div>
+										</div>
+									`);
+                            		$content.append($tab);
                             		
-                            		var ctx = $('#chart-' + q.idx).get(0).getContext('2d');
-                            		new Chart(ctx, {
+                            		// 기본 탭 숨김/첫 탭 활성화
+                            		$tab.find('.tabcontent > div').hide();
+                            		$tab.find('.tabnav a').filter(':eq(0)').addClass('active');
+                            		$tab.find('#pie-' + q.idx).show();
+
+                            		// 탭 클릭 바인딩
+                            		$tab.find('.tabnav a').click(function(){
+										var $thisTab = $(this).closest('.tab');
+										$thisTab.find('.tabcontent > div').hide().filter(this.hash).fadeIn();
+										$thisTab.find('.tabnav a').removeClass('active');
+										$(this).addClass('active');
+										return false;
+                            		});
+                            		
+                            		// 파이 차트 그리기
+                            		var pieCtx = $('#chart-pie-' + q.idx).get(0).getContext('2d');
+                            		new Chart(pieCtx, {
                                         type: 'pie',
                                         data: {
                                             labels: labels,
@@ -241,6 +272,20 @@
 												}
                                             }
                                         }
+                            		});
+                            		
+                            		// 막대차트 그리기
+                            		var barCtx = document.getElementById('chart-bar-' + q.idx).getContext('2d');
+                            		new Chart(barCtx, {
+                            		  type: 'bar',
+                            		  data: {
+                            		    labels: labels,
+                            		    datasets: [{ label:'응답 수', data: respData }]
+                            		  },
+                            		  options: {
+                            		    responsive:true, maintainAspectRatio:false,
+                            		    scales:{ y:{ beginAtZero:true } }
+                            		  }
                             		});
                             		
                             	}
