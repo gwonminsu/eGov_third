@@ -50,6 +50,10 @@
 			alert(decodeURIComponent(errorMsg)); 
 		}
 		
+		function escapeHtml(str) {
+			return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+		}
+		
 		// AJAX 로 페이징/리스트를 불러오는 함수
 		function loadSurveyList(pageIndex) {
 			currentPageIndex = pageIndex;
@@ -88,6 +92,7 @@
 	                var $tbody = $('#surveyListTbl').find('tbody');
 	                $tbody.empty();
 	                $.each(data, function(i, item) {
+	                	var safeDesc = escapeHtml(item.description);
 	                    var row = '<tr>' +
 								'<td>' + item.number + '</td>' +
 								'<td>' +
@@ -104,7 +109,7 @@
 										item.title +
 									'</a>' +
 								'</td>' +
-								'<td>' + item.description + '</td>' +
+								'<td>' + safeDesc + '</td>' +
 								'<td>' + item.startDate + '</td>' +
 								'<td>' + item.endDate + '</td>' +
 								'</tr>';

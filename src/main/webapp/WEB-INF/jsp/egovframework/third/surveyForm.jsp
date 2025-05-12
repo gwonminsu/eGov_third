@@ -148,6 +148,10 @@
 		// 설문 응답 여부
 		var hasResponded = false;
 		var originQuestions = [];
+		
+		function escapeHtml(str) {
+			return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+		}
 	
 	    $(function(){
 			// 설문 응답 여부 조회
@@ -177,8 +181,8 @@
 	    			data: JSON.stringify({ idx: idx }),
 	    			dataType: 'json'
 	    		}).done(function(item) {
-		   	        $('#title').val(item.title);
-		   	        $('#description').html(item.description);
+		   	        $('#title').val(escapeHtml(item.title));
+		   	        $('#description').html(escapeHtml(item.description));
 					$("#datepickerStart").datepicker('setDate', item.startDate);
 					$("#datepickerEnd").datepicker('setDate',   item.endDate);
 					$('input[name="isUse"][value="'+ item.isUse +'"]').prop('checked', true);

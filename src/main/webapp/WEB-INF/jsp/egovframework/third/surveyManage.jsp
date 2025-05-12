@@ -50,6 +50,10 @@
 		var currentSearchKeyword = '<c:out value="${param.searchKeyword}" default=""/>';
 		var currentPageIndex = parseInt('<c:out value="${param.pageIndex}" default="1"/>');
 		
+		function escapeHtml(str) {
+			return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+		}
+		
 		// AJAX 로 페이징/리스트를 불러오는 함수
 		function loadSurveyList(pageIndex) {
 			currentPageIndex = pageIndex;
@@ -87,19 +91,31 @@
 	                var $tbody = $('#surveyListTbl').find('tbody');
 	                $tbody.empty();
 	                $.each(data, function(i, item) {
-	                    var row = '<tr>' +
-								'<td>' + item.title + '</td>' +
-								'<td id="svParticipateNum-' + item.idx + '">' + '0명' + '</td>' +
-								'<td>' + (item.isUse ? '사용' : '미사용') + '</td>' +
-								'<td>' + item.userName + '</td>' +
-								'<td>' +
-									'<button onclick="goEdit(\'' + item.idx + '\')">수정</button>' +
-								'</td>' +
-								'<td>' +
-									'<button onclick="goStats(\'' + item.idx + '\')">통계조회</button>' +
-								'</td>' +
-								'</tr>';
-	                    $tbody.append(row);
+	                    var $tr = $('<tr>');
+	                    
+	                    // 2) td를 text()로 채워서, jQuery가 자동으로 HTML 인젝션 방지
+	                    $tr.append( $('<td>').text(item.title) );
+	                    $tr.append( $('<td>').text(item.responseNum + '명') );
+	                    $tr.append( $('<td>').text(item.isUse ? '사용' : '미사용') );
+	                    $tr.append( $('<td>').text(item.userName) );
+	                    
+	                    // 3) 수정/통계 버튼도 append
+	                    $tr.append(
+	                      $('<td>').append(
+	                        $('<button>').text('수정').on('click', function(){
+	                          goEdit(item.idx);
+	                        })
+	                      )
+	                    );
+	                    $tr.append(
+	                      $('<td>').append(
+	                        $('<button>').text('통계조회').on('click', function(){
+	                          goStats(item.idx);
+	                        })
+	                      )
+	                    );
+
+	                    $tbody.append($tr);
 		    			// 설문에 응답한 사용자 수 조회
 		    			$.ajax({
 		    				url: '${countResponseApi}',
