@@ -72,6 +72,7 @@
 		
 		// datalabels 플러그인 등록
 		Chart.register(ChartDataLabels);
+		var chartInstances = {}; // 차트 인스턴스 저장용 객체
 	
 		$(function(){
 			// 설문 기본 정보 조회
@@ -198,10 +199,6 @@
                             		console.log('라벨: ' + JSON.stringify(labels));
                             		console.log('데이터: ' + JSON.stringify(respData));
                             		
-                            		// 차트 그리기
-									// var $canvas = $('<canvas>').attr('id', 'chart-' + q.idx); // 차트용 캔버스
-                            		// var $chart = $('<div>').addClass('chart-area');
-                            		// $chart.append($canvas);
 									var $tab = $(`
 										<div class="tab">
 											<ul class="tabnav">
@@ -231,17 +228,32 @@
 										$thisTab.find('.tabcontent > div').hide().filter(this.hash).fadeIn();
 										$thisTab.find('.tabnav a').removeClass('active');
 										$(this).addClass('active');
+										
+										// 클릭된 차트 리셋, 업데이트
+									    var chartKey = this.hash.substring(1);
+									    var chart = chartInstances[chartKey];
+									    if (chart) {
+								        	chart.reset(); // 차트를 초기 상태로 되돌림
+									        chart.update(); // 다시 애니메이션 실행
+									    }
+										
 										return false;
                             		});
                             		
                             		// 파이 차트 그리기
                             		var pieCtx = $('#chart-pie-' + q.idx).get(0).getContext('2d');
-                            		new Chart(pieCtx, {
+                            		var pieChart = new Chart(pieCtx, {
                                         type: 'pie',
                                         data: {
                                             labels: labels,
                                             datasets: [{
-                                                data: respData
+                                                data: respData,
+                                                backgroundColor: [
+                                                    '#FF6633','#FFB399','#FF33FF','#FFFF99','#00B3E6',
+                                                    '#E6B333','#3366E6','#999966','#99FF99','#B34D4D',
+                                                    '#80B300','#809900','#E6B3B3','#6680B3','#66991A',
+                                                    '#FF99E6','#CCFF1A','#FF1A66','#E6331A','#33FFCC'
+                                                ]
                                             }]
                                         },
                                         options: {
@@ -258,9 +270,11 @@
 													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0, // 0인 값은 라벨 나오지 않게
 													color: '#fff',
 													formatter: (value, ctx) => {
+														var label = ctx.chart.data.labels[ctx.dataIndex];
 														var data = ctx.chart.data.datasets[0].data;
 														var sum = data.reduce((a, b) => a + b, 0);
-														return ((value / sum) * 100).toFixed(1) + '%\n(' + value + '명)';
+														var percent = ((value / sum) * 100).toFixed(1) + '%';
+														return label + '\n' + percent + '\n(' + value + '명)';
 													},
 													font: {
 														weight: 'bold',
@@ -273,20 +287,22 @@
                                             }
                                         }
                             		});
+                            		chartInstances['pie-' + q.idx] = pieChart;
                             		
                             		// 막대차트 그리기
                             		var barCtx = document.getElementById('chart-bar-' + q.idx).getContext('2d');
-                            		new Chart(barCtx, {
-                            		  type: 'bar',
-                            		  data: {
-                            		    labels: labels,
-                            		    datasets: [{ label:'응답 수', data: respData }]
-                            		  },
-                            		  options: {
-                            		    responsive:true, maintainAspectRatio:false,
-                            		    scales:{ y:{ beginAtZero:true } }
-                            		  }
+                            		var barChart = new Chart(barCtx, {
+									type: 'bar',
+									data: {
+										labels: labels,
+										datasets: [{ label:'응답 수', data: respData }]
+									},
+									options: {
+										responsive:true, maintainAspectRatio:false,
+										scales:{ y:{ beginAtZero:true } }
+									}
                             		});
+                            		chartInstances['bar-' + q.idx] = barChart;
                             		
                             	}
                             },
