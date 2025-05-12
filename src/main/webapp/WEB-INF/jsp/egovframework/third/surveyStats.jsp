@@ -7,6 +7,8 @@
 	<title>설문 통계</title>
 	<link rel="stylesheet" href="<c:url value='/css/surveyStats.css'/>" />
 	<script src="<c:url value='/js/jquery-3.6.0.min.js'/>"></script>
+	<script src="<c:url value='/js/chart.umd.js'/>"></script>
+	<script src="<c:url value='/js/chartjs-plugin-datalabels.js'/>"></script>
 	
 	<!-- API URL -->
 	<c:url value="/api/survey/detail.do" var="detailApi"/>
@@ -67,6 +69,9 @@
 			alert('잘못된 접근입니다');
 			postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 		}
+		
+		// datalabels 플러그인 등록
+		Chart.register(ChartDataLabels);
 	
 		$(function(){
 			// 설문 기본 정보 조회
@@ -151,7 +156,6 @@
                             contentType: 'application/json',
                             data: JSON.stringify({ questionIdx: q.idx }),
                             success: function(ansList) {
-                            	console.log(JSON.stringify(ansList));
                             	var users = {}; // 대답 사용자 수 체크용
                             	ansList.forEach(a => { users[a.userIdx] = true; }); // userIdx를 key로 객체에 저장(중복 제거 효과 있음)
                             	var respCount = Object.keys(users).length; // 배열로 변환해서 길이 체크
@@ -175,20 +179,69 @@
                             		$content.append($list);
                             	} else {
                             		// 객관식 타입일 경우 각 옵션별 응답자 수
-                            		var counts = {};
+                            		var counts = {}; // 문항에 대한 응답자 수를 구하기 위한 객체
+                            		var labels = []; // 문항 content 배열
+                            		var respData = []; // 문항에 대한 응답자 수 배열
                             		ansList.forEach(a => { // 각 옵션 id에 응답자id 배열 저장
                             			counts[a.qitemIdx] = counts[a.qitemIdx] || {};
                             			counts[a.qitemIdx][a.userIdx] = true;
                             		})
                                     q.qitemList.forEach(opt => {
+                                    	labels.push(opt.content);
                                         var num = 0;
                                         if (counts[opt.idx]) {
                                             num = Object.keys(counts[opt.idx]).length; // 옵션 id에 해당하는 사용자 수 계산
                                         }
-                                        $content.append($('<div>').addClass('option-stats').text(opt.content + ' : ' + num + '명'));
-                                        
-                                        console.log('옵션 내용: ' + opt.content + ', 응답자 수: ' + num + '명');
+                                        respData.push(num);
+                                        // $content.append($('<div>').addClass('option-stats').text(opt.content + ' : ' + num + '명'));
                                     });
+                            		console.log('라벨: ' + JSON.stringify(labels));
+                            		console.log('데이터: ' + JSON.stringify(respData));
+                            		
+                            		// 차트 그리기
+                            		var $canvas = $('<canvas>').attr('id', 'chart-' + q.idx); // 차트용 캔버스
+                            		var $chart = $('<div>').addClass('chart-area');
+                            		$chart.append($canvas);
+                            		$content.append($chart);
+                            		
+                            		var ctx = $('#chart-' + q.idx).get(0).getContext('2d');
+                            		new Chart(ctx, {
+                                        type: 'pie',
+                                        data: {
+                                            labels: labels,
+                                            datasets: [{
+                                                data: respData
+                                            }]
+                                        },
+                                        options: {
+                                            responsive: true,
+                                            maintainAspectRatio: false,
+                                            plugins: {
+                                            	legend: {
+                                            		display: true,
+                                            		position: 'right',
+                                            		align: 'center',
+                                            		labels: { boxWidth: 12, padding: 8 }
+                                            	},
+												datalabels: {
+													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0, // 0인 값은 라벨 나오지 않게
+													color: '#fff',
+													formatter: (value, ctx) => {
+														var data = ctx.chart.data.datasets[0].data;
+														var sum = data.reduce((a, b) => a + b, 0);
+														return ((value / sum) * 100).toFixed(1) + '%';
+													},
+													font: {
+														weight: 'bold',
+														size: 12
+													},
+													anchor: 'center',
+													align: 'center'
+												}
+                                            }
+                                        }
+                            		});
+                            		
                             	}
                             },
                             error: function() {
@@ -196,8 +249,6 @@
                             }
 						});
 						
-/* 						var $canvas  = $('<canvas>').attr('id', 'chart-' + q.idx);
-						$content.append($canvas); */
 					});
 				},
 				error: function() {

@@ -91,6 +91,14 @@ table.survey-info th {
 	display: block;
 	margin: 12px 0;
 }
+.q-content .chart-area {
+	height: 400px;
+	padding: 20px 50px;
+}
+.q-content canvas {
+	width: 80%;
+	height: 100%;
+}
 
 /* 버튼 영역 */
 .btn-area {
