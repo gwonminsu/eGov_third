@@ -91,6 +91,11 @@ table.survey-info th {
 	display: block;
 	margin: 12px 0;
 }
+.q-content .no-data {
+    background: #f0f0f0;
+    border-radius: 4px;
+    padding: 8px;
+}
 .tab {
     width: 100%;
 }

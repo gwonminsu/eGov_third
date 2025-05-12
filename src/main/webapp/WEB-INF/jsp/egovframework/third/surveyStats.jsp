@@ -52,7 +52,7 @@
 			<th>설문 기간</th>
 			<td><span id="svStart"></span> ~ <span id="svEnd"></span></td>
 		</tr>
-		<tr><th>참여 인원</th><td id="svParticipateNum"></td></tr>
+		<tr><th>참여 인원</th><td id="svParticipateNum">0명</td></tr>
 	</table>
 	
 	<!-- 각 질문 통계 정보 렌더링 영역 -->
@@ -180,6 +180,13 @@
                             	var respCount = Object.keys(users).length; // 배열로 변환해서 길이 체크
                             	$content.find('.response-count').text('응답 ' + respCount + '개');
                             	
+                        		// 응답받은 데이터 없으면 return
+                        		if (respCount === 0) {
+                        		    // 차트 대신 메시지 노출
+                        		    $content.append($('<div>').addClass('no-data').text('응답한 데이터 없음'));
+                        		    return;
+                        		}
+                            	
                             	if(q.type === 'short' || q.type === 'long') {
                             		// 주관식 타입일 경우 모든 답변 나열
                             		var contentCounts = {}; // 내용 중복 개수 카운트
@@ -212,10 +219,7 @@
                                             num = Object.keys(counts[opt.idx]).length; // 옵션 id에 해당하는 사용자 수 계산
                                         }
                                         respData.push(num);
-                                        // $content.append($('<div>').addClass('option-stats').text(opt.content + ' : ' + num + '명'));
                                     });
-                            		console.log('라벨: ' + JSON.stringify(labels));
-                            		console.log('데이터: ' + JSON.stringify(respData));
                             		
 									var $tab = $(`
 										<div class="tab">
