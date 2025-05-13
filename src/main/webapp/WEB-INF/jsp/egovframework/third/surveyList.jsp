@@ -50,10 +50,6 @@
 			alert(decodeURIComponent(errorMsg)); 
 		}
 		
-		function unescapeHtml(str) {
-			return $('<textarea/>').html(str).text();
-		}
-		
 		// AJAX 로 페이징/리스트를 불러오는 함수
 		function loadSurveyList(pageIndex) {
 			currentPageIndex = pageIndex;
@@ -94,10 +90,10 @@
 	                $.each(data, function(i, item) {
 	                	var $tr = $('<tr>');
 	                	$tr.append($('<td>').text(item.number));
-	                    $tr.append($('<td>').append($('<a>').attr('href', 'javascript:void(0)').text(unescapeHtml(item.title)).on('click', function() {
+	                    $tr.append($('<td>').append($('<a>').attr('href', 'javascript:void(0)').text(item.title).on('click', function() {
 	                    	postTo('${surveyDetailUrl}', { idx: item.idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 	                    })));
-	                    $tr.append($('<td>').text(unescapeHtml(item.description)));
+	                    $tr.append($('<td>').text(item.description));
 	                    $tr.append($('<td>').text(item.startDate));
 	                    $tr.append($('<td>').text(item.endDate));
 						$tbody.append($tr);

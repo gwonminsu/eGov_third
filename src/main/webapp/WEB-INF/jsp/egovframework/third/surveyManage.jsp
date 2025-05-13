@@ -50,10 +50,6 @@
 		var currentSearchKeyword = '<c:out value="${param.searchKeyword}" default=""/>';
 		var currentPageIndex = parseInt('<c:out value="${param.pageIndex}" default="1"/>');
 		
-		function unescapeHtml(str) {
-			return $('<textarea/>').html(str).text();
-		}
-		
 		// AJAX 로 페이징/리스트를 불러오는 함수
 		function loadSurveyList(pageIndex) {
 			currentPageIndex = pageIndex;
@@ -92,10 +88,10 @@
 	                $tbody.empty();
 	                $.each(data, function(i, item) {
 	                	var $tr = $('<tr>');
-	                    $tr.append($('<td>').text(unescapeHtml(item.title)));
+	                    $tr.append($('<td>').text(item.title));
 	                    $tr.append($('<td>').attr('id', 'svParticipateNum-' + item.idx).text('0명'));
 	                    $tr.append($('<td>').text(item.isUse ? '사용' : '미사용'));
-	                    $tr.append($('<td>').text(unescapeHtml(item.userName)));
+	                    $tr.append($('<td>').text(item.userName));
 	                    $tr.append($('<td>').append($('<button>').text('수정').on('click', function(){goEdit(item.idx);})));
                   	    $tr.append($('<td>').append($('<button>').text('통계조회').on('click', function(){goStats(item.idx);})));
 						$tbody.append($tr);

@@ -148,13 +148,6 @@
 		// 설문 응답 여부
 		var hasResponded = false;
 		var originQuestions = [];
-		
-		function escapeHtml(str) {
-			return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-		}
-		function unescapeHtml(str) {
-			return $('<textarea/>').html(str).text();
-		}
 	
 	    $(function(){
 			// 설문 응답 여부 조회
@@ -184,8 +177,8 @@
 	    			data: JSON.stringify({ idx: idx }),
 	    			dataType: 'json'
 	    		}).done(function(item) {
-		   	        $('#title').val(unescapeHtml(item.title));
-		   	        $('#description').val(unescapeHtml(item.description));
+		   	        $('#title').val(item.title);
+		   	        $('#description').val(item.description);
 					$("#datepickerStart").datepicker('setDate', item.startDate);
 					$("#datepickerEnd").datepicker('setDate', item.endDate);
 					$('input[name="isUse"][value="'+ item.isUse +'"]').prop('checked', true);
@@ -630,8 +623,8 @@
 	    				survey: $.extend({}, {
 		    				authorIdx: sessionUserIdx,
 		    				editorIdx: sessionUserIdx,
-		    				title: escapeHtml($('#title').val()),
-		    				description: escapeHtml($('#description').val()),
+		    				title: $('#title').val(),
+		    				description: $('#description').val(),
 		    				startDate: startStr,
 		    				endDate: endStr,
 		    				isUse: isUseVal
