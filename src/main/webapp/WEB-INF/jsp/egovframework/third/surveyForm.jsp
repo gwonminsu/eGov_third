@@ -434,6 +434,17 @@
 				}
 				// 이미지면 해당 이미지 세팅
 				if (q.imageData) {
+					var $td = $('#imagePreviewRow td');
+					if (!$('#removeImageBtn').length) {
+						$('<button type="button" id="removeImageBtn">X</button>').appendTo($td).on('click', function() {
+							// 이미지 삭제 로직
+							currentImage = null;
+							currentImageData = null;
+							$('.imagePreview').attr('src','');
+							$('.imageInput').val('');
+							$(this).remove();
+						});
+					}
 					currentImage = q.imageFile || null;
 					currentImageData = q.imageData;
 					$('.imagePreview').attr('src', currentImageData);
@@ -566,6 +577,18 @@
 				reader.onload = function(e) {
 					currentImageData = e.target.result;
 					$('.imagePreview').attr('src', e.target.result);
+					
+				    var $td = $('#imagePreviewRow td');
+				    if (!$('#removeImageBtn').length) {
+						$('<button type="button" id="removeImageBtn">X</button>').appendTo($td).on('click', function() {
+							// 클릭하면 이미지·파일 초기화
+							currentImage = null;
+							currentImageData = null;
+							$('.imagePreview').attr('src', '');
+							$('.imageInput').val('');
+							$(this).remove();
+						});
+				    }
 				};
 				reader.readAsDataURL(file);
 			});
