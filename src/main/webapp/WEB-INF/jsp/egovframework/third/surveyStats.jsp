@@ -40,7 +40,6 @@
 	
 </head>
 <body>
-
 	<h2>설문 통계</h2>
 	
 	<!-- 설문 메타 정보가 들어갈 영역 -->
@@ -60,6 +59,19 @@
 	
 	<div class="btn-area">
 		<button type="button" id="btnList">목록</button>
+	</div>
+		
+	<div class="black-bg">
+		<!-- 모달 창 영역 -->
+		<div class="white-bg">
+			<div id="modal-header">
+				<h3>사용자 목록</h3>
+				<button id="btnClose">X</button>
+			</div>
+			<div id="modal-content">
+				<h4>여긴 내용이 들어갈 예정!</h4>
+			</div>
+		</div>
 	</div>
 	
 	<script>
@@ -102,12 +114,11 @@
 				contentType: 'application/json',
 				data: JSON.stringify({ surveyIdx: idx }),
 				success: function(resList) {
-					resList.forEach(function(res, i) {
-						console.log(res.userName);
-					});
-					if (resList.length > 0) {
-						$('#svParticipateNum').text(resList.length + '명');
+					$svNum = $('#svParticipateNum');
+					if (resList.length < 1) {
+						return;
 					}
+					$svNum.text(resList.length + '명').append($('<button>').attr('id', 'btnShowModal').text('참여한 사용자 목록 조회'));
 				},
 				error: function(){
 					console.error('응답 개수 조회 실패');
@@ -534,6 +545,21 @@
 			$('#btnList').click(function() {
 				postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 			});
+			// 모달 창 버튼
+			$(document).on('click', '#btnShowModal', function() {
+				$('.black-bg').addClass('show-modal');
+			});
+			// 모달 창 닫기 버튼
+			$('#btnClose').click(function() {
+				$('.black-bg').removeClass('show-modal');
+			});
+			// 배경 눌러도 닫힘
+			$('.black-bg').click(function(e) {
+				if (e.target === this) {
+					$(this).removeClass('show-modal');
+				}
+			});
+			
 		});
 	</script>
 	
