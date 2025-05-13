@@ -50,8 +50,8 @@
 			alert(decodeURIComponent(errorMsg)); 
 		}
 		
-		function escapeHtml(str) {
-			return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+		function unescapeHtml(str) {
+			return $('<textarea/>').html(str).text();
 		}
 		
 		// AJAX 로 페이징/리스트를 불러오는 함수
@@ -92,28 +92,15 @@
 	                var $tbody = $('#surveyListTbl').find('tbody');
 	                $tbody.empty();
 	                $.each(data, function(i, item) {
-	                	var safeDesc = escapeHtml(item.description);
-	                    var row = '<tr>' +
-								'<td>' + item.number + '</td>' +
-								'<td>' +
-									'<a href="javascript:void(0)" ' +
-										'onclick="postTo(' +
-											'\'${surveyDetailUrl}\',' +
-											' {' +
-											' idx: \'' + item.idx + '\',' +
-											' searchType: \'' + currentSearchType + '\',' +
-											' searchKeyword: \'' + currentSearchKeyword + '\',' +
-											' pageIndex: ' + currentPageIndex + 
-											' }' +
-										 ')">' +
-										item.title +
-									'</a>' +
-								'</td>' +
-								'<td>' + safeDesc + '</td>' +
-								'<td>' + item.startDate + '</td>' +
-								'<td>' + item.endDate + '</td>' +
-								'</tr>';
-	                    $tbody.append(row);  
+	                	var $tr = $('<tr>');
+	                	$tr.append($('<td>').text(item.number));
+	                    $tr.append($('<td>').append($('<a>').attr('href', 'javascript:void(0)').text(unescapeHtml(item.title)).on('click', function() {
+	                    	postTo('${surveyDetailUrl}', { idx: item.idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+	                    })));
+	                    $tr.append($('<td>').text(unescapeHtml(item.description)));
+	                    $tr.append($('<td>').text(item.startDate));
+	                    $tr.append($('<td>').text(item.endDate));
+						$tbody.append($tr);
 	                });
 	                renderPagination(totalCount, pageIndex);
 	            },

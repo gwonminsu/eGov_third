@@ -72,6 +72,10 @@
 			postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 		}
 		
+		function unescapeHtml(str) {
+			return $('<textarea/>').html(str).text();
+		}
+		
 		// datalabels 플러그인 등록
 		Chart.register(ChartDataLabels);
 		var chartInstances = {}; // 차트 인스턴스 저장용 객체
@@ -84,9 +88,9 @@
 				contentType: 'application/json',
 				data: JSON.stringify({ idx: idx }),
 				success: function(sv) {
-					$('#svTitle').text(sv.title);
-					$('#svDesc').text(sv.description);
-					$('#svAuthor').text(sv.userName);
+					$('#svTitle').text(unescapeHtml(sv.title));
+					$('#svDesc').text(unescapeHtml(sv.description));
+					$('#svAuthor').text(unescapeHtml(sv.userName));
 					$('#svStart').text(sv.startDate.substr(0,10));
 					$('#svEnd').text(sv.endDate.substr(0,10));
 				},

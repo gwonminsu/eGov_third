@@ -70,6 +70,10 @@
 			alert('잘못된 접근입니다');
 			postTo('${listUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 		}
+		
+		function unescapeHtml(str) {
+			return $('<textarea/>').html(str).text();
+		}
 	
 		$(function(){
 			// 설문 기본 정보 조회
@@ -79,9 +83,9 @@
 				contentType: 'application/json',
 				data: JSON.stringify({ idx: idx }),
 				success: function(sv) {
-					$('#svTitle').text(sv.title);
-					$('#svDesc').text(sv.description);
-					$('#svAuthor').text(sv.userName);
+					$('#svTitle').text(unescapeHtml(sv.title));
+					$('#svDesc').text(unescapeHtml(sv.description));
+					$('#svAuthor').text(unescapeHtml(sv.userName));
 					$('#svStart').text(sv.startDate.substr(0,10));
 					$('#svEnd').text(sv.endDate.substr(0,10));
 				},
