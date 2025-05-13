@@ -45,11 +45,11 @@ public class AnswerController {
         return Collections.singletonMap("status","OK");
     }
     
-    // 설문에 응답한 사용자 수 조회
-    @PostMapping(value="/count.do", consumes="application/json", produces="application/json")
-	public Map<String, Integer> getCount(@RequestBody Map<String,String> param) throws Exception {
-		int num = surveyResponseService.getResponseCount(param.get("surveyIdx"));
-		return Collections.singletonMap("responseNum", num);
+    // 설문에 응답한 기록 목록 조회
+    @PostMapping(value="/resList.do", consumes="application/json", produces="application/json")
+	public List<SurveyResponseVO> getResList(@RequestBody Map<String,String> param) throws Exception {
+		List<SurveyResponseVO> list = surveyResponseService.getSurveyResponseList(param.get("surveyIdx"));
+		return list;
 	}
     
     // 사용자 설문 응답 여부 조회

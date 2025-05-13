@@ -1,6 +1,7 @@
 package egovframework.third.homework.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -21,12 +22,12 @@ public class SurveyResponseServiceImpl extends EgovAbstractServiceImpl implement
 	@Resource(name = "surveyResponseDAO")
 	private SurveyResponseDAO sResDAO;
 	
-	// 설문에 응답한 사용자 수 조회
+	// 설문에 응답한 기록 목록 조회
 	@Override
-	public int getResponseCount(String surveyIdx) throws Exception {
-		int num = sResDAO.countBySurveyIdx(surveyIdx);
-		log.info("SELECT 설문({})에 응답한 사용자 수 조회: {}명", surveyIdx, num);
-		return num;
+	public List<SurveyResponseVO> getSurveyResponseList(String surveyIdx) throws Exception {
+		List<SurveyResponseVO> list = sResDAO.selectSurveyResponseListBySurveyIdx(surveyIdx);
+		log.info("SELECT 설문({})에 응답한 기록 목록 조회: {}명", surveyIdx);
+		return list;
 	}
 	
 	// 사용자 설문 응답 여부 조회

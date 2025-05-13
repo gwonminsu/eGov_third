@@ -21,5 +21,9 @@ public class SurveyResponseVO {
     private String userIdx; // 설문 참여자 idx
     
     private Timestamp createdAt; // 등록일
+    
+    private String userName; // 사용자 이름
+    
+    private String userId; // 사용자 아이디
 
 }

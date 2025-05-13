@@ -23,8 +23,8 @@
 	<c:url value="/surveyList.do" var="listUrl"/>
 	<!-- 통계 조회(추후 구현) -->
 	<c:url value="/surveyStats.do" var="surveyStatsUrl"/>
-	<!-- 응답자 수 조회 api -->
-	<c:url value="/api/answer/count.do" var="countResponseApi"/>
+	<!-- 응답 기록 목록 조회 api -->
+	<c:url value="/api/answer/resList.do" var="resListApi"/>
 	
 	<!-- 페이지네이션 버튼 이미지 url -->
 	<c:url value="/images/egovframework/cmmn/btn_page_pre10.gif" var="firstImgUrl"/>
@@ -98,14 +98,13 @@
 	                    
 		    			// 설문에 응답한 사용자 수 조회
 		    			$.ajax({
-		    				url: '${countResponseApi}',
+		    				url: '${resListApi}',
 		    				type: 'POST',
 		    				contentType: 'application/json',
 		    				data: JSON.stringify({ surveyIdx: item.idx }),
-		    				success: function(res) {
-		    					console.log('현재 설문조사 idx: ' + item.idx + ', 응답자 수: ' + res.responseNum);
-		    					if (res.responseNum) {
-		    						$('#svParticipateNum-' + item.idx).text(res.responseNum + '명');
+		    				success: function(resList) {
+		    					if (resList.length > 0) {
+		    						$('#svParticipateNum-' + item.idx).text(resList.length + '명');
 		    					}
 		    				},
 		    				error: function(){

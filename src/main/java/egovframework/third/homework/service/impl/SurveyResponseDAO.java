@@ -1,5 +1,6 @@
 package egovframework.third.homework.service.impl;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -25,9 +26,9 @@ public class SurveyResponseDAO {
         return sqlSession.selectOne("surveyResponseDAO.SurveyResponse", idx);
     }
     
-    // 설문 응답자 수 조회
-    public int countBySurveyIdx(String surveyIdx) throws Exception {
-    	return sqlSession.selectOne("surveyResponseDAO.countBySurveyIdx", surveyIdx);
+    // 설문에 응답한 기록 목록 조회
+    public List<SurveyResponseVO> selectSurveyResponseListBySurveyIdx(String surveyIdx) throws Exception {
+    	return sqlSession.selectList("surveyResponseDAO.selectSurveyResponseListBySurveyIdx", surveyIdx);
     }
     
     // 사용자 설문 응답 여부 조회

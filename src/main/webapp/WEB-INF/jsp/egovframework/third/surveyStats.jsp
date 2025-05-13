@@ -15,7 +15,7 @@
 	<c:url value="/api/survey/questions.do" var="questionsApi"/>
 	<c:url value="/api/answer/stats.do" var="statsApi"/>
 	<c:url value="/api/survey/qimage.do" var="qimageApi"/>
-	<c:url value="/api/answer/count.do" var="countResponseApi"/>
+	<c:url value="/api/answer/resList.do" var="resListApi"/>
 	
 	<!-- 설문관리(목록) 페이지 URL -->
 	<c:url value="/surveyManage.do" var="surveyManageUrl"/>
@@ -97,13 +97,16 @@
 			
 			// 설문에 응답한 사용자 수 조회
 			$.ajax({
-				url: '${countResponseApi}',
+				url: '${resListApi}',
 				type: 'POST',
 				contentType: 'application/json',
 				data: JSON.stringify({ surveyIdx: idx }),
-				success: function(res) {
-					if (res.responseNum) {
-						$('#svParticipateNum').text(res.responseNum + '명');
+				success: function(resList) {
+					resList.forEach(function(res, i) {
+						console.log(res.userName);
+					});
+					if (resList.length > 0) {
+						$('#svParticipateNum').text(resList.length + '명');
 					}
 				},
 				error: function(){
