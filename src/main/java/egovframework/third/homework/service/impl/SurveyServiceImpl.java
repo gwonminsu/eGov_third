@@ -74,11 +74,12 @@ public class SurveyServiceImpl extends EgovAbstractServiceImpl implements Survey
 						qitemService.createQitem(qitem);
 					}
 				}
-				
-				// imgIdx 해당하는 파일이 존재하면 질문에 imgidx로 파일 매핑
-				if (files != null && imgIdx < files.size() && !files.get(imgIdx).isEmpty()) {
-					MultipartFile mf = files.get(imgIdx++);
-					qimageService.createQimage(q.getIdx(), mf); // 이미지를 해당 질문 자식으로 저장
+				if (Boolean.TRUE.equals(q.getImageChanged())) {
+					// imgIdx 해당하는 파일이 존재하면 질문에 imgidx로 파일 매핑
+					if (files != null && imgIdx < files.size() && !files.get(imgIdx).isEmpty()) {
+						MultipartFile mf = files.get(imgIdx++);
+						qimageService.createQimage(q.getIdx(), mf); // 이미지를 해당 질문 자식으로 저장
+					}
 				}
 			}
 		}

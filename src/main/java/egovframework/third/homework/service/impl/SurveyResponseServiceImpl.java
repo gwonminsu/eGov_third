@@ -26,7 +26,7 @@ public class SurveyResponseServiceImpl extends EgovAbstractServiceImpl implement
 	@Override
 	public List<SurveyResponseVO> getSurveyResponseList(String surveyIdx) throws Exception {
 		List<SurveyResponseVO> list = sResDAO.selectSurveyResponseListBySurveyIdx(surveyIdx);
-		log.info("SELECT 설문({})에 응답한 기록 목록 조회: {}명", surveyIdx);
+		log.info("SELECT 설문({})에 응답한 기록 목록 조회", surveyIdx);
 		return list;
 	}
 	

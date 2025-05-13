@@ -300,12 +300,12 @@
 				$(`<tr id="imageInputRow">
 						<th>이미지 업로드</th>
 						<td>
-							<input type="file" id="imageInput" accept="image/jpeg,image/png,image/gif,image/bmp,image/svg+xml"/>
+							<input type="file" class="imageInput" accept="image/jpeg,image/png,image/gif,image/bmp,image/svg+xml"/>
 						</td>
 				   </tr>`).insertAfter('#qInputRow');
 				$(`<tr id="imagePreviewRow">
 						<th>미리보기</th>
-						<td><img id="imagePreview" style="max-width:200px; max-height:200px; display:block"/></td>
+						<td><img class="imagePreview" style="max-width:200px; max-height:200px; display:block"/></td>
 				   </tr>`).insertAfter('#imageInputRow');
 			    
 			    // 객관식 타입이면 옵션 입력/목록 로우 추가
@@ -403,7 +403,7 @@
 					if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
 					qObj.qitemList = [...currentOptions];
 				}
-				// 타입이 이미지면 이미지 파일 필수 체크
+				// 이미지 있으면 이미지 파일 필수 체크
 			    if(currentImage) {
 					qObj.imageFile = currentImage; // 서버 전송용
 					qObj.imageData = currentImageData; // 미리보기용
@@ -436,7 +436,7 @@
 				if (q.imageData) {
 					currentImage = q.imageFile || null;
 					currentImageData = q.imageData;
-					$('#imagePreview').attr('src', currentImageData);
+					$('.imagePreview').attr('src', currentImageData);
 				}
 				
 				// 추가 버튼 숨기고 수정완료 버튼 추가
@@ -464,12 +464,15 @@
 					// 배열 업데이트(객관식일경우 옵션리스트 객체를 배열에 추가)
 					var updated = { idx: originalIdx, type: newType, content: newContent, isRequired: newIsRequired };
 					if(newType === 'radio' || newType === 'dropdown' || newType === 'check') {
+						if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
 						updated.qitemList = [...currentOptions];
 					}
 					// 이미지 파일이 있으면 추가
-					if(q.imageData) {
+					if(currentImage) {
 						updated.imageData = currentImageData;
 						updated.imageFile = currentImage;
+					} else if (q.imageData) {
+						updated.imageData = q.imageData; // 이미지 변경 안했으면 그대로 유지
 					}
 					questions[idx] = updated;
 					renderQuestionList();
@@ -537,12 +540,12 @@
 			});
 			
 			// 이미지 파일 선택 시 검증 + 미리보기
-			$('#addQuestionTable').on('change','#imageInput',function() {
-				var file=this.files[0];
+			$('#addQuestionTable').on('change','.imageInput',function() {
+				var file = this.files[0];
 				if(!file) {
 					currentImage=null;
 					currentImageData=null;
-					$('#imagePreview').attr('src','');
+					$('.imagePreview').attr('src','');
 					return;
 				}
 			    // 허용할 확장자 리스트
@@ -562,7 +565,7 @@
 				var reader = new FileReader();
 				reader.onload = function(e) {
 					currentImageData = e.target.result;
-					$('#imagePreview').attr('src', e.target.result);
+					$('.imagePreview').attr('src', e.target.result);
 				};
 				reader.readAsDataURL(file);
 			});
