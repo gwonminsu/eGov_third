@@ -65,12 +65,13 @@
 		<!-- 모달 창 영역 -->
 		<div class="white-bg">
 			<div id="modal-header">
-				<h3>사용자 목록</h3>
+				<h3>설문에 응답한 사용자 목록</h3>
 				<button id="btnClose">X</button>
 			</div>
-			<div id="modal-content">
-				<h4>여긴 내용이 들어갈 예정!</h4>
+			<div id="modal-body">
+				<div id="modal-content"></div>
 			</div>
+			
 		</div>
 	</div>
 	
@@ -114,11 +115,14 @@
 				contentType: 'application/json',
 				data: JSON.stringify({ surveyIdx: idx }),
 				success: function(resList) {
-					$svNum = $('#svParticipateNum');
 					if (resList.length < 1) {
 						return;
 					}
-					$svNum.text(resList.length + '명').append($('<button>').attr('id', 'btnShowModal').text('참여한 사용자 목록 조회'));
+					$('#svParticipateNum').text(resList.length + '명').append($('<button>').attr('id', 'btnShowModal').text('참여한 사용자 목록 조회'));
+					$('#modal-body').prepend($('<h4>').text('총 ' + resList.length + '명'));
+					resList.forEach(res => {
+						$('#modal-content').append($('<span>').addClass('modal-item').text('- ' + res.userName + '(' + res.userId + ')'));
+					});
 				},
 				error: function(){
 					console.error('응답 개수 조회 실패');
