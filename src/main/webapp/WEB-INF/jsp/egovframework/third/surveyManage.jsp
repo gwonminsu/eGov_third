@@ -88,7 +88,9 @@
 	                $tbody.empty();
 	                $.each(data, function(i, item) {
 	                	var $tr = $('<tr>');
+	                	$tr.append($('<td>').text(item.number));
 	                    $tr.append($('<td>').text(item.title));
+	                    $tr.append($('<td>').text(item.startDate.substr(0,10) + ' ~ ' + item.endDate.substr(0,10)));
 	                    $tr.append($('<td>').attr('id', 'svParticipateNum-' + item.idx).text('0명'));
 	                    $tr.append($('<td>').text(item.isUse ? '사용' : '미사용'));
 	                    $tr.append($('<td>').text(item.userName));
@@ -233,7 +235,9 @@
     <table id="surveyListTbl" border="1">
     	<thead>
 	        <tr>
+	        	<th>순번</th>
 	            <th>제목</th>
+	            <th>설문 기간</th>
 	            <th>응답자 수</th>
 	            <th>사용 유무</th>
 	            <th>작성자</th>

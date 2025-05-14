@@ -324,6 +324,8 @@
 												datalabels: {
 													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0, // 0인 값은 라벨 나오지 않게
 													color: '#fff',
+													textStrokeColor: '#000',
+												    textStrokeWidth: 1,
 													formatter: (value, ctx) => {
 														var label = ctx.chart.data.labels[ctx.dataIndex];
 														var data = ctx.chart.data.datasets[0].data;
@@ -373,6 +375,8 @@
 												datalabels: {
 													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0, // 0인 값은 라벨 나오지 않게
 													color: '#fff',
+													textStrokeColor: '#000',
+												    textStrokeWidth: 1,
 													formatter: (value, ctx) => {
 														var label = ctx.chart.data.labels[ctx.dataIndex];
 														var data = ctx.chart.data.datasets[0].data;
@@ -426,7 +430,15 @@
 												},
 												datalabels: {
 													display: ctx => ctx.dataset.data[ctx.dataIndex] > 0,
-													formatter: value => value + '명',
+													textStrokeColor: '#000',
+												    textStrokeWidth: 1,
+													formatter: (value, ctx) => {
+														var label = ctx.chart.data.labels[ctx.dataIndex];
+														var data = ctx.chart.data.datasets[0].data;
+														var sum = data.reduce((a, b) => a + b, 0);
+														var percent = ((value / sum) * 100).toFixed(1) + '%';
+														return label + '\n' + percent + '\n(' + value + '명)';
+													},
 													color: '#fff',
 													font: { weight: 'bold', size: 12 }
 												}

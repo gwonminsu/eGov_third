@@ -131,8 +131,8 @@
 	                	$tr.append($('<td>').text(item.number));
 	                	$tr.append($statusTd);
 	                    $tr.append($('<td>').text(item.description));
-	                    $tr.append($('<td>').text(item.startDate));
-	                    $tr.append($('<td>').text(item.endDate));
+	                    $tr.append($('<td>').text(item.startDate.substr(0,10)));
+	                    $tr.append($('<td>').text(item.endDate.substr(0,10)));
 						$tbody.append($tr);
 	                });
 	                renderPagination(totalCount, pageIndex);

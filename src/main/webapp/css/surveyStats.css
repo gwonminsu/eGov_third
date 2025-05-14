@@ -261,14 +261,14 @@ table.survey-info th {
 	margin-top: 12px;
 }
 .modal-item {
-  display: block;
-  padding: 8px 0;
-  border-bottom: 1px solid #eee;
-  font-size: 14px;
-  color: #333;
-  line-height: 1.4;
+	display: block;
+	padding: 8px 0;
+	border-bottom: 1px solid #eee;
+	font-size: 14px;
+	color: #333;
+	line-height: 1.4;
 }
 .modal-item:last-child {
-  border-bottom: none;
-  margin-bottom: 0;
+	border-bottom: none;
+	margin-bottom: 0;
 }

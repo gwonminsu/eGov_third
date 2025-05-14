@@ -5,7 +5,7 @@ table#surveyListTbl {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-    table-layout: auto;
+    table-layout: fixed;
 }
 table#surveyListTbl th,
 table#surveyListTbl td {
@@ -20,10 +20,52 @@ table#surveyListTbl th {
 table#surveyListTbl tbody tr:hover {
     background-color: #f1f3f5;
 }
-table#surveyListTbl th:not(:first-child),
-table#surveyListTbl td:not(:first-child) {
+/* 순번 컬럼 */
+table#surveyListTbl th:nth-child(1),
+table#surveyListTbl td:nth-child(1) {
+    width: 50px;
+}
+/* 제목 컬럼 */
+table#surveyListTbl th:nth-child(2),
+table#surveyListTbl td:nth-child(2) {
+	width: 250px;
     white-space: nowrap;
-    width: 1%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* 설문 기간 컬럼 */
+table#surveyListTbl th:nth-child(3),
+table#surveyListTbl td:nth-child(3) {
+    width: 200px;
+}
+/* 응답자 수 컬럼 */
+table#surveyListTbl th:nth-child(4),
+table#surveyListTbl td:nth-child(4) {
+    width: 80px;
+}
+/* 사용 유무 컬럼 */
+table#surveyListTbl th:nth-child(5),
+table#surveyListTbl td:nth-child(5) {
+	white-space: nowrap;
+    width: 60px;
+}
+/* 작성자 컬럼 */
+table#surveyListTbl th:nth-child(6),
+table#surveyListTbl td:nth-child(6) {
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* 수정 버튼 컬럼 */
+table#surveyListTbl th:nth-child(7),
+table#surveyListTbl td:nth-child(7) {
+    width: 50px;
+}
+/* 통계 조회 버튼 컬럼 */
+table#surveyListTbl th:nth-child(8),
+table#surveyListTbl td:nth-child(8) {
+    width: 75px;
 }
 .count-red {
 	color: red;
