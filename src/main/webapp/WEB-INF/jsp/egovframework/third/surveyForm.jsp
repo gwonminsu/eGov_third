@@ -158,11 +158,8 @@
 				contentType: 'application/json',
 				data: JSON.stringify({ surveyIdx: idx }),
 				success: function(resList) {
-					console.log(JSON.stringify(resList));
-					console.log(JSON.stringify(resList.length));
 					if (resList.length > 0) {
 						hasResponded = true;
-			    		console.log(hasResponded);
 						if (hasResponded) {
 							$('#surveyFormGuide').append($('<div>').addClass('notice-box').text("⚠ 현재 수정하고 있는 설문은 응답 이력이 있으므로 질문 수정이 불가합니다."));
 						}
@@ -635,6 +632,11 @@
 	        	// 폼 검증(하나라도 인풋이 비어있으면 알림)
 	    		if (!$('#title')[0].reportValidity()) return;
 	    		if (!$('#description')[0].reportValidity()) return;
+	    		
+	    		if (questions.length === 0) {
+	    			alert("질문을 한개 이상 등록하셔야 합니다.");
+	    			return;
+	    		}
 	    		
 				// Date 객체로 가져오기
 				var startObj = $("#datepickerStart").datepicker("getDate");
