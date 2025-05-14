@@ -253,6 +253,7 @@
 	    	var currentOptions = []; // 객관식 옵션 객체 리스트
 			var currentImage = null; // 이미지 파일 객체
 			var currentImageData = null; // DataURL 미리보기
+			var editingIndex = null; // 현재 수정 중인 질문 인덱스
 			
 			resetForm(); // 폼 초기화
 	    	
@@ -360,7 +361,7 @@
 							<tr>
 								<th colspan="2">
 									<div class="th-content">
-										<span class="label-text">\${label} 질문 [idx: \${idx}] \${requiredMark}</span>
+										<span class="label-text">Q\${idx+1}. \${label} 질문 \${requiredMark}</span>
 										<span class="btn-group">
 											<button class="modifyBtn">수정</button>
 											<button class="deleteBtn">삭제</button>
@@ -417,9 +418,15 @@
 			// 수정 모드로 진입
 			$('#questionList').on('click', '.modifyBtn', function() {
 				var idx = +$(this).closest('table').data('index');
+				// 다른 질문 수정 중이면 차단
+			    if (editingIndex !== null) {
+			    	alert('현재 ' + (editingIndex+1) + '번 질문을 수정 중입니다! 먼저 수정 완료를 눌러주세요.');
+			        return false;
+			    }
+				editingIndex = idx;
 				var q = questions[idx];
 				
-				$('#qHint').text('설문지 질문 수정');
+				$('#qHint').text('설문지 질문 수정(Q' + (editingIndex+1) + ')');
 				
 				// 질문아이템의 필수 여부 값 스위치 세팅
 				$('#isRequiredSwitch').prop('checked', q.isRequired);
@@ -436,7 +443,7 @@
 				if (q.imageData) {
 					var $td = $('#imagePreviewRow td');
 					if (!$('#removeImageBtn').length) {
-						$('<button type="button" id="removeImageBtn">X</button>').appendTo($td).on('click', function() {
+						$('<button type="button" id="removeImageBtn">이미지 제거</button>').appendTo($td).on('click', function() {
 							// 이미지 삭제 로직
 							currentImage = null;
 							currentImageData = null;
@@ -490,12 +497,18 @@
 					questions[idx] = updated;
 					renderQuestionList();
 					resetForm();
+					editingIndex = null;
 				});
 			});
 			
 			// 질문 삭제
 			$('#questionList').on('click', '.deleteBtn', function() {
 				var idx = +$(this).closest('table').data('index');
+				// 다른 질문 편집 중이면 차단
+			    if (editingIndex !== null) {
+			    	alert('현재 ' + (editingIndex+1) + '번 질문을 수정 중입니다! 먼저 수정 완료를 눌러주세요.');
+			        return false;
+			    }
 				questions.splice(idx, 1);
 				renderQuestionList();
 			});
@@ -503,6 +516,11 @@
 			// 질문 순서 올리기
 			$('#questionList').on('click', '.upBtn', function() {
 				var idx = +$(this).closest('table').data('index');
+				// 다른 질문 편집 중이면 차단
+			    if (editingIndex !== null) {
+			        alert('현재 ' + (editingIndex+1) + '번 질문을 수정 중입니다! 먼저 수정 완료를 눌러주세요.');
+			        return false;
+			    }
 				if(idx > 0) {
 					[questions[idx-1], questions[idx]] = [questions[idx], questions[idx-1]];
 					renderQuestionList();
@@ -512,6 +530,11 @@
 			// 질문 순서 내리기
 			$('#questionList').on('click', '.downBtn', function() {
 				var idx = +$(this).closest('table').data('index');
+				// 다른 질문 편집 중이면 차단
+			    if (editingIndex !== null) {
+			    	alert('현재 ' + (idx+1) + '번 질문을 수정 중입니다! 먼저 수정 완료를 눌러주세요.');
+			        return false;
+			    }
 				if(idx < questions.length - 1) {
 					[questions[idx], questions[idx+1]] = [questions[idx+1], questions[idx]];
 					renderQuestionList();
@@ -577,7 +600,7 @@
 						
 					    var $td = $('#imagePreviewRow td');
 					    if (!$('#removeImageBtn').length) {
-							$('<button type="button" id="removeImageBtn">X</button>').appendTo($td).on('click', function() {
+							$('<button type="button" id="removeImageBtn">이미지 제거</button>').appendTo($td).on('click', function() {
 								// 클릭하면 이미지·파일 초기화
 								currentImage = null;
 								currentImageData = null;

@@ -66,9 +66,12 @@ table.survey-info th {
     display: flex;
     flex-direction: column;
     gap: 8px;
+   	max-height: 300px;
+	overflow-y: auto;
 }
 .q-content .answer-item {
 	white-space: pre-wrap;
+	width: 95%;
     background: #f0f0f0;
     border-radius: 4px;
     padding: 8px;

@@ -39,6 +39,7 @@ table#surveyListTbl td a:hover {
 /* 설문 상태 딱지 */
 .closed-tag {
 	display: inline-block;
+	user-select: none;
 	padding: 0.25em 0.5em;
 	margin: 0 0.5em;
 	background-color: #f28b82;
@@ -49,6 +50,7 @@ table#surveyListTbl td a:hover {
 }
 .commingSoon-tag {
 	display: inline-block;
+	user-select: none;
 	padding: 0.25em 0.5em;
 	margin: 0 0.5em;
 	background-color: #ffaa82;
@@ -59,6 +61,7 @@ table#surveyListTbl td a:hover {
 }
 .available-tag {
 	display: inline-block;
+	user-select: none;
 	padding: 0.25em 0.5em;
 	margin: 0 0.5em;
 	background-color: #98d187;
