@@ -73,6 +73,36 @@
 		}
 	
 		$(function(){
+			// 설문 기본 정보 조회
+			$.ajax({
+				url: '${detailApi}',
+				type: 'POST',
+				contentType: 'application/json',
+				data: JSON.stringify({ idx: idx }),
+				success: function(sv) {
+					$('#svTitle').text(sv.title);
+					$('#svDesc').text(sv.description);
+					$('#svAuthor').text(sv.userName);
+					$('#svStart').text(sv.startDate.substr(0,10));
+					$('#svEnd').text(sv.endDate.substr(0,10));
+					
+					// 시간 계산
+                    var start = new Date(sv.startDate);
+                    var end = new Date(sv.endDate);
+                    end.setDate(end.getDate() + 1);
+                    var today = new Date();
+                    
+                    if (today < start) {
+                    	$('#btnGo').prop('disabled', true).text('오픈 예정');
+                    } else if (today > end) {
+                    	$('#btnGo').prop('disabled', true).text('마감');
+                    }
+				},
+				error: function() {
+					alert('설문 정보를 불러올 수 없습니다');
+				}
+			});
+			
 			// 설문 응답 여부 조회
 			$.ajax({
 				url: '${checkResponseApi}',
@@ -86,24 +116,6 @@
 				},
 				error: function(){
 					console.error('응답 체크 실패');
-				}
-			});
-			
-			// 설문 기본 정보 조회
-			$.ajax({
-				url: '${detailApi}',
-				type: 'POST',
-				contentType: 'application/json',
-				data: JSON.stringify({ idx: idx }),
-				success: function(sv) {
-					$('#svTitle').text(sv.title);
-					$('#svDesc').text(sv.description);
-					$('#svAuthor').text(sv.userName);
-					$('#svStart').text(sv.startDate.substr(0,10));
-					$('#svEnd').text(sv.endDate.substr(0,10));
-				},
-				error: function() {
-					alert('설문 정보를 불러올 수 없습니다');
 				}
 			});
 

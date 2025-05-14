@@ -36,7 +36,7 @@ table#surveyListTbl td a:hover {
     text-decoration: underline;
 }
 
-/* 참여 불가 딱지 */
+/* 설문 상태 딱지 */
 .closed-tag {
 	display: inline-block;
 	padding: 0.25em 0.5em;
@@ -52,6 +52,16 @@ table#surveyListTbl td a:hover {
 	padding: 0.25em 0.5em;
 	margin: 0 0.5em;
 	background-color: #ffaa82;
+	color: #ffffff;
+	font-size: 0.75rem;
+	border-radius: 0.25rem;
+	line-height: 1;   
+}
+.available-tag {
+	display: inline-block;
+	padding: 0.25em 0.5em;
+	margin: 0 0.5em;
+	background-color: #98d187;
 	color: #ffffff;
 	font-size: 0.75rem;
 	border-radius: 0.25rem;

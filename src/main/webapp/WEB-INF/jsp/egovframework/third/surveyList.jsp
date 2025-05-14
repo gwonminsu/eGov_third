@@ -11,6 +11,8 @@
 	
 	<!-- 설문 리스트 json 가져오는 api 호출 url -->
 	<c:url value="/api/survey/list.do" var="surveyListUrl"/>
+	<!-- 설문 응답 여부 api -->
+	<c:url value="/api/answer/check.do" var="checkResponseApi"/>
 	<!-- 로그인 페이지 url -->
 	<c:url value="/login.do" var="loginUrl"/>
 	<!-- 로그아웃 api 호출 url -->
@@ -31,6 +33,7 @@
 		// 서버에서 렌더링 시점에 loginUser.userName 이 없으면 빈 문자열로
 		var loginUserName = '<c:out value="${sessionScope.loginUser.userName}" default="" />';
 		var isAdmin = '<c:out value="${sessionScope.loginUser.role}" default="" />';
+		var sessionUserIdx = '<c:out value="${sessionScope.loginUser.idx}" default="" />';
 		
 	    var PAGE_SIZE = ${pageSize}; // 한 그룹당 페이지 버튼 개수
 	    var PAGE_UNIT = ${pageUnit}; // 한 페이지당 레코드 수
@@ -97,16 +100,36 @@
 	                    var $linkTitle = $('<a>').attr('href', 'javascript:void(0)').text(item.title).on('click', function() {
 	                    	postTo('${surveyDetailUrl}', { idx: item.idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 	                    })
+	                    var $statusTd = $('<td class="status">');
+	                    
+	                    if (today < start) {
+	                    	$statusTd.prepend($('<span>').addClass('commingSoon-tag').text('오픈 예정')).append($linkTitle);
+	                    } else if (today > end) {
+	                    	$statusTd.prepend($('<span>').addClass('closed-tag').text('마감')).append($linkTitle);
+	                    } else {
+	                    	// 이미 참여한 설문인지 확인
+	            			$.ajax({
+	            				url: '${checkResponseApi}',
+	            				type: 'POST',
+	            				contentType: 'application/json',
+	            				data: JSON.stringify({ surveyIdx: item.idx, userIdx: sessionUserIdx }),
+	            				success: function(res) {
+	            					console.log('설문 idx: ' + item.idx + ', 응답 여부: ' + res.hasResponded);
+	            					if (res.hasResponded) {
+	            						$statusTd.prepend($('<span>').addClass('closed-tag').text('이미 참여함')).append($linkTitle);
+	            					} else {
+	            						$statusTd.prepend($('<span>').addClass('available-tag').text('참여 가능')).append($linkTitle);
+	            					}
+	            				},
+	            				error: function(){
+	            					console.error('응답 체크 실패');
+	            				}
+	            			});
+	                    }
 	                    
 	                    // td 추가
 	                	$tr.append($('<td>').text(item.number));
-	                    if (today < start) {
-	                    	$tr.append($('<td>').prepend($('<span>').addClass('commingSoon-tag').text('오픈 예정')).append($linkTitle));
-	                    } else if (today > end) {
-	                    	$tr.append($('<td>').prepend($('<span>').addClass('closed-tag').text('마감')).append($linkTitle));
-	                    } else {
-	                    	$tr.append($('<td>').append($linkTitle));
-	                    }
+	                	$tr.append($statusTd);
 	                    $tr.append($('<td>').text(item.description));
 	                    $tr.append($('<td>').text(item.startDate));
 	                    $tr.append($('<td>').text(item.endDate));
