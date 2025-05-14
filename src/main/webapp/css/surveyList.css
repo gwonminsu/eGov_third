@@ -36,6 +36,28 @@ table#surveyListTbl td a:hover {
     text-decoration: underline;
 }
 
+/* 참여 불가 딱지 */
+.closed-tag {
+	display: inline-block;
+	padding: 0.25em 0.5em;
+	margin: 0 0.5em;
+	background-color: #f28b82;
+	color: #ffffff;
+	font-size: 0.75rem;
+	border-radius: 0.25rem;
+	line-height: 1;   
+}
+.commingSoon-tag {
+	display: inline-block;
+	padding: 0.25em 0.5em;
+	margin: 0 0.5em;
+	background-color: #ffaa82;
+	color: #ffffff;
+	font-size: 0.75rem;
+	border-radius: 0.25rem;
+	line-height: 1;   
+}
+
 /* 버튼 공통 스타일 */
 #btnGoSurveyManage,
 #btnGoLogin,

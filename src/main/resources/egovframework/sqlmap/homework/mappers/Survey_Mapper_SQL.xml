@@ -41,8 +41,6 @@
 			</if>
 		    <if test="onlyAvailable == true">
 				AND s.is_use = true
-			  	AND CURRENT_TIMESTAMP <![CDATA[>=]]> s.start_date
-  				AND CURRENT_TIMESTAMP <![CDATA[<]]>  s.end_date   + INTERVAL '1 day'
 		    </if>
 		</where>
 		ORDER BY s.created_at DESC

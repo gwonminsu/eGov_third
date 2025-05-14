@@ -89,10 +89,24 @@
 	                $tbody.empty();
 	                $.each(data, function(i, item) {
 	                	var $tr = $('<tr>');
-	                	$tr.append($('<td>').text(item.number));
-	                    $tr.append($('<td>').append($('<a>').attr('href', 'javascript:void(0)').text(item.title).on('click', function() {
+	                	// 참여 불가 딱지 위한 시간 계산 변수
+	                    var start = new Date(item.startDate);
+	                    var end = new Date(item.endDate);
+	                    end.setDate(end.getDate() + 1);
+	                    var today = new Date();
+	                    var $linkTitle = $('<a>').attr('href', 'javascript:void(0)').text(item.title).on('click', function() {
 	                    	postTo('${surveyDetailUrl}', { idx: item.idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
-	                    })));
+	                    })
+	                    
+	                    // td 추가
+	                	$tr.append($('<td>').text(item.number));
+	                    if (today < start) {
+	                    	$tr.append($('<td>').prepend($('<span>').addClass('commingSoon-tag').text('오픈 예정')).append($linkTitle));
+	                    } else if (today > end) {
+	                    	$tr.append($('<td>').prepend($('<span>').addClass('closed-tag').text('마감')).append($linkTitle));
+	                    } else {
+	                    	$tr.append($('<td>').append($linkTitle));
+	                    }
 	                    $tr.append($('<td>').text(item.description));
 	                    $tr.append($('<td>').text(item.startDate));
 	                    $tr.append($('<td>').text(item.endDate));
@@ -173,7 +187,7 @@
 	</script>
 </head>
 <body>
-    <h2>참여 가능한 설문 목록</h2>
+    <h2>설문 목록</h2>
     
 	<!-- 사용자 로그인 상태 영역 -->
 	<div id="userInfo">
