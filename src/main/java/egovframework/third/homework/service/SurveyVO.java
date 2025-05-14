@@ -28,10 +28,8 @@ public class SurveyVO {
     
     private String description; // 설문 개요
     
-    @JsonFormat(pattern="yyyy-MM-dd", timezone="Asia/Seoul")
     private Timestamp startDate; // 설문 시작일
     
-    @JsonFormat(pattern="yyyy-MM-dd", timezone="Asia/Seoul")
 	private Timestamp endDate; // 설문 종료일
 	
     @JsonProperty("isUse")

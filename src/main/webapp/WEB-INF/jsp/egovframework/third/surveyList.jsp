@@ -96,15 +96,15 @@
 	                    var start = new Date(item.startDate);
 	                    var end = new Date(item.endDate);
 	                    end.setDate(end.getDate() + 1);
-	                    var today = new Date();
+	                    var currentTime = new Date();
 	                    var $linkTitle = $('<a>').attr('href', 'javascript:void(0)').text(item.title).on('click', function() {
 	                    	postTo('${surveyDetailUrl}', { idx: item.idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 	                    })
 	                    var $statusTd = $('<td class="status">');
 	                    
-	                    if (today < start) {
+	                    if (currentTime < start) {
 	                    	$statusTd.prepend($('<span>').addClass('commingSoon-tag').text('오픈 예정')).append($linkTitle);
-	                    } else if (today > end) {
+	                    } else if (currentTime > end) {
 	                    	$statusTd.prepend($('<span>').addClass('closed-tag').text('마감')).append($linkTitle);
 	                    } else {
 	                    	// 이미 참여한 설문인지 확인

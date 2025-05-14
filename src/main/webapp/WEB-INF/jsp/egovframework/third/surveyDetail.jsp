@@ -90,11 +90,38 @@
                     var start = new Date(sv.startDate);
                     var end = new Date(sv.endDate);
                     end.setDate(end.getDate() + 1);
-                    var today = new Date();
+                    var currentTime = new Date();
                     
-                    if (today < start) {
+                    if (currentTime < start) {
                     	$('#btnGo').prop('disabled', true).text('오픈 예정');
-                    } else if (today > end) {
+                    	$('#btnGo').after('<div id="countdownMsg" style="margin-top:8px; font-size:0.9rem; color:#555;"></div>');
+                        var timerId;
+                        (function tick() {
+                            var now = Date.now();
+                            var diff = start.getTime() - now;
+                            if (diff <= 0) {
+                                clearTimeout(timerId);
+                                $('#countdownMsg').remove();
+                                $('#btnGo').prop('disabled', false).text('설문 참여');
+                                return;
+                            }
+                            var d = Math.floor(diff / 86400000);
+                            var h = Math.floor((diff % 86400000) / 3600000);
+                            var m = Math.floor((diff % 3600000) / 60000);
+                            var s = Math.floor((diff % 60000) / 1000);
+
+                            var parts = [];
+                            if (d > 0) parts.push(d + '일');
+                            if (h > 0) parts.push(h + '시간');
+                            if (m > 0) parts.push(m + '분');
+                            parts.push(s + '초 후에 참여 가능');
+
+                            $('#countdownMsg').text(parts.join(' '));
+
+                            var delay = 1000 - (now % 1000);
+                            timerId = setTimeout(tick, delay);
+                        })();
+                    } else if (currentTime > end) {
                     	$('#btnGo').prop('disabled', true).text('마감');
                     }
 				},
