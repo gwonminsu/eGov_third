@@ -442,6 +442,8 @@
 							currentImageData = null;
 							$('.imagePreview').attr('src','');
 							$('.imageInput').val('');
+		                    q.imageData = null;
+		                    q.imageFile = null;
 							$(this).remove();
 						});
 					}
@@ -553,44 +555,40 @@
 			// 이미지 파일 선택 시 검증 + 미리보기
 			$('#addQuestionTable').on('change','.imageInput',function() {
 				var file = this.files[0];
-				if(!file) {
-					currentImage=null;
-					currentImageData=null;
-					$('.imagePreview').attr('src','');
-					return;
-				}
-			    // 허용할 확장자 리스트
-			    var allowed = ['jpg','jpeg','png','gif','bmp','svg'];
-			    var ext = file.name.split('.').pop().toLowerCase();
-				if(allowed.indexOf(ext) < 0) {
-					alert('지원하지 않는 파일 형식입니다. JPG, PNG, GIF, BMP, SVG만 가능합니다.');
-					$(this).val('');
-					return;
-				}
-			    if (!file.type.startsWith('image/')) {
-			        alert('이미지 파일이 아닙니다');
-			        $(this).val('');
-			        return;
-			    }
-				currentImage = file;
-				var reader = new FileReader();
-				reader.onload = function(e) {
-					currentImageData = e.target.result;
-					$('.imagePreview').attr('src', e.target.result);
-					
-				    var $td = $('#imagePreviewRow td');
-				    if (!$('#removeImageBtn').length) {
-						$('<button type="button" id="removeImageBtn">X</button>').appendTo($td).on('click', function() {
-							// 클릭하면 이미지·파일 초기화
-							currentImage = null;
-							currentImageData = null;
-							$('.imagePreview').attr('src', '');
-							$('.imageInput').val('');
-							$(this).remove();
-						});
+				if(file) {
+				    // 허용할 확장자 리스트
+				    var allowed = ['jpg','jpeg','png','gif','bmp','svg'];
+				    var ext = file.name.split('.').pop().toLowerCase();
+					if(allowed.indexOf(ext) < 0) {
+						alert('지원하지 않는 파일 형식입니다. JPG, PNG, GIF, BMP, SVG만 가능합니다.');
+						$(this).val('');
+						return;
+					}
+				    if (!file.type.startsWith('image/')) {
+				        alert('이미지 파일이 아닙니다');
+				        $(this).val('');
+				        return;
 				    }
-				};
-				reader.readAsDataURL(file);
+					currentImage = file;
+					var reader = new FileReader();
+					reader.onload = function(e) {
+						currentImageData = e.target.result;
+						$('.imagePreview').attr('src', e.target.result);
+						
+					    var $td = $('#imagePreviewRow td');
+					    if (!$('#removeImageBtn').length) {
+							$('<button type="button" id="removeImageBtn">X</button>').appendTo($td).on('click', function() {
+								// 클릭하면 이미지·파일 초기화
+								currentImage = null;
+								currentImageData = null;
+								$('.imagePreview').attr('src', '');
+								$('.imageInput').val('');
+								$(this).remove();
+							});
+					    }
+					};
+					reader.readAsDataURL(file);
+				}
 			});
 			
 			$('#checkArray').on('click', function() {
