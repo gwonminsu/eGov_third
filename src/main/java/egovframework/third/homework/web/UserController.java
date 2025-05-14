@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springmodules.validation.commons.DefaultBeanValidator;
 
+import egovframework.third.cmmn.web.ActiveUserStore;
 import egovframework.third.homework.service.LoginVO;
 import egovframework.third.homework.service.UserService;
 import egovframework.third.homework.service.UserVO;
@@ -36,6 +36,10 @@ public class UserController {
 	// 전자정부 검증 빈
     @Resource(name = "beanValidator")
     protected DefaultBeanValidator beanValidator;
+    
+    // 세션 스토어
+    @Resource(name="activeUserStore")
+    private ActiveUserStore activeUserStore;
 	
 	// AJAX 호출로 사용자 리스트 가져오기(테스트 용)
 	@GetMapping(value = "/userList.do", produces = "application/json; charset=UTF-8")
@@ -90,6 +94,12 @@ public class UserController {
         	log.info("로그인 인증 실패: " + param);
             return Collections.singletonMap("error","로그인 인증에 실패하였습니다");
         }
+        
+        // 중복 로그인 체크
+        if (!activeUserStore.register(loginUser.getUserId(), session)) {
+        	return Collections.singletonMap("error","이미 사용 중인 세션입니다");
+        }
+        
         log.info("로그인 인증 성공: " + loginUser);
         session.setAttribute("loginUser", loginUser);  // 세션에 로그인 사용자 정보 저장
         return Collections.singletonMap("user", loginUser); // 사용자 정보 반환
@@ -99,6 +109,9 @@ public class UserController {
     @PostMapping("/logout.do")
     public Map<String,String> logout(HttpSession session) {
     	UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+        if (loginUser != null) {
+            activeUserStore.unregister(loginUser.getUserId()); // 사용중인 세션에서 제거
+        }
     	log.info(loginUser.getUserName() + " 로그아웃됨");
         session.invalidate(); // 세션 무효화
         return Collections.singletonMap("status","OK");

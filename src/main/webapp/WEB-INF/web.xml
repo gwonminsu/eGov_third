@@ -38,6 +38,11 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
+	
+	<!-- 중복 로그인 방지를 위한 세션 스토어 리스너 -->
+	<listener>
+		<listener-class>egovframework.third.cmmn.web.ActiveUserStore</listener-class>
+	</listener>
     
     <!-- DispatcherServlet 등록: 컨트롤러 요청 매핑 (.do 사용) -->
 	<servlet>
