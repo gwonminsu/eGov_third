@@ -28,6 +28,20 @@
 	display: block;
 }
 
+/* 사용자 알림 박스 */
+.notice-box {
+    display: block;
+    background-color: #fff4e5;
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 16px 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-break: keep-all;
+}
+
 /* form-table(설문조사 등록 폼) 스타일 */
 table.form-table {
 	width: 100%;

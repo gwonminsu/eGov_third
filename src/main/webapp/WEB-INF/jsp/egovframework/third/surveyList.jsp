@@ -131,6 +131,7 @@
 	                	$tr.append($('<td>').text(item.number));
 	                	$tr.append($statusTd);
 	                    $tr.append($('<td>').text(item.description));
+	                    $tr.append($('<td>').text(item.userName));
 	                    $tr.append($('<td>').text(item.startDate.substr(0,10)));
 	                    $tr.append($('<td>').text(item.endDate.substr(0,10)));
 						$tbody.append($tr);
@@ -240,6 +241,7 @@
 	            <th>순번</th>
 	            <th>제목</th>
 	            <th>개요</th>
+	            <th>작성자</th>
 	            <th>설문 시작일</th>
 	            <th>설문 종료일</th>
 	        </tr>
