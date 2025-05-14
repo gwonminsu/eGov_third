@@ -17,6 +17,9 @@ table.survey-info th {
 	background: #f7f7f7;
 	text-align: center;
 }
+#svDesc {
+	white-space: pre-wrap;
+}
 
 /* 질문 블록 */
 #questionList .question-block {
