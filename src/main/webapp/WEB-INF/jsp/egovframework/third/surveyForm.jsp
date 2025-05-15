@@ -407,7 +407,7 @@
 				var qObj = { type, content, isRequired };
 				// 타입이 객관식이면 옵션 필수 체크
 			    if(type === 'radio' || type === 'dropdown' || type === 'check') {
-					if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
+					if(currentOptions.length<2) return alert('옵션을 둘 이상 추가해주세요');
 					qObj.qitemList = [...currentOptions];
 				}
 				// 이미지 있으면 이미지 파일 필수 체크
@@ -445,7 +445,7 @@
 					currentOptions = [...q.qitemList];
 					renderOptionList();
 				}
-				// 이미지면 해당 이미지 세팅
+				// 이미지 있으면 해당 이미지 세팅
 				if (q.imageData) {
 					var $td = $('#imagePreviewRow td');
 					if (!$('#removeImageBtn').length) {

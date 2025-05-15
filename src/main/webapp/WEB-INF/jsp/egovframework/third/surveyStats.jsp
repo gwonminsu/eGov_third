@@ -90,6 +90,13 @@
 		// datalabels 플러그인 등록
 		Chart.register(ChartDataLabels);
 		var chartInstances = {}; // 차트 인스턴스 저장용 객체
+		
+		// cnt 값 강조 색깔 메서드 
+		function interpolateColor(cnt, maxCnt) {
+			var ratio = Math.min(Math.max((cnt - 1) / (maxCnt * 2), 0), 1);
+			var gb = Math.round(255 * (1 - ratio));
+			return `rgb(255, \${gb}, \${gb})`;
+		}
 	
 		$(function(){
 			// 설문 기본 정보 조회
@@ -221,8 +228,10 @@
                             		var $list = $('<div>').addClass('answer-list');
                             		Object.keys(contentCounts).forEach(function(txt) {
                             			var cnt = contentCounts[txt];
+                            			var color = interpolateColor(cnt, 10);
+                            			console.log(color);
                                         var $item = $('<div>').addClass('answer-item')
-                                        						.append($('<span>').addClass('count-circle').text(cnt))
+                                        						.append($('<span>').addClass('count-circle').css('color', color).text(cnt + '건'))
                                         						.append($('<span>').text(txt));
                                         $list.append($item);
                             		});

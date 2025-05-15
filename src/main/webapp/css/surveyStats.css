@@ -96,15 +96,17 @@ table.survey-info th {
 }
 .q-content .count-circle {
     display: inline-block;
-    width: 20px;
+    min-width: 20px;
     height: 20px;
     line-height: 20px;
     margin-right: 6px;
-    border-radius: 50%;
-    background: #bdc3c7;
+    border-radius: 999px;
+    background: #444444;
     color: #fff;
     text-align: center;
     font-size: 12px;
+    padding: 0 6px;
+    white-space: nowrap;
 }
 .q-content .q-image {
 	max-width: 200px;
@@ -174,7 +176,7 @@ table.survey-info th {
 }
 .tabcontent > div {
     display: none;
-   	height: 400px;
+   	height: 600px;
 	padding: 20px 50px;
 }
 .q-content canvas {

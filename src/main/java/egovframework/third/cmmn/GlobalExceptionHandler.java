@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
         return Collections.singletonMap("error", "외래키 제약 위반 오류가 발생했습니다");
     }
     
+    // 근데 파일 제한 용량보다 클경우 실제 요청에서는 요청이 스프링 서버까지 전달되지 않아서 이 에러는 발생안됨 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     @ResponseStatus(HttpStatus.PAYLOAD_TOO_LARGE)
     @ResponseBody
