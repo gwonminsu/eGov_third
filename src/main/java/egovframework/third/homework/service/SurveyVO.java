@@ -24,6 +24,12 @@ public class SurveyVO {
     
     private String userName; // 작성자 이름
     
+    private String userId; // 작성자 아이디
+    
+    private String editorName; // 수정자 이름
+    
+    private String editorId; // 수정자 아이디
+    
     private String title; // 제목
     
     private String description; // 설문 개요

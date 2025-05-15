@@ -42,6 +42,8 @@
 <body>
 	<h2>설문 통계</h2>
 	
+	<div id="surveyStatsGuide"></div>
+	
 	<!-- 설문 메타 정보가 들어갈 영역 -->
 	<table class="survey-info">
 		<tr><th>제목</th><td id="svTitle"></td></tr>
@@ -97,11 +99,16 @@
 				contentType: 'application/json',
 				data: JSON.stringify({ idx: idx }),
 				success: function(sv) {
+					console.log(JSON.stringify(sv));
 					$('#svTitle').text(sv.title);
 					$('#svDesc').text(sv.description);
 					$('#svAuthor').text(sv.userName);
 					$('#svStart').text(sv.startDate.substr(0,10));
 					$('#svEnd').text(sv.endDate.substr(0,10));
+					console.log('userId: ' + sv.userId + ', editorId: ' + sv.editorId);
+					if(sv.createdAt !== sv.updatedAt) {
+						$('#surveyStatsGuide').append($('<div>').addClass('notice-box').text("💡 이 설문은 [" + sv.updatedAt + "]에 " + sv.editorName + '(' + sv.editorId + ')님에 의해서 수정되었습니다.'));
+					}
 				},
 				error: function() {
 					alert('설문 정보를 불러올 수 없습니다');

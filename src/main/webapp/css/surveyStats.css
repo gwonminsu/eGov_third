@@ -21,6 +21,20 @@ table.survey-info th {
 	white-space: pre-wrap;
 }
 
+/* 사용자 알림 박스 */
+.notice-box {
+    display: block;
+    background-color: #e8ffe6;
+    border: 1px solid #6aff06;
+    color: #068216;
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 16px 0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    word-break: keep-all;
+}
+
 /* 질문 블록 */
 .question-block {
     border: 1px solid #ddd;

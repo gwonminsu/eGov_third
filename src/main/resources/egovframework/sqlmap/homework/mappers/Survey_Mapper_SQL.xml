@@ -73,7 +73,10 @@
 			s.idx,
 			s.author_idx AS authorIdx,
 			s.editor_idx AS editorIdx,
-			u.user_name AS userName,
+			ua.user_name AS userName,
+			ua.user_id AS userId,
+			ue.user_name AS editorName,
+			ue.user_id AS editorId,
 			s.title,
 			s.description,
 			s.start_date AS startDate,
@@ -82,8 +85,10 @@
 			s.created_at AS createdAt,
 			s.updated_at AS updatedAt
 		FROM survey s
-		JOIN "user" u
-			ON s.author_idx = u.idx
+		JOIN "user" ua
+			ON s.author_idx = ua.idx
+		JOIN "user" ue
+			ON s.editor_idx = ue.idx
 		WHERE s.idx = #{idx}
 	</select>
 
