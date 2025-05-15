@@ -320,7 +320,7 @@
 					$(`<tr id="optionInputRow">
 					        <th>응답 옵션</th>
 					        <td>
-					          <input type="text" id="optionContent" style="width:70%"/>
+					          <input type="text" id="optionContent" style="width:70%" maxlength="100"/>
 					          <button type="button" id="addOptionBtn">추가</button>
 					        </td>
 					      </tr>`).insertAfter('#imagePreviewRow'); // imagePreviewRow 다음에 추가
@@ -490,7 +490,7 @@
 					// 배열 업데이트(객관식일경우 옵션리스트 객체를 배열에 추가)
 					var updated = { idx: originalIdx, type: newType, content: newContent, isRequired: newIsRequired };
 					if(newType === 'radio' || newType === 'dropdown' || newType === 'check') {
-						if(currentOptions.length<1) return alert('옵션을 하나 이상 추가해주세요');
+						if(currentOptions.length<2) return alert('옵션을 둘 이상 추가해주세요');
 						updated.qitemList = [...currentOptions];
 					}
 					// 이미지 파일이 있으면 추가

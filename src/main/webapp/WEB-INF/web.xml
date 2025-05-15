@@ -57,7 +57,7 @@
 		<multipart-config>
  			<location>C:/uploadFiles/tmp</location>
  			<max-file-size>524288000</max-file-size> <!-- 500MB -->
- 			<max-request-size>524288000</max-request-size>
+ 			<max-request-size>524288000</max-request-size> <!-- 500MB -->
  			<file-size-threshold>0</file-size-threshold>
  		</multipart-config>
 	</servlet>

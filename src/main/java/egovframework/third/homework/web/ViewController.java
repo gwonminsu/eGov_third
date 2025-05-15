@@ -57,7 +57,13 @@ public class ViewController {
 	
 	// 설문조사 폼 페이지
 	@RequestMapping(value = "/surveyForm.do")
-	public String showSurveyForm() {
+	public String showSurveyForm(HttpSession session, RedirectAttributes rt) {
+		UserVO me = (UserVO) session.getAttribute("loginUser");
+        // 로그인 안 했거나, 관리자 아니면
+        if (me == null || !me.isRole()) {
+            rt.addFlashAttribute("errorMsg", "관리자 권한이 필요합니다.");
+            return "redirect:/surveyList.do";
+        }
 		return "surveyForm";
 	}
 	
@@ -69,13 +75,25 @@ public class ViewController {
 	
 	// 설문조사 참여 페이지
 	@RequestMapping(value = "/surveyParticipate.do")
-	public String showSurveyParticipate() {
+	public String showSurveyParticipate(HttpSession session, RedirectAttributes rt) {
+		UserVO me = (UserVO) session.getAttribute("loginUser");
+        // 로그인 안 했거나
+        if (me == null) {
+            rt.addFlashAttribute("errorMsg", "로그인이 필요합니다.");
+            return "redirect:/surveyList.do";
+        }
 		return "surveyParticipate";
 	}
 	
 	// 설문조사 통계 페이지
 	@RequestMapping(value = "/surveyStats.do")
-	public String showSurveyStats() {
+	public String showSurveyStats(HttpSession session, RedirectAttributes rt) {
+		UserVO me = (UserVO) session.getAttribute("loginUser");
+        // 로그인 안 했거나, 관리자 아니면
+        if (me == null || !me.isRole()) {
+            rt.addFlashAttribute("errorMsg", "관리자 권한이 필요합니다.");
+            return "redirect:/surveyList.do";
+        }
 		return "surveyStats";
 	}
 	
