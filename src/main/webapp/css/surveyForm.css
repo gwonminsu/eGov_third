@@ -206,6 +206,23 @@ table.form-table textarea {
 	justify-content: space-between;
 	align-items: center;
 	background: #f7f7f7;
+  	position: relative;
+	overflow: hidden;
+}
+.question-item th .th-content.highlight-wave::after {
+	content: '';
+	position: absolute;
+	top: 0; left: 0;
+	width: 0%;
+	height: 100%;
+	background: rgba(0,200,0,0.4);
+	animation: horizontalWave 0.6s ease-out forwards;
+}
+@keyframes horizontalWave {
+	to {
+		width: 100%;
+		opacity: 0;
+	}
 }
 .question-item th .label-text {
 	margin-left: 10px;
@@ -222,4 +239,3 @@ table.form-table textarea {
 	margin-left: 4px;
 	font-weight: bold;
 }
-

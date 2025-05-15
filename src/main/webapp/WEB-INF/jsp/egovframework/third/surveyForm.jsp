@@ -504,6 +504,20 @@
 					renderQuestionList();
 					resetForm();
 					editingIndex = null;
+					
+					// 해당 질문 아이템 위치로 스크롤 이동하고 효과
+				    var $target = $('#questionList').find('.question-item').eq(idx);
+				    if ($target.length) {
+				        $('html, body').animate({
+				            scrollTop: $target.offset().top
+				        }, 500, 'swing', function() {
+				        	var $hdr = $target.find('.th-content').first();
+				            $hdr.addClass('highlight-wave');
+				            setTimeout(function(){
+				                $hdr.removeClass('highlight-wave');
+				            }, 600);
+				        });
+				    }
 				});
 			});
 			
@@ -646,9 +660,9 @@
 					alert("종료일이 시작일보다 빠릅니다! 날짜를 다시 확인해주세요");
 					return;
 				}
-				// 문자열 포맷 변환 (yyyy-MM-dd)
-				var startStr = $.datepicker.formatDate("yy-mm-dd", startObj);
-				var endStr   = $.datepicker.formatDate("yy-mm-dd", endObj);
+				// 문자열 포맷 변환
+				var startStr = $.datepicker.formatDate("yy-mm-dd", startObj) + "T00:00:00+09:00";
+				var endStr = $.datepicker.formatDate("yy-mm-dd", endObj) + "T00:00:00+09:00";
 				
 				// 사용 여부 값 가져오기
 				var isUseVal = $('input[name="isUse"]:checked').val() === 'true';
