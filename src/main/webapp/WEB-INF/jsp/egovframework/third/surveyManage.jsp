@@ -25,6 +25,8 @@
 	<c:url value="/surveyStats.do" var="surveyStatsUrl"/>
 	<!-- 응답 기록 목록 조회 api -->
 	<c:url value="/api/answer/resList.do" var="resListApi"/>
+	<!-- 접속 중 사용자 목록 조회 api -->
+	<c:url value="/api/user/activeUserList.do" var="activeUserListApi"/>
 	
 	<!-- 페이지네이션 버튼 이미지 url -->
 	<c:url value="/images/egovframework/cmmn/btn_page_pre10.gif" var="firstImgUrl"/>
@@ -208,13 +210,14 @@
 	</script>
 </head>
 <body>
-    <h2>🛠️설문 관리</h2>
+    <h2>🛠️ 관리자 페이지(설문 관리)</h2>
     
 	<!-- 사용자 로그인 상태 영역 -->
 	<div id="userInfo">
 		<span id="loginMsg"></span>
 		<button type="button" id="btnGoLogin">로그인하러가기</button>
 		<button type="button" id="btnLogout">로그아웃</button>
+		<button type="button" id="btnShowActiveUsers">현재 접속 유저 보기</button>
 	</div>
 	
 	<!-- 검색 영역 -->
@@ -311,6 +314,20 @@
 	        	// 설문 목록 페이지로 이동
 				postTo('${listUrl}', {});
 			})
+			
+			// 현재 접속 중 유저 보기 버튼 핸들러
+			$('#btnShowActiveUsers').click(function(){
+			    $.ajax({
+			        url: '${activeUserListApi}',
+			        type: 'POST',
+			        success: function(res) {
+			        	alert(`🔍 현재 접속 중인 유저 목록: \${res.users.join(', ')}`);
+			        },
+			        error: function(err) {
+			            console.error('유저 목록 조회 실패', err);
+			        }
+			    });
+			});
 	        
 	    });
     </script>

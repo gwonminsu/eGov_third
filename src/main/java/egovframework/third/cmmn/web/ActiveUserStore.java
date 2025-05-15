@@ -1,5 +1,7 @@
 package egovframework.third.cmmn.web;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,6 +27,11 @@ public class ActiveUserStore implements HttpSessionListener {
     // 로그아웃 시 또는 세션 종료 시 호출
     public void unregister(String userId) {
         sessions.remove(userId);
+    }
+    
+    // 현재 세션에 등록된 userId 목록을 반환
+    public List<String> getAllUserIds() {
+        return new ArrayList<>(sessions.keySet());
     }
 
     // 톰캣에서 세션 만료될 때 맵에서 제거

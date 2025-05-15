@@ -49,6 +49,13 @@ public class UserController {
 	    return list;
 	}
 	
+	// 접속 중인 사용자 목록 조회
+    @PostMapping(value="/activeUserList.do", produces="application/json")
+	public Map<String, List<String>> activeUserList() throws Exception {
+    	List<String> users = activeUserStore.getAllUserIds();
+        return Collections.singletonMap("users", users);
+	}
+	
     // 회원가입(JSON 요청 바디로 전달된 사용자 정보: userId, password, userName)
     @PostMapping(value="/register.do", consumes="application/json", produces="application/json")
     public Map<String,String> register(@RequestBody UserVO user) {
