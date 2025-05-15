@@ -736,6 +736,11 @@
 			            }
 	    			},
 					error: function(xhr){
+						// 네트워크 연결 리셋 시 (멀티파트 파일들 크기가 제한 크기보다 크면 발생)
+						if (xhr.status === 0) {
+							alert("이미지 파일 크기가 너무 커서 서버 연결이 리셋됐습니다. 파일 크기를 확인해주세요.");
+							return;
+						}
 						var errMsg = xhr.responseJSON && xhr.responseJSON.error; // 인터셉터에서 에러메시지 받아옴
 						if (!errMsg) {
 							try {
