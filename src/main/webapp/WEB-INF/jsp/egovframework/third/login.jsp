@@ -58,6 +58,13 @@
     		// 회원가입 페이지 이동
     		postTo('${registerUrl}', {});
     	});
+    	
+    	// 엔터키 누르면 로그인 버튼 클릭 실행
+        $('#userId, #password').on('keypress', function(e){
+            if (e.which === 13) {
+                $('#btnLogin').click();
+            }
+        });
     });
 	</script>
 </body>
