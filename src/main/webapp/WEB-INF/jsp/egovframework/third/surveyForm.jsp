@@ -681,78 +681,86 @@
 					});
 				}
 
-	        	// 설문에 응답 이력이 있고 질문이 변경되었으면 차단
-				if (mode==='edit' && hasResponded) {
-					if (JSON.stringify(cleanQuestions) !== JSON.stringify(cleanOriginQuestions)) {
-						alert('해당 설문에 이미 응답 이력이 있어 질문을 수정할 수 없습니다. 설문 메타데이터만 변경 가능합니다.');
-						e.preventDefault();
-						return false;
-					}
-				}
-				
-	    		// 검증 통과 시 게시글 등록/수정 api 실행
-	    		var payload = {
-	    				survey: $.extend({}, {
-		    				authorIdx: sessionUserIdx,
-		    				editorIdx: sessionUserIdx,
-		    				title: $('#title').val(),
-		    				description: $('#description').val(),
-		    				startDate: startStr,
-		    				endDate: endStr,
-		    				isUse: isUseVal
-	    				}, mode==='edit'?{idx: idx}:{}),
-	    				questionList: cleanQuestions
-   				}; // 보낼 데이터
-	    		console.log("payload: " + JSON.stringify(payload));
-   				
-				// FormData 에 JSON + 이미지 파일들 묶기
-				var formData = new FormData();
-				formData.append('payload', new Blob([JSON.stringify(payload)],{type:'application/json'}));
-				
-				questions.forEach(q => {
-					if (q.imageFile) {
-						// 키는 전부 동일하게 'files' 로, 순서대로 붙이면 컨트롤러에 List<MultipartFile> 로 들어옴
-						formData.append('files', q.imageFile);
-					}
-				});
-				
-				for (let [key, value] of formData.entries()) {
-					console.log(key, value);
-				}
-	    		
-	    		// 설문지 등록 요청
-	    		$.ajax({
-	    			url: apiUrl,
-	    			type:'POST',
-	    			contentType: false,
-	    			processData: false,
-	    			dataType: 'json',
-	    			data: formData,
-	    			success: function(res){
-						if (res.error) {
-							alert(res.error);
-						} else {
-							alert(mode==='edit'?'설문 수정 완료':'설문 등록 완료');
-							postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
-			            }
-	    			},
-					error: function(xhr){
-						// 네트워크 연결 리셋 시 (멀티파트 파일들 크기가 제한 크기보다 크면 발생)
-						if (xhr.status === 0) {
-							alert("이미지 파일 크기가 너무 커서 서버 연결이 리셋됐습니다. 파일 크기를 확인해주세요.");
-							return;
-						}
-						var errMsg = xhr.responseJSON && xhr.responseJSON.error; // 인터셉터에서 에러메시지 받아옴
-						if (!errMsg) {
-							try {
-								errMsg = JSON.parse(xhr.responseText).error;
-							} catch (e) {
-								errMsg = '설문 ' + (mode==='edit'?'수정':'등록') + ' 중 에러 발생'
+				// 저장전 설문 응답 이력 한번 더 확인
+				$.ajax({
+					url: '${resListApi}',
+					type: 'POST',
+					contentType: 'application/json',
+					data: JSON.stringify({ surveyIdx: idx }),
+					success: function(resList) {
+			        	// 설문에 응답 이력이 있고 질문이 변경되었으면 차단
+						if (mode==='edit' && resList.length > 0) {
+							if (JSON.stringify(cleanQuestions) !== JSON.stringify(cleanOriginQuestions)) {
+								alert('해당 설문에 이미 응답 이력이 있어 질문을 수정할 수 없습니다. 설문 메타데이터만 변경 가능합니다.');
+								e.preventDefault();
+								return false;
 							}
 						}
-						alert(errMsg);
+						
+			    		// 검증 통과 시 게시글 등록/수정 api 실행
+			    		var payload = {
+			    				survey: $.extend({}, {
+				    				authorIdx: sessionUserIdx,
+				    				editorIdx: sessionUserIdx,
+				    				title: $('#title').val(),
+				    				description: $('#description').val(),
+				    				startDate: startStr,
+				    				endDate: endStr,
+				    				isUse: isUseVal
+			    				}, mode==='edit'?{idx: idx}:{}),
+			    				questionList: cleanQuestions
+		   				}; // 보낼 데이터
+			    		console.log("payload: " + JSON.stringify(payload));
+		   				
+						// FormData 에 JSON + 이미지 파일들 묶기
+						var formData = new FormData();
+						formData.append('payload', new Blob([JSON.stringify(payload)],{type:'application/json'}));
+						
+						questions.forEach(q => {
+							if (q.imageFile) {
+								// 키는 전부 동일하게 'files' 로, 순서대로 붙이면 컨트롤러에 List<MultipartFile> 로 들어옴
+								formData.append('files', q.imageFile);
+							}
+						});
+			    		
+			    		// 설문지 등록 요청
+			    		$.ajax({
+			    			url: apiUrl,
+			    			type:'POST',
+			    			contentType: false,
+			    			processData: false,
+			    			dataType: 'json',
+			    			data: formData,
+			    			success: function(res){
+								if (res.error) {
+									alert(res.error);
+								} else {
+									alert(mode==='edit'?'설문 수정 완료':'설문 등록 완료');
+									postTo('${surveyManageUrl}', { searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
+					            }
+			    			},
+							error: function(xhr){
+								// 네트워크 연결 리셋 시 (멀티파트 파일들 크기가 제한 크기보다 크면 발생)
+								if (xhr.status === 0) {
+									alert("이미지 파일 크기가 너무 커서 서버 연결이 리셋됐습니다. 파일 크기를 확인해주세요.");
+									return;
+								}
+								var errMsg = xhr.responseJSON && xhr.responseJSON.error; // 인터셉터에서 에러메시지 받아옴
+								if (!errMsg) {
+									try {
+										errMsg = JSON.parse(xhr.responseText).error;
+									} catch (e) {
+										errMsg = '설문 ' + (mode==='edit'?'수정':'등록') + ' 중 에러 발생'
+									}
+								}
+								alert(errMsg);
+							}
+			    		});
+					},
+					error: function(){
+						console.error('응답 개수 조회 실패');
 					}
-	    		});
+				});
 	        });
 	    	
 	        $('#btnDelete').click(function() {
