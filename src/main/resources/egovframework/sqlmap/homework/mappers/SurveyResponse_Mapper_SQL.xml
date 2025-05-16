@@ -37,6 +37,7 @@
 		FROM survey_response sr
 		JOIN "user" u ON sr.user_idx = u.idx
 		WHERE survey_idx = #{surveyIdx}
+		ORDER BY sr.created_at DESC
 	</select>
 	
 	<!-- 사용자가 설문 응답 여부용 카운트 조회 -->
