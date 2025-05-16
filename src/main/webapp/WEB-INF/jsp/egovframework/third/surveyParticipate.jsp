@@ -285,8 +285,12 @@
 	        		type: 'POST',
 	        		contentType:'application/json',
 	                data: JSON.stringify(payload),
-	                success: function(){
-	                    alert('제출 완료');
+	                success: function(res){
+	                    if (res.status === 'OK') {
+	                        alert('제출 완료');
+	                    } else if (res.status === 'error'){
+	                        alert('이미 마감된 설문입니다.');
+	                    }
 	                    postTo('${detailUrl}', { idx: idx, searchType: currentSearchType, searchKeyword: currentSearchKeyword, pageIndex: currentPageIndex });
 	                },
 	                error: function(){

@@ -1,5 +1,6 @@
 package egovframework.third.homework.web;
 
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,8 @@ import egovframework.third.homework.service.AnswerService;
 import egovframework.third.homework.service.AnswerVO;
 import egovframework.third.homework.service.SurveyResponseService;
 import egovframework.third.homework.service.SurveyResponseVO;
+import egovframework.third.homework.service.SurveyVO;
+import egovframework.third.homework.service.impl.SurveyDAO;
 
 @RestController
 @RequestMapping("/api/answer")
@@ -35,14 +38,26 @@ public class AnswerController {
     
     @Resource(name="surveyResponseService")
     private SurveyResponseService surveyResponseService;
+    
+	@Resource(name = "surveyDAO")
+	private SurveyDAO surveyDAO;
 
     // 설문의 질문에 대한 답변 목록 일괄 등록(해당 설문의 응답 기록 등록 작업 포함)
     @PostMapping(value="/submit.do", consumes="application/json", produces="application/json")
     public Map<String, String> submit(@RequestBody Map<String, Object> payload) throws Exception {
     	SurveyResponseVO sRes = objectMapper.convertValue(payload.get("surveyResponse"), SurveyResponseVO.class);
         List<AnswerVO> answerList = objectMapper.convertValue(payload.get("answerList"), new TypeReference<List<AnswerVO>>() {});
-        answerService.createAnswerList(sRes, answerList);
-        return Collections.singletonMap("status","OK");
+		// 설문 만료 여부 검증
+		SurveyVO survey = surveyDAO.selectSurvey(sRes.getSurveyIdx());
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		if (now.after(survey.getEndDate())) {
+			log.info("현재시간({})이 마감시간({})을 초과했습니다.", now, survey.getEndDate());
+			return Collections.singletonMap("status","error");
+		} else {
+			answerService.createAnswerList(sRes, answerList);
+			return Collections.singletonMap("status","OK");
+		}
+        
     }
     
     // 설문에 응답한 기록 목록 조회

@@ -1,5 +1,6 @@
 package egovframework.third.homework.service.impl;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import egovframework.third.homework.service.AnswerService;
 import egovframework.third.homework.service.AnswerVO;
 import egovframework.third.homework.service.SurveyResponseVO;
+import egovframework.third.homework.service.SurveyVO;
 
 @Service("answerService")
 public class AnswerServiceImpl extends EgovAbstractServiceImpl implements AnswerService {
