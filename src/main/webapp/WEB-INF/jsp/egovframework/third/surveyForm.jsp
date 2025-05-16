@@ -20,7 +20,6 @@
     <c:url value="/api/survey/detail.do" var="detailApi"/>
     <c:url value="/api/survey/questions.do" var="questionsApi"/>
     <c:url value="/api/survey/qimage.do" var="qimageApi"/>
-    <c:url value="/api/answer/check.do" var="checkResponseApi"/>
     <c:url value="/api/answer/resList.do" var="resListApi"/>
     <!-- 데이트피커 이미지 url -->
     <c:url value="/images/datepicker.png" var="datepickerImgUrl"/>
@@ -135,7 +134,7 @@
 
 	<div class="btn-area">
 		<button id="btnSubmit">저장</button>
-		<button id="btnDelete">삭제</button>
+		<button id="btnDelete" style="display: none;">삭제</button>
 		<button id="btnCancel">취소</button>
 	</div>
 	<button id="checkArray" >현재 배열 확인하기</button>
@@ -174,6 +173,7 @@
 	    		$('#formTitle').text('설문지 관리(수정)');
 	    		$('#surveyFormGuide').show();
 	    		$('#idxShow').text(idx);
+	    		$('#btnDelete').show();
 	    		
 	    		// 설문 메타 정보 가져와서 input에 채워넣기
 	    		$.ajax({
@@ -708,6 +708,7 @@
 				// FormData 에 JSON + 이미지 파일들 묶기
 				var formData = new FormData();
 				formData.append('payload', new Blob([JSON.stringify(payload)],{type:'application/json'}));
+				
 				questions.forEach(q => {
 					if (q.imageFile) {
 						// 키는 전부 동일하게 'files' 로, 순서대로 붙이면 컨트롤러에 List<MultipartFile> 로 들어옴

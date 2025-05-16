@@ -34,16 +34,16 @@ public class ActiveUserStore implements HttpSessionListener {
         return new ArrayList<>(sessions.keySet());
     }
 
-    // 톰캣에서 세션 만료될 때 맵에서 제거
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
-        HttpSession dead = se.getSession();
-        sessions.entrySet().removeIf(e -> e.getValue().getId().equals(dead.getId()));
+
 	}
 
+    // 톰캣에서 세션 만료될 때 맵에서 제거
 	@Override
 	public void sessionDestroyed(HttpSessionEvent se) {
-		
+        HttpSession dead = se.getSession();
+        sessions.entrySet().removeIf(e -> e.getValue().getId().equals(dead.getId()));
 	}
 
 }
