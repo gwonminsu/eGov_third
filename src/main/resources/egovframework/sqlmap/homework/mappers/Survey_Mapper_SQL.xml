@@ -5,8 +5,14 @@
 	<!-- 설문 등록 -->
 	<insert id="insertSurvey" parameterType="surveyVO">
 		<selectKey keyProperty="idx" resultType="String" order="BEFORE">
-			SELECT 'SURVEY-' || (COALESCE(MAX((SUBSTRING(idx FROM 8))::int), 0) + 1)
-			FROM survey
+			SELECT 'SURVEY-' ||
+				(
+					SELECT (SUBSTRING(idx FROM 8))::int + 1
+					FROM survey
+					ORDER BY (SUBSTRING(idx FROM 8))::int DESC
+					LIMIT 1
+					FOR UPDATE
+				)
 		</selectKey>
 		INSERT INTO survey
 			(idx, author_idx, editor_idx, title, description, start_date, end_date, is_use, created_at, updated_at)
